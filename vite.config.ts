@@ -7,6 +7,12 @@ export default defineConfig({
     ignorePatterns: [".agents/**"],
     semi: false,
     useTabs: false,
+    overrides: [
+      {
+        files: [".vscode/extensions.json"],
+        options: { printWidth: 1 },
+      },
+    ],
   },
   lint: {
     options: {
