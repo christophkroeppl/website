@@ -6,6 +6,10 @@
         "type": "remote",
         "url": "https://mcp.cloudflare.com/mcp",
       },
+      "Astro docs": {
+        "type": "remote",
+        "url": "https://mcp.docs.astro.build/mcp",
+      },
     },
   },
 }

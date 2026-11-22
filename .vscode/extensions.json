@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "VoidZero.vite-plus-extension-pack",
-    "EditorConfig.EditorConfig"
+    "EditorConfig.EditorConfig",
+    "astro-build.astro-vscode"
   ]
 }

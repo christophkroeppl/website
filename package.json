@@ -11,6 +11,11 @@
     "test": "vp test",
     "typecheck": "cf workers types && vp check --no-fmt --no-lint"
   },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.4.9",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^7.4.13"
+  },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^2.0.0-rc.3",
     "@cloudflare/vitest-plugin": "^1.9.0",
