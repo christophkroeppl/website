@@ -17,21 +17,21 @@ const otherPath = useTranslatedPath(otherLang)(
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="light">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{Astro.props.title ?? "Website"}</title>
   </head>
-  <body class="flex min-h-dvh flex-col bg-base-100 text-base-content">
-    <header class="bg-base-200 w-full">
-      <div class="navbar w-full max-w-3xl mx-auto">
-        <div class="flex-1">
-          <a href={homePath} class="btn btn-ghost btn-circle">
-            <Image src={ck} alt="CK" class="w-12 h-12 rounded-full object-cover" />
+  <body class="flex min-h-dvh flex-col">
+    <header class="bg-base-200">
+      <div class="navbar mx-auto w-full max-w-3xl px-4">
+        <div class="navbar-start">
+          <a href={homePath} class="btn btn-ghost btn-circle btn-lg" aria-label={t("home.title")}>
+            <Image src={ck} alt="" class="size-10 rounded-full object-cover" />
           </a>
         </div>
-        <nav class="flex gap-2">
+        <nav class="navbar-end gap-1">
           <a
             href="https://github.com/christophkroeppl"
             target="_blank"
@@ -68,21 +68,21 @@ const otherPath = useTranslatedPath(otherLang)(
           </a>
           <button
             id="lang-toggle"
-            class="btn btn-ghost btn-lg group w-12 justify-center"
+            class="btn btn-ghost btn-lg"
             data-target={otherPath}
             data-lang={otherLang}
+            aria-label={t("nav.switchLang")}
           >
-            <span class="group-hover:hidden">{lang.toUpperCase()}</span>
-            <span class="hidden group-hover:inline">{otherLang.toUpperCase()}</span>
+            {otherLang.toUpperCase()}
           </button>
         </nav>
       </div>
     </header>
-    <main class="container mx-auto max-w-3xl flex-1 px-4 py-10">
+    <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
       <slot />
     </main>
-    <footer class="bg-base-200 py-4 text-sm">
-      <div class="mx-auto flex w-full max-w-3xl flex-col items-center gap-2 px-4 md:flex-row md:justify-between">
+    <footer class="bg-base-200">
+      <div class="footer sm:footer-horizontal mx-auto w-full max-w-3xl place-items-center gap-4 px-4 py-4 sm:justify-between">
         <nav class="flex gap-4">
           <a class="link link-hover" href={impressumPath}>
             {t("nav.impressum")}

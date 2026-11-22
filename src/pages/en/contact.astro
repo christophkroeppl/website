@@ -1,17 +1,17 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro"
 import Reveal from "../../components/Reveal.astro"
+import ContactModal from "../../components/ContactModal.astro"
 import { getLangFromUrl, useTranslations } from "../../i18n/ui"
 const lang = getLangFromUrl(Astro.url)
 const t = useTranslations(lang)
-const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
 const name = import.meta.env.PUBLIC_CONTACT_NAME
 ---
 
 <BaseLayout title={t("impressum.title")}>
   <h1 class="text-3xl font-bold mb-4">{t("impressum.title")}</h1>
-  <p class="mb-4 leading-relaxed text-sm opacity-80">{t("impressum.notice")}</p>
-  <p class="mb-6 text-xs opacity-60">
+  <p class="mb-4 leading-relaxed text-sm text-base-content/80">{t("impressum.notice")}</p>
+  <p class="mb-6 text-xs text-base-content/60">
     <a
       href="https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25"
       target="_blank"
@@ -25,101 +25,5 @@ const name = import.meta.env.PUBLIC_CONTACT_NAME
     <Reveal id="contact" lang={lang} />
   </div>
 
-  <button class="btn btn-primary" onclick="document.getElementById('contact-modal').showModal()">
-    {t("contact.open")}
-  </button>
-
-  <dialog id="contact-modal" class="modal">
-    <div class="modal-box">
-      <h3 class="font-bold text-lg mb-4">{t("contact.title")}</h3>
-      <form id="contact-form" class="space-y-4">
-        <input
-          type="text"
-          name="name"
-          placeholder={t("contact.name")}
-          class="input input-bordered w-full"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder={t("contact.email")}
-          class="input input-bordered w-full"
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder={t("contact.phone")}
-          class="input input-bordered w-full"
-        />
-        <textarea
-          name="message"
-          placeholder={t("contact.message")}
-          class="textarea textarea-bordered w-full"
-          required
-          minlength="30"
-          maxlength="1500"
-        ></textarea>
-        <div class="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess"></div>
-        <p class="text-xs opacity-70">{t("contact.turnstile")}</p>
-        <div class="modal-action">
-          <button type="submit" id="submit-btn" class="btn btn-primary" disabled>
-            {t("contact.send")}
-          </button>
-          <button
-            type="button"
-            class="btn"
-            onclick="document.getElementById('contact-modal').close()"
-          >
-            Close
-          </button>
-        </div>
-        <p id="status" class="text-sm"></p>
-      </form>
-    </div>
-  </dialog>
-
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script is:inline>
-    window.onTurnstileSuccess = function () {
-      const btn = document.getElementById("submit-btn")
-      if (btn) btn.disabled = false
-    }
-    const form = document.getElementById("contact-form")
-    const status = document.getElementById("status")
-    const btn = document.getElementById("submit-btn")
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      btn.disabled = true
-      const sending = "Sending..."
-      btn.textContent = sending
-      const data = new FormData(form)
-      const payload = {
-        name: data.get("name"),
-        email: data.get("email"),
-        phone: data.get("phone"),
-        message: data.get("message"),
-        token: data.get("cf-turnstile-response"),
-      }
-      try {
-        const res = await fetch("/api/contact", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-        const json = await res.json()
-        if (res.ok) {
-          status.textContent = "Message sent. Thank you!"
-          form.reset()
-        } else {
-          status.textContent = json.error || "Failed to send."
-        }
-      } catch {
-        status.textContent = "Failed to send."
-      } finally {
-        btn.disabled = false
-        btn.textContent = "Send"
-      }
-    })
-  </script>
+  <ContactModal lang={lang} />
 </BaseLayout>

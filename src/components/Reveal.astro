@@ -1,7 +1,7 @@
 ---
 import { revealOutlines } from "../generated/reveals"
-import { useTranslations, type Locale } from "../i18n/ui"
-import type { RevealId } from "../reveals/registry"
+import { type Locale } from "../i18n/ui"
+import { type RevealId } from "../reveals/registry"
 
 interface Props {
   id: RevealId
@@ -9,7 +9,6 @@ interface Props {
 }
 
 const { id, lang } = Astro.props
-const t = useTranslations(lang)
 const { viewBox, labels } = revealOutlines[id]
 const label = labels[lang]
 const labelWidth = (label.width / viewBox.units).toFixed(2)
@@ -27,9 +26,6 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
     </svg>
   </button>
   <div data-reveal-lines class="grid gap-[0.4em]" hidden></div>
-  <p data-reveal-error class="text-xs opacity-70" hidden>
-    {t("reveal.unavailable")}
-  </p>
 </div>
 
 <script>
@@ -59,7 +55,7 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
         svg.setAttribute("style", `width:${(line.width / units).toFixed(2)}em`)
         const path = document.createElementNS(namespace, "path")
         path.setAttribute("d", line.d)
-        svg.append(path)
+        svg.appendChild(path)
         return svg
       }),
     )
@@ -72,8 +68,7 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
     const lang = root.dataset.revealLang
     const button = root.querySelector<HTMLButtonElement>("[data-reveal-button]")
     const target = root.querySelector<HTMLElement>("[data-reveal-lines]")
-    const error = root.querySelector<HTMLElement>("[data-reveal-error]")
-    if (!id || !lang || !button || !target || !error) continue
+    if (!id || !lang || !button || !target) continue
 
     let loaded: Promise<Payload> | undefined
 
@@ -102,7 +97,6 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
         .then((payload) => {
           render(target, payload)
           button.hidden = true
-          error.hidden = true
           let width = Math.round(target.clientWidth)
           new ResizeObserver(([entry]) => {
             const next = Math.round(entry.contentRect.width)
@@ -113,7 +107,6 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
         })
         .catch(() => {
           button.disabled = false
-          error.hidden = false
         })
     }
 

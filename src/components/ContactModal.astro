@@ -1,0 +1,166 @@
+---
+import { useTranslations, type Locale } from "../i18n/ui"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
+---
+
+<button type="button" data-contact-open class="btn btn-primary">
+  {t("contact.open")}
+</button>
+
+<dialog id="contact-modal" class="modal" aria-labelledby="contact-modal-title">
+  <div class="modal-box">
+    <form method="dialog">
+      <button
+        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+        aria-label={t("contact.close")}
+      >
+        ✕
+      </button>
+    </form>
+    <h3 id="contact-modal-title" class="text-lg font-bold">
+      {t("contact.title")}
+    </h3>
+    <form
+      id="contact-form"
+      class="mt-4 space-y-4"
+      data-send={t("contact.send")}
+      data-sending={t("contact.sending")}
+      data-success={t("contact.success")}
+      data-error={t("contact.error")}
+    >
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">{t("contact.name")}</legend>
+        <input type="text" name="name" class="input w-full" required />
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">{t("contact.email")}</legend>
+        <input type="email" name="email" class="input w-full" />
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">{t("contact.phone")}</legend>
+        <input type="tel" name="phone" class="input w-full" />
+      </fieldset>
+      <fieldset class="fieldset">
+        <legend class="fieldset-legend">{t("contact.message")}</legend>
+        <textarea
+          name="message"
+          class="textarea w-full"
+          required
+          minlength="30"
+          maxlength="1500"
+        ></textarea>
+        <p class="label">{t("contact.messageHint")}</p>
+      </fieldset>
+      <div class="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess"></div>
+      <p class="text-xs text-base-content/70">{t("contact.turnstile")}</p>
+      <div id="contact-status" role="status" class="alert" hidden></div>
+      <div class="modal-action">
+        <button type="submit" id="contact-submit" class="btn btn-primary" disabled>
+          {t("contact.send")}
+        </button>
+        <button type="button" data-contact-close class="btn">
+          {t("contact.close")}
+        </button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>{t("contact.close")}</button>
+  </form>
+</dialog>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
+<script>
+  type Turnstile = { reset: () => void }
+  type StatusKind = "success" | "error"
+
+  const statusClass: Record<StatusKind, string> = {
+    success: "alert alert-success",
+    error: "alert alert-error",
+  }
+
+  const dialog = document.querySelector<HTMLDialogElement>("#contact-modal")
+  const form = document.querySelector<HTMLFormElement>("#contact-form")
+  const status = document.querySelector<HTMLElement>("#contact-status")
+  const submit = document.querySelector<HTMLButtonElement>("#contact-submit")
+
+  const turnstile = () => (window as Window & { turnstile?: Turnstile }).turnstile
+
+  if (dialog && form && status && submit) {
+    const messages = form.dataset as {
+      send: string
+      sending: string
+      success: string
+      error: string
+    }
+
+    const setStatus = (kind: StatusKind, message: string) => {
+      status.className = statusClass[kind]
+      status.textContent = message
+      status.hidden = false
+    }
+
+    const clearStatus = () => {
+      status.hidden = true
+      status.textContent = ""
+    }
+
+    for (const button of document.querySelectorAll("[data-contact-open]")) {
+      button.addEventListener("click", () => {
+        clearStatus()
+        dialog.showModal()
+      })
+    }
+
+    for (const button of document.querySelectorAll("[data-contact-close]")) {
+      button.addEventListener("click", () => dialog.close())
+    }
+
+    ;(window as Window & { onTurnstileSuccess?: () => void }).onTurnstileSuccess = () => {
+      submit.disabled = false
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault()
+      submit.disabled = true
+      submit.textContent = messages.sending
+
+      const data = new FormData(form)
+      const payload = {
+        name: data.get("name"),
+        email: data.get("email"),
+        phone: data.get("phone"),
+        message: data.get("message"),
+        token: data.get("cf-turnstile-response"),
+      }
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+        const result = (await response.json()) as { error?: string }
+        if (!response.ok) throw new Error(result.error || messages.error)
+        setStatus("success", messages.success)
+        form.reset()
+      } catch (reason) {
+        setStatus(
+          "error",
+          reason instanceof Error && reason.message ? reason.message : messages.error,
+        )
+      } finally {
+        submit.disabled = true
+        submit.textContent = messages.send
+        turnstile()?.reset()
+      }
+    })
+  }
+</script>
