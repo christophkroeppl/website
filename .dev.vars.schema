@@ -1,0 +1,23 @@
+# Varlock schema for the Cloudflare Worker secrets loaded from `.dev.vars`.
+#
+# This is NOT the `.env` schema (see `.env.schema`) and defines no `.env` values.
+# `cf dev` / wrangler load these keys from `.dev.vars` in this directory, or from
+# `.dev.vars.<environment>` when running against a named environment. Varlock
+# cannot read that file, so resolved values come from the process environment:
+#
+#   set -a; . ./.dev.vars; set +a
+#   varlock load -p .dev.vars.schema
+#
+# @defaultSensitive=true
+# ---
+
+# Cloudflare Turnstile secret used by POST /api/contact for siteverify
+# @docs(https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)
+TURNSTILE_SECRET_KEY=
+
+# Telegram bot token used by POST /api/contact to deliver contact messages
+# @docs(https://core.telegram.org/bots/api#authorizing-your-bot)
+TELEGRAM_BOT_TOKEN=
+
+# Telegram chat that receives contact messages
+TELEGRAM_CHAT_ID=

@@ -10,6 +10,10 @@
         "type": "remote",
         "url": "https://mcp.docs.astro.build/mcp",
       },
+      "Varlock docs": {
+        "type": "remote",
+        "url": "https://docs.mcp.varlock.dev/mcp",
+      },
     },
   },
 }
