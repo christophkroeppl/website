@@ -18,9 +18,11 @@ export const ui = {
     "nav.home": "Start",
     "nav.impressum": "Impressum",
     "nav.privacy": "Datenschutz",
-    "home.title": "Willkommen",
-    "home.body":
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "home.title": "Christoph Kröppl",
+    "home.experience":
+      "IT-Projektmanager und Team Lead mit über sechs Jahren in Softwareentwicklung, ERP und Infrastruktur. Als Geschäftsführer der georgischen Tochter eines deutschen mittelständischen Softwarehauses führte ich bis zu sieben Entwickler und lieferte eine Odoo-Migration über 500.000 € für einen österreichischen Telekom-Anbieter — bis heute in Produktion.",
+    "home.approach":
+      "Ich arbeite technisch: Linux, Docker, Windows Server und Odoo, vom Entwurf bis zum Betrieb. Zuletzt baute ich Tagesdosis.at allein mit Bun und Nuxt — und stellte es ein, als die Zahlen nicht aufgingen.",
     "impressum.title": "Impressum",
     "impressum.notice":
       "Nicht-kommerzielle persönliche Website. Kleine Website im Sinne des § 25 Mediengesetz.",
@@ -43,9 +45,11 @@ export const ui = {
     "nav.home": "Home",
     "nav.impressum": "Contact",
     "nav.privacy": "Privacy",
-    "home.title": "Welcome",
-    "home.body":
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "home.title": "Christoph Kröppl",
+    "home.experience":
+      "IT project manager and team lead with 6+ years in software delivery, ERP and infrastructure. As managing director of the Georgian subsidiary or a German medium-sized software company I led up to seven developers and delivered a €500,000 Odoo migration for an Austrian telecom — still in production today.",
+    "home.approach":
+      "I work from a technical base: Linux, Docker, Windows Server and Odoo, from design to operations. Most recently I built Tagesdosis.at solo on Bun and Nuxt — and shut it down when the numbers didn't add up.",
     "impressum.title": "Legal notice",
     "impressum.notice":
       "Non-commercial personal website. Small-site disclosure under § 25 Mediengesetz (Austrian Media Act).",
