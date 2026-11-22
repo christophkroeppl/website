@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import { getLangFromUrl, useTranslations } from "../../i18n/ui"
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+---
+
+<BaseLayout title={t("home.title")}>
+  <h1 class="text-3xl font-bold mb-4">{t("home.title")}</h1>
+  <p class="leading-relaxed">{t("home.body")}</p>
+</BaseLayout>

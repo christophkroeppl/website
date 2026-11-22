@@ -4,15 +4,16 @@ import { defineConfig } from "vite-plus"
 export default defineConfig({
   plugins: [cloudflare()],
   fmt: {
-    ignorePatterns: [".agents/**"],
-    semi: false,
-    useTabs: false,
+    astro: true,
+    ignorePatterns: [".agents/**", "src/generated/**"],
     overrides: [
       {
         files: [".vscode/extensions.json"],
         options: { printWidth: 1 },
       },
     ],
+    semi: false,
+    useTabs: false,
   },
   lint: {
     options: {
@@ -21,6 +22,6 @@ export default defineConfig({
     },
   },
   staged: {
-    "*": "vp check --fix",
+    "*": "astro sync && vp check --fix",
   },
 })

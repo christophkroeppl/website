@@ -1,0 +1,80 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro"
+import { getLangFromUrl, useTranslations, useTranslatedPath } from "../../i18n/ui"
+const lang = getLangFromUrl(Astro.url)
+const t = useTranslations(lang)
+const impressumPath = useTranslatedPath(lang)("/impressum/")
+---
+
+<BaseLayout title={t("privacy.title")}>
+  <h1 class="text-3xl font-bold mb-4">{t("privacy.title")}</h1>
+
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    This website sets no cookies for analytics, marketing or statistics and uses no tracking tools.
+    Only data that is technically necessary to operate the site and answer enquiries is processed.
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Controller</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    Christoph Kröppl. Name, postal address and email address are listed in the{" "}
+    <a class="link link-hover" href={impressumPath}>
+      legal notice
+    </a>
+    .
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Hosting</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    This website runs as a Cloudflare Worker at Cloudflare, Inc., 101 Townsend St, San Francisco, CA
+    94107, USA. When the site is accessed, Cloudflare processes technically necessary connection
+    data such as IP address, time of access, requested resource and user agent in server logs. The
+    legal basis is the legitimate interest in secure and stable operation under Art. 6(1)(f) GDPR. A
+    data processing agreement is in place with Cloudflare; transfers to the United States rely on
+    the EU-US Data Privacy Framework.
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Contact form and Turnstile</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    To prevent automated submissions, the contact form is protected by Cloudflare Turnstile.
+    Turnstile processes client signals such as IP address, TLS fingerprint, user agent, and the
+    sitekey and origin used. Turnstile sets no cookies on this website; pre-clearance is not
+    enabled. Cloudflare acts as a processor for bot detection and as an independent controller when
+    improving its own detection methods. The legal basis is the legitimate interest in preventing
+    abuse under Art. 6(1)(f) GDPR.
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Delivery of contact requests</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    The details entered in the form (name, email address, phone number, message) are transmitted via
+    the Telegram Bot API to Telegram Messenger Inc. and stored there so the enquiry can be handled.
+    The legal basis is the performance of your request under Art. 6(1)(b) GDPR and the legitimate
+    interest in reliable delivery under Art. 6(1)(f) GDPR. Telegram carries out its own data
+    processing for delivery; Telegram's privacy policy applies additionally. Enquiries are deleted
+    once they have been fully handled and no statutory retention obligations apply.
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Contact details on this website</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    The postal address, email address and phone number are not shipped with the page source. They
+    are requested from the server only after a click and rendered as graphics. That request is not
+    stored, sets no cookies and involves no third parties.
+  </p>
+
+  <h2 class="text-lg font-semibold mt-8 mb-2">Your rights</h2>
+  <p class="mb-6 leading-relaxed text-sm opacity-80">
+    You have the right to access, rectification, erasure, restriction of processing, data
+    portability and objection to processing (Art. 15 to 21 GDPR). You may also lodge a complaint
+    with the Austrian Data Protection Authority:{" "}
+    <a
+      class="link link-hover"
+      href="https://www.dsb.gv.at"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Barichgasse 40–42, 1030 Vienna (dsb.gv.at)
+    </a>
+    .
+  </p>
+
+  <p class="mt-8 text-xs opacity-60">Last updated: November 2026</p>
+</BaseLayout>
