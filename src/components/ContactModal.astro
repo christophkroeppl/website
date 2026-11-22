@@ -14,7 +14,11 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
   {t("contact.open")}
 </button>
 
-<dialog id="contact-modal" class="modal" aria-labelledby="contact-modal-title">
+<dialog
+  id="contact-modal"
+  class="modal modal-bottom sm:modal-middle"
+  aria-labelledby="contact-modal-title"
+>
   <div class="modal-box">
     <form method="dialog">
       <button
