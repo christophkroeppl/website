@@ -1,4 +1,5 @@
-import type { Locale, TranslationKey } from "../i18n/ui"
+import type { Locale } from "../i18n/locales"
+import type { TranslationKey } from "../i18n/ui"
 import { contactLines, type RevealEnv } from "./contact"
 
 export type Revealable = {

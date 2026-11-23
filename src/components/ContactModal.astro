@@ -1,5 +1,6 @@
 ---
-import { useTranslations, type Locale } from "../i18n/ui"
+import { useTranslations } from "../i18n/ui"
+import { pathFor, type Locale } from "../i18n/routes"
 
 interface Props {
   lang: Locale
@@ -7,6 +8,7 @@ interface Props {
 
 const { lang } = Astro.props
 const t = useTranslations(lang)
+const privacyPath = pathFor("privacy", lang)
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
 ---
 
@@ -73,6 +75,13 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
           {t("contact.close")}
         </button>
       </div>
+      <p class="mt-4 text-xs leading-relaxed text-base-content/60">
+        {t("contact.privacyNote")}{" "}
+        <a class="link link-hover" href={privacyPath}>
+          {t("contact.privacyLink")}
+        </a>
+        .
+      </p>
     </form>
   </div>
   <form method="dialog" class="modal-backdrop">

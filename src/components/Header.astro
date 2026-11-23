@@ -2,11 +2,11 @@
 import { Image } from "astro:assets"
 import ck from "../assets/ck.webp"
 import { getLocale } from "virtual:astro-localized-routes"
-import { pathFor, type Locale } from "../i18n/routes"
+import { pathFor } from "../i18n/routes"
 import { person } from "../content/site"
 import LanguageSwitcher from "./LanguageSwitcher.astro"
 
-const lang = getLocale(Astro) as Locale
+const lang = getLocale(Astro)
 ---
 
 <header class="sticky top-0 z-40 border-b border-base-300/60 bg-base-100/85 backdrop-blur">

@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro"
 import { revealOutlines, type GeneratedReveal } from "../../../generated/reveals"
-import type { Locale } from "../../../i18n/ui"
-
-const LOCALES: Locale[] = ["de", "en"]
+import { isLocale } from "../../../i18n/locales"
 
 function respond(status: number, body?: unknown) {
   return new Response(body === undefined ? null : JSON.stringify(body), {
@@ -26,12 +24,12 @@ export const GET: APIRoute = ({ request, params }) => {
   }
 
   const lang = new URL(request.url).searchParams.get("lang")
-  if (!lang || !LOCALES.includes(lang as Locale)) {
+  if (!lang || !isLocale(lang)) {
     return respond(400)
   }
 
   const entry: GeneratedReveal = (revealOutlines as Record<string, GeneratedReveal>)[id]
-  const lines = entry.lines[lang as Locale]
+  const lines = entry.lines[lang]
   if (lines.length === 0) {
     return respond(503)
   }

@@ -77,4 +77,22 @@
   }
 }
 
+@layer components {
+  .eyebrow {
+    @apply font-mono text-[0.72rem] uppercase tracking-[0.2em] text-base-content/65;
+  }
+
+  .legal h2 {
+    @apply mt-8 mb-2 text-lg font-semibold;
+  }
+
+  .legal p {
+    @apply mb-6 text-sm leading-relaxed text-base-content/80;
+  }
+
+  .legal a {
+    @apply link link-hover;
+  }
+}
+
 @source not "../../.agents";

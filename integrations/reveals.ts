@@ -4,13 +4,13 @@ import { fileURLToPath } from "node:url"
 import { loadEnv } from "vite"
 import opentype from "opentype.js"
 import type { AstroIntegration } from "astro"
-import { ui, useTranslations, type Locale } from "../src/i18n/ui"
+import { locales, type Locale } from "../src/i18n/locales"
+import { useTranslations } from "../src/i18n/ui"
 import { reveals } from "../src/reveals/registry"
 import { fontViewBox, outline, type Font, type Outline } from "./outline"
 
 const FONT_FILE = "src/assets/fonts/inter-latin-400.woff"
 const OUTPUT_FILE = "src/generated/reveals.ts"
-const LOCALES = Object.keys(ui) as Locale[]
 
 function loadFont(root: string): Font {
   const buffer = fs.readFileSync(path.join(root, FONT_FILE))
@@ -26,7 +26,7 @@ type GeneratedReveal = {
 }
 
 function byLocale<T>(build: (lang: Locale) => T): Record<Locale, T> {
-  return Object.fromEntries(LOCALES.map((lang) => [lang, build(lang)])) as Record<Locale, T>
+  return Object.fromEntries(locales.map((lang) => [lang, build(lang)])) as Record<Locale, T>
 }
 
 export function generateReveals(root: URL, mode: string) {
@@ -46,7 +46,7 @@ export function generateReveals(root: URL, mode: string) {
   )
 
   const source = [
-    `import type { Locale } from "../i18n/ui"`,
+    `import type { Locale } from "../i18n/locales"`,
     `import type { RevealId } from "../reveals/registry"`,
     ``,
     `export type Outline = { d: string; width: number }`,
