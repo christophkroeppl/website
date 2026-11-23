@@ -13,6 +13,7 @@ export default defineConfig({
       },
     ],
     semi: false,
+    sortPackageJson: true,
     useTabs: false,
   },
   lint: {
