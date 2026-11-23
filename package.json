@@ -8,6 +8,7 @@
     "deploy": "cf deploy",
     "check": "astro sync && cf workers types && vp check",
     "format": "vp fmt",
+    "prepare": "vp config --no-agent",
     "test": "vp test",
     "typecheck": "astro sync && cf workers types && vp check --no-fmt --no-lint"
   },
