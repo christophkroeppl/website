@@ -1,0 +1,22 @@
+---
+import type { Link } from "../links/types"
+import LinkIcon from "./LinkIcon.astro"
+
+interface Props {
+  link: Link
+}
+
+const { link } = Astro.props
+const external = link.href.startsWith("http")
+  ? { target: "_blank", rel: "noopener noreferrer" }
+  : {}
+---
+
+<a
+  href={link.href}
+  class="btn btn-outline btn-lg btn-block justify-start gap-3 font-normal"
+  {...external}
+>
+  <LinkIcon link={link} size={20} />
+  <span class="truncate">{link.label}</span>
+</a>

@@ -4,7 +4,7 @@ export default defineConfig({
   worker: {
     name: "website",
     compatibilityDate: "2026-11-22",
-    domains: ["kroeppl.ch", "www.kroeppl.ch"],
+    domains: ["kroeppl.ch", "www.kroeppl.ch", "links.kroeppl.ch"],
     previewUrls: true,
     env: {
       TURNSTILE_SECRET_KEY: bindings.secret(),

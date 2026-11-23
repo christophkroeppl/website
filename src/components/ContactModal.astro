@@ -4,17 +4,21 @@ import { pathFor, type Locale } from "../i18n/routes"
 
 interface Props {
   lang: Locale
+  trigger?: boolean
+  privacyHref?: string
 }
 
-const { lang } = Astro.props
+const { lang, trigger = true, privacyHref } = Astro.props
 const t = useTranslations(lang)
-const privacyPath = pathFor("privacy", lang)
+const privacyPath = privacyHref ?? pathFor("privacy", lang)
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
 ---
 
-<button type="button" data-contact-open class="btn btn-primary">
-  {t("contact.open")}
-</button>
+{trigger && (
+  <button type="button" data-contact-open class="btn btn-primary">
+    {t("contact.open")}
+  </button>
+)}
 
 <dialog
   id="contact-modal"

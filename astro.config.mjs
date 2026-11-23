@@ -5,6 +5,7 @@ import tailwindcss from "@tailwindcss/vite"
 import { defaultLocale, locales } from "./src/i18n/locales.ts"
 import { localizedRoutes as routes } from "./src/i18n/routes.ts"
 import { revealOutlines } from "./integrations/reveals"
+import { links } from "./integrations/links"
 
 export default defineConfig({
   output: "server",
@@ -18,6 +19,7 @@ export default defineConfig({
       removeOriginalPageRoutes: true,
     }),
     revealOutlines(),
+    links(),
   ],
   prefetch: {
     defaultStrategy: "viewport",

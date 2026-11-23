@@ -1,0 +1,28 @@
+---
+import type { Link } from "../links/types"
+
+interface Props {
+  link: Link
+  size?: number
+}
+
+const { link, size = 20 } = Astro.props
+---
+
+{link.icon.kind === "svg" ? (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox={link.icon.viewBox}
+    width={size}
+    height={size}
+    fill="currentColor"
+    class="shrink-0"
+    aria-hidden="true"
+  >
+    {link.icon.paths.map((path) => (
+      <path d={path} fill-rule={link.icon.fillRule} />
+    ))}
+  </svg>
+) : (
+  <img src={link.icon.src} alt="" width={size} height={size} class="shrink-0 object-contain" />
+)}
