@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets"
-import ck from "../assets/ck.webp"
+import bullet from "../assets/bullet.webp"
 import { getLocale } from "virtual:astro-localized-routes"
 import { pathFor } from "../i18n/routes"
 import { person } from "../content/site"
@@ -17,7 +17,7 @@ const lang = getLocale(Astro)
       aria-label={person.name}
     >
       <Image
-        src={ck}
+        src={bullet}
         alt=""
         width={72}
         height={72}
