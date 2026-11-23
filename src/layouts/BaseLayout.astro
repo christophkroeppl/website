@@ -1,19 +1,19 @@
 ---
 import "../styles/global.css"
-import { getLangFromUrl, useTranslations, useTranslatedPath, getRouteFromUrl } from "../i18n/ui"
+import { getAlternates, getLocale } from "virtual:astro-localized-routes"
+import { pathFor, type Locale } from "../i18n/routes"
+import { useTranslations } from "../i18n/ui"
 import { Image } from "astro:assets"
 import ck from "../assets/ck.webp"
-const lang = getLangFromUrl(Astro.url)
+const lang = getLocale(Astro) as Locale
 const t = useTranslations(lang)
-const translatePath = useTranslatedPath(lang)
-const impressumPath = translatePath("/impressum/")
-const privacyPath = translatePath("/datenschutz/")
-const homePath = translatePath("/")
+const homePath = pathFor("home", lang)
+const contactPath = pathFor("contact", lang)
+const privacyPath = pathFor("privacy", lang)
 const otherLang = lang === "de" ? "en" : "de"
-const otherPath = useTranslatedPath(otherLang)(
-  getRouteFromUrl(Astro.url) ? `/${getRouteFromUrl(Astro.url)}/` : "/",
-  otherLang,
-)
+const otherPath =
+  getAlternates(Astro).find((alternate) => alternate.locale === otherLang)?.path ??
+  pathFor("home", otherLang)
 ---
 
 <!doctype html>
@@ -85,7 +85,7 @@ const otherPath = useTranslatedPath(otherLang)(
     <footer class="bg-base-200">
       <div class="footer sm:footer-horizontal mx-auto w-full max-w-3xl place-items-center gap-4 px-4 py-4 sm:justify-between">
         <nav class="flex gap-4">
-          <a class="link link-hover" href={impressumPath}>
+          <a class="link link-hover" href={contactPath}>
             {t("nav.impressum")}
           </a>
           <a class="link link-hover" href={privacyPath}>

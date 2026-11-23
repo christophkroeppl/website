@@ -14,6 +14,7 @@
   "dependencies": {
     "@astrojs/cloudflare": "^15.0.0-beta.6",
     "astro": "^7.4.13",
+    "astro-localized-routes": "0.4.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

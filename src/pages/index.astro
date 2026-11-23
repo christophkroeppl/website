@@ -1,7 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro"
-import { getLangFromUrl, useTranslations } from "../i18n/ui"
-const lang = getLangFromUrl(Astro.url)
+import { getLocale } from "virtual:astro-localized-routes"
+import { useTranslations } from "../i18n/ui"
+import type { Locale } from "../i18n/routes"
+const lang = getLocale(Astro) as Locale
 const t = useTranslations(lang)
 ---
 
