@@ -1,0 +1,23 @@
+---
+import { getAlternates, getLocale } from "virtual:astro-localized-routes"
+import type { Locale } from "../i18n/routes"
+import { languages } from "../i18n/ui"
+
+const locale = getLocale(Astro) as Locale
+const target = getAlternates(Astro).find((alternate) => alternate.locale !== locale)
+const label = target ? languages[target.locale as Locale] : undefined
+---
+
+{target && label && (
+  <a
+    href={target.path}
+    hreflang={target.locale}
+    lang={target.locale}
+    title={label}
+    data-astro-prefetch="false"
+    class="ml-1 grid h-9 min-w-9 place-items-center rounded-full px-2 text-xs font-medium text-base-content/55 transition-colors hover:bg-base-200 hover:text-base-content focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-base-content/60"
+  >
+    {target.locale.toUpperCase()}
+    <span class="sr-only"> — {label}</span>
+  </a>
+)}

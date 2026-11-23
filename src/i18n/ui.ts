@@ -10,7 +10,6 @@ export const ui = {
     "nav.home": "Start",
     "nav.impressum": "Impressum",
     "nav.privacy": "Datenschutz",
-    "nav.switchLang": "Auf Englisch wechseln",
     "home.title": "Christoph Kröppl",
     "home.experience":
       "IT-Projektmanager und Team Lead mit über sechs Jahren in Softwareentwicklung, ERP und Infrastruktur. Als Geschäftsführer der georgischen Tochter eines deutschen mittelständischen Softwarehauses führte ich bis zu sieben Entwickler und lieferte eine Odoo-Migration über 500.000 € für einen österreichischen Telekom-Anbieter — bis heute in Produktion.",
@@ -40,7 +39,6 @@ export const ui = {
     "nav.home": "Home",
     "nav.impressum": "Contact",
     "nav.privacy": "Privacy",
-    "nav.switchLang": "Switch to German",
     "home.title": "Christoph Kröppl",
     "home.experience":
       "IT project manager and team lead with 6+ years in software delivery, ERP and infrastructure. As managing director of the Georgian subsidiary or a German medium-sized software company I led up to seven developers and delivered a €500,000 Odoo migration for an Austrian telecom — still in production today.",

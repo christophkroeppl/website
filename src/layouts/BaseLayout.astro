@@ -37,30 +37,5 @@ const t = useTranslations(lang)
       <slot />
     </main>
     <Footer />
-    <script is:inline>
-      ;(function () {
-        const btn = document.getElementById("lang-toggle")
-        btn?.addEventListener("click", function () {
-          const target = btn.getAttribute("data-target")
-          const nextLang = btn.getAttribute("data-lang")
-          if (nextLang) localStorage.setItem("lang", nextLang)
-          if (target) location.href = target
-        })
-        const stored = localStorage.getItem("lang")
-        const isEn = location.pathname.startsWith("/en")
-        const current = isEn ? "en" : "de"
-        let targetLang = stored
-        if (!targetLang) {
-          targetLang = (navigator.language || "").toLowerCase().startsWith("en") ? "en" : "de"
-        }
-        if (targetLang && targetLang !== current) {
-          localStorage.setItem("lang", targetLang)
-          if (btn) {
-            const t = btn.getAttribute("data-target")
-            if (t) location.href = t
-          }
-        }
-      })()
-    </script>
   </body>
 </html>
