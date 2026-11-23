@@ -1,0 +1,68 @@
+---
+import { links } from "../generated/links"
+import LinkIcon from "./LinkIcon.astro"
+
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+
+const excluded = new Set(["website"])
+const footerLinks = links.filter((link) => !excluded.has(link.slug))
+
+const external = (href: string) =>
+  href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {}
+
+const linkGlyph = [
+  "M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z",
+  "M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z",
+]
+---
+
+<nav class="hidden items-center gap-1 lg:flex" aria-label={label}>
+  {footerLinks.map((link) => (
+    <a
+      href={link.href}
+      aria-label={link.label}
+      title={link.label}
+      class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-base-200 hover:text-base-content"
+      {...external(link.href)}
+    >
+      <LinkIcon link={link} size={17} />
+    </a>
+  ))}
+</nav>
+
+<div class="fab lg:hidden">
+  <div
+    tabindex="0"
+    role="button"
+    class="btn btn-lg btn-circle btn-primary shadow-lg"
+    aria-label={label}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 16 16"
+      width="20"
+      height="20"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      {linkGlyph.map((path) => (
+        <path d={path} />
+      ))}
+    </svg>
+  </div>
+  {footerLinks.map((link) => (
+    <a
+      href={link.href}
+      aria-label={link.label}
+      title={link.label}
+      class="btn btn-lg btn-circle bg-base-100 shadow-md"
+      {...external(link.href)}
+    >
+      <LinkIcon link={link} size={20} />
+    </a>
+  ))}
+</div>
