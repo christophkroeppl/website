@@ -1,5 +1,7 @@
 import type { Locale } from "./ui"
 
+export type { Locale }
+
 export const pagePaths = {
   home: { de: "/", en: "/en/" },
   contact: { de: "/impressum/", en: "/en/contact/" },

@@ -6,10 +6,10 @@
     "dev": "cf dev",
     "build": "cf build",
     "deploy": "cf deploy",
-    "check": "cf workers types && vp check",
+    "check": "astro sync && cf workers types && vp check",
     "format": "vp fmt",
     "test": "vp test",
-    "typecheck": "cf workers types && vp check --no-fmt --no-lint"
+    "typecheck": "astro sync && cf workers types && vp check --no-fmt --no-lint"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^15.0.0-beta.6",
