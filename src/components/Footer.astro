@@ -1,0 +1,26 @@
+---
+import { getLocale } from "virtual:astro-localized-routes"
+import { pathFor, type Locale } from "../i18n/routes"
+import { useTranslations } from "../i18n/ui"
+import { person } from "../content/site"
+
+const lang = getLocale(Astro) as Locale
+const t = useTranslations(lang)
+const year = new Date().getFullYear()
+---
+
+<footer class="mt-20 border-t border-base-300/60">
+  <div class="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 py-8 text-sm text-base-content/55 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <nav class="flex flex-wrap gap-x-5 gap-y-2">
+      <a class="transition-colors hover:text-base-content" href={pathFor("contact", lang)}>
+        {t("nav.impressum")}
+      </a>
+      <a class="transition-colors hover:text-base-content" href={pathFor("privacy", lang)}>
+        {t("nav.privacy")}
+      </a>
+    </nav>
+    <p>
+      © {year} {person.name}
+    </p>
+  </div>
+</footer>

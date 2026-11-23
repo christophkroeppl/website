@@ -34,6 +34,7 @@ export const ui = {
     "contact.turnstile": "Bitte bestätige, dass du ein Mensch bist.",
     "contact.reveal": "Kontaktdaten anzeigen",
     "privacy.title": "Datenschutz",
+    "a11y.skip": "Zum Inhalt springen",
   },
   en: {
     "nav.home": "Home",
@@ -63,6 +64,7 @@ export const ui = {
     "contact.turnstile": "Please confirm you are human.",
     "contact.reveal": "Show contact details",
     "privacy.title": "Privacy",
+    "a11y.skip": "Skip to content",
   },
 } as const
 
