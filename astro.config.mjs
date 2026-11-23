@@ -7,6 +7,7 @@ import { revealOutlines } from "./integrations/reveals"
 
 export default defineConfig({
   output: "server",
+  trailingSlash: "always",
   adapter: cloudflare(),
   integrations: [
     localizedRoutes({
