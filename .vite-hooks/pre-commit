@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+git diff --cached --name-only --diff-filter=ACMR -- package.json bun.lock | grep -q . || exit 0
+vp dedupe
+git add bun.lock
