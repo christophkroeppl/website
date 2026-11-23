@@ -5,8 +5,6 @@ const tagesdosisLink =
 
 export const person = {
   name: "Christoph Kröppl",
-  github: "https://github.com/christophkroeppl",
-  linkedin: "https://www.linkedin.com/in/christoph-kroeppl/",
 }
 
 export const home = {
@@ -15,7 +13,7 @@ export const home = {
     en: "Remote, Vienna, Austria · IT project management, Web, ERP & infrastructure",
   } satisfies Bilingual,
   title: {
-    de: "Resiliente Software, maßgeschneidert.",
+    de: "Resiliente Software, nach Maß.",
     en: "Software that stays in production.",
   } satisfies Bilingual,
   lead: {

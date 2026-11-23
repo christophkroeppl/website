@@ -2,7 +2,6 @@
 import { contact } from "../content/site"
 import { pick } from "../content/types"
 import { getLocale } from "virtual:astro-localized-routes"
-import { pathFor } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 
 const lang = getLocale(Astro)
@@ -21,9 +20,9 @@ const t = useTranslations(lang)
           {pick(lang, contact.body)}
         </p>
       </div>
-      <a class="btn btn-primary btn-sm sm:btn-md" href={pathFor("contact", lang)}>
+      <button type="button" data-contact-open class="btn btn-primary btn-sm sm:btn-md">
         {pick(lang, contact.cta)}
-      </a>
+      </button>
     </div>
   </div>
 </section>

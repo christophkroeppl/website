@@ -2,7 +2,9 @@
 import Section from "../Section.astro"
 import ProofGrid from "../ProofGrid.astro"
 import ContactCta from "../ContactCta.astro"
-import { about, contact, home as homeContent, person } from "../../content/site"
+import ContactModal from "../ContactModal.astro"
+import { about, contact, home as homeContent } from "../../content/site"
+import { linkHref } from "../../links/urls"
 import { pick } from "../../content/types"
 import { pathFor, type Locale } from "../../i18n/routes"
 
@@ -11,6 +13,7 @@ interface Props {
 }
 
 const { lang } = Astro.props
+const github = linkHref("github")
 ---
 
 <section class="border-b border-base-300/60">
@@ -29,12 +32,14 @@ const { lang } = Astro.props
         />
       </div>
       <div class="flex flex-wrap items-center gap-3 lg:justify-end">
-        <a class="btn btn-primary" href={pathFor("contact", lang)}>
+        <button type="button" data-contact-open class="btn btn-primary">
           {pick(lang, contact.cta)}
-        </a>
-        <a class="btn btn-ghost" href={person.github} target="_blank" rel="noopener noreferrer">
-          GitHub ↗
-        </a>
+        </button>
+        {github && (
+          <a class="btn btn-ghost" href={github} target="_blank" rel="noopener noreferrer">
+            GitHub ↗
+          </a>
+        )}
       </div>
     </div>
 
@@ -58,3 +63,5 @@ const { lang } = Astro.props
 </Section>
 
 <ContactCta />
+
+<ContactModal lang={lang} trigger={false} />
