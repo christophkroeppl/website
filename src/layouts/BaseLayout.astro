@@ -68,12 +68,13 @@ const otherPath = useTranslatedPath(otherLang)(
           </a>
           <button
             id="lang-toggle"
-            class="btn btn-ghost btn-lg"
+            class="btn btn-ghost btn-lg group w-17"
             data-target={otherPath}
             data-lang={otherLang}
             aria-label={t("nav.switchLang")}
           >
-            {otherLang.toUpperCase()}
+            <span class="group-hover:hidden">{lang.toUpperCase()}</span>
+            <span class="hidden group-hover:inline">{otherLang.toUpperCase()}</span>
           </button>
         </nav>
       </div>
