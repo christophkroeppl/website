@@ -1,0 +1,29 @@
+---
+import { pick } from "../content/types"
+import type { SkillGroup } from "../content/skills"
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  groups: SkillGroup[]
+  lang: Locale
+  compact?: boolean
+}
+
+const { groups, lang, compact = false } = Astro.props
+const visible = compact ? groups.filter((group) => group.id !== "bitcoin") : groups
+---
+
+<div class="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+  {visible.map((group) => (
+    <div class="border-t border-base-300/60 pt-4">
+      <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/45">
+        {pick(lang, group.label)}
+      </h3>
+      <ul class="mt-3 space-y-1.5 text-sm leading-relaxed text-base-content/70">
+        {group.items.map((item) => (
+          <li>{pick(lang, item)}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>

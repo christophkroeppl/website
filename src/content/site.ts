@@ -24,6 +24,10 @@ export const home = {
     de: `Ich arbeite technisch: TypeScript, Linux, Docker/Podman und Odoo, vom Entwurf bis zum Betrieb. Und ich baue selbst — zuletzt ${tagesdosisLink} mit Bun und Nuxt.`,
     en: `I work from a technical base: TypeScript, Linux, Docker/Podman and Odoo, from design to operations. And I build: most recently ${tagesdosisLink} on Bun and Nuxt.`,
   } satisfies Bilingual,
+  cvCta: {
+    de: "Lebenslauf lesen",
+    en: "Read the CV",
+  } satisfies Bilingual,
 }
 
 export const proof = [

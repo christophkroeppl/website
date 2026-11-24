@@ -6,6 +6,7 @@ const de = {
   "nav.privacy": "Datenschutz",
   "nav.contact": "Kontakt",
   "nav.language": "Sprache",
+  "nav.cv": "Lebenslauf",
   "footer.links": "Links",
   "footer.legal": "Rechtliches",
   "home.title": "Christoph Kröppl",
@@ -29,6 +30,17 @@ const de = {
   "contact.reveal": "Kontaktdaten anzeigen",
   "contact.privacyNote": "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben gemäß der",
   "contact.privacyLink": "Datenschutzerklärung",
+  "cv.title": "Lebenslauf",
+  "cv.profile": "Profil",
+  "cv.experience": "Berufserfahrung",
+  "cv.skills": "Technische Kenntnisse",
+  "cv.education": "Ausbildung",
+  "cv.certifications": "Zertifikate",
+  "cv.languages": "Sprachen",
+  "cv.interests": "Interessen",
+  "cv.bitcoin": "Bitcoin & Krypto",
+  "cv.note":
+    "Diese Seite zeigt den PM-/Team-Lead-Zuschnitt. Zugeschnittene Versionen für Odoo-Beratung, Start-ups, regulierte Umgebungen und Vertrieb gibt es auf Anfrage.",
   "a11y.skip": "Zum Inhalt springen",
 } as const
 
@@ -42,6 +54,7 @@ export const ui = {
     "nav.privacy": "Privacy",
     "nav.contact": "Contact",
     "nav.language": "Language",
+    "nav.cv": "CV",
     "footer.links": "Links",
     "footer.legal": "Legal",
     "home.title": "Christoph Kröppl",
@@ -66,6 +79,17 @@ export const ui = {
     "contact.privacyNote":
       "By submitting, you agree to the processing of your data as described in the",
     "contact.privacyLink": "Privacy Policy",
+    "cv.title": "CV",
+    "cv.profile": "Profile",
+    "cv.experience": "Professional experience",
+    "cv.skills": "Technical skills",
+    "cv.education": "Education",
+    "cv.certifications": "Certifications",
+    "cv.languages": "Languages",
+    "cv.interests": "Interests",
+    "cv.bitcoin": "Bitcoin & crypto",
+    "cv.note":
+      "This page shows the PM/team-lead cut. Tailored versions for Odoo consulting, startups, regulated environments and sales are available on request.",
     "a11y.skip": "Skip to content",
   },
 } as const satisfies Record<Locale, Record<TranslationKey, string>>

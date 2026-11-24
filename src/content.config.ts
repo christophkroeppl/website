@@ -20,4 +20,19 @@ const privacy = defineCollection({
   }),
 })
 
-export const collections = { privacy }
+const cv = defineCollection({
+  loader: glob({
+    pattern: "cv/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    headline: z.string().min(1),
+    location: z.string().min(1),
+    roles: z.array(z.string().min(1)).min(1),
+    skills: z.array(z.string().min(1)).min(1),
+  }),
+})
+
+export const collections = { privacy, cv }

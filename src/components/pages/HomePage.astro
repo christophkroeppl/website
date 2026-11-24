@@ -56,9 +56,14 @@ const github = linkHref("github")
         <p set:html={pick(lang, paragraph)} />
       ))}
     </div>
-    <blockquote class="border-l-2 border-primary pl-5 text-lg leading-relaxed text-base-content/75">
-      {pick(lang, about.quote)}
-    </blockquote>
+    <div class="flex h-full flex-col justify-between gap-6 border-l-2 border-primary pl-5">
+      <blockquote class="text-lg leading-relaxed text-base-content/75">
+        {pick(lang, about.quote)}
+      </blockquote>
+      <a class="btn btn-ghost btn-sm self-end" href={pathFor("cv", lang)}>
+        {pick(lang, homeContent.cvCta)}
+      </a>
+    </div>
   </div>
 </Section>
 

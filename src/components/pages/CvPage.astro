@@ -1,0 +1,148 @@
+---
+import PageHeader from "../PageHeader.astro"
+import Section from "../Section.astro"
+import Timeline from "../Timeline.astro"
+import SkillsList from "../SkillsList.astro"
+import ContactCta from "../ContactCta.astro"
+import ContactModal from "../ContactModal.astro"
+import { roles } from "../../content/experience"
+import {
+  bitcoin,
+  certifications,
+  education,
+  interests,
+  languages,
+  skillGroups,
+} from "../../content/skills"
+import { pick } from "../../content/types"
+import { linkHref } from "../../links/urls"
+import { type Locale } from "../../i18n/routes"
+import { useTranslations } from "../../i18n/ui"
+import { cvFor, pickById, renderEntry } from "../../lib/content"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const github = linkHref("github")
+const linkedin = linkHref("linkedin")
+
+const entry = await cvFor(lang)
+const { Content } = await renderEntry(entry)
+const orderedRoles = pickById(roles, entry.data.roles, "cv.roles")
+const orderedSkills = pickById(skillGroups, entry.data.skills, "cv.skills")
+
+const numbered = (index: number) => String(index).padStart(2, "0")
+---
+
+<PageHeader eyebrow={entry.data.location} title={t("cv.title")} lead={entry.data.headline}>
+  <div class="mt-6 flex flex-wrap gap-3">
+    {github && (
+      <a class="btn btn-primary btn-sm" href={github} target="_blank" rel="noopener noreferrer">
+        GitHub ↗
+      </a>
+    )}
+    {linkedin && (
+      <a class="btn btn-primary btn-sm" href={linkedin} target="_blank" rel="noopener noreferrer">
+        LinkedIn ↗
+      </a>
+    )}
+  </div>
+</PageHeader>
+
+<Section eyebrow={numbered(1)} title={t("cv.profile")}>
+  <div class="max-w-3xl space-y-4 text-base leading-relaxed text-base-content/70">
+    <Content />
+  </div>
+</Section>
+
+<Section eyebrow={numbered(2)} title={t("cv.experience")}>
+  <Timeline roles={orderedRoles} lang={lang} />
+</Section>
+
+<Section eyebrow={numbered(3)} title={t("cv.skills")} tone="muted">
+  <SkillsList groups={orderedSkills} lang={lang} />
+</Section>
+
+<Section eyebrow={numbered(4)} title={t("cv.education")}>
+  <ul class="space-y-6">
+    {education.map((entry) => (
+      <li class="grid gap-1 border-t border-base-300/60 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+        <span class="font-mono text-xs leading-relaxed text-base-content/45">{entry.period}</span>
+        <div>
+          <p class="font-medium tracking-[-0.01em]">{entry.org}</p>
+          <p class="mt-1 text-sm leading-relaxed text-base-content/60">
+            {pick(lang, entry.detail)}
+          </p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<Section eyebrow={numbered(5)} title={t("cv.certifications")}>
+  <ul class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
+    {certifications.map((entry) => (
+      <li class="flex gap-4 border-t border-base-300/60 pt-3">
+        {entry.period && (
+          <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/45">
+            {entry.period}
+          </span>
+        )}
+        <span class="text-sm leading-relaxed text-base-content/70">{pick(lang, entry.detail)}</span>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<Section eyebrow={numbered(6)} title={t("cv.languages")} tone="muted">
+  <div class="grid gap-10 md:grid-cols-2">
+    <ul class="space-y-5">
+      {languages.map((entry) => (
+        <li>
+          <p class="font-medium">{pick(lang, entry.name)}</p>
+          <p class="text-sm text-base-content/55">{pick(lang, entry.level)}</p>
+        </li>
+      ))}
+    </ul>
+    <div>
+      <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/45">
+        {t("cv.interests")}
+      </h3>
+      <ul class="mt-3 flex flex-wrap gap-2">
+        {interests.map((interest) => (
+          <li class="rounded-full border border-base-300/80 px-3 py-1 text-xs text-base-content/65">
+            {pick(lang, interest)}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Section>
+
+<Section eyebrow={numbered(7)} title={t("cv.bitcoin")}>
+  <div class="grid gap-8 md:grid-cols-2">
+    <ul class="space-y-3 text-sm leading-relaxed text-base-content/70">
+      {bitcoin.own.map((entry) => (
+        <li class="flex gap-3">
+          <span aria-hidden="true" class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-secondary" />
+          <span>{pick(lang, entry)}</span>
+        </li>
+      ))}
+    </ul>
+    <ul class="space-y-2 text-sm leading-relaxed text-base-content/55">
+      {bitcoin.events.map((entry) => (
+        <li>{pick(lang, entry)}</li>
+      ))}
+    </ul>
+  </div>
+  <p class="mt-8 max-w-3xl border-t border-base-300/60 pt-5 text-xs leading-relaxed text-base-content/45">
+    {t("cv.note")}
+  </p>
+</Section>
+
+<ContactCta />
+
+<ContactModal lang={lang} trigger={false} />
