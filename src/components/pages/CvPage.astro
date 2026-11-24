@@ -78,7 +78,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
         <span class="font-mono text-xs leading-relaxed text-accent/90">{entry.period}</span>
         <div>
           <p class="font-medium tracking-[-0.01em]">{entry.org}</p>
-          <p class="mt-1 text-sm leading-relaxed text-base-content/60">
+          <p class="mt-1 text-sm leading-relaxed text-base-content/65">
             {pick(lang, entry.detail)}
           </p>
         </div>
@@ -92,7 +92,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
     {certifications.map((entry) => (
       <li class="flex gap-4 border-l-2 border-secondary/40 pt-1 pl-3">
         {entry.period && (
-          <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/45">
+          <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/65">
             {entry.period}
           </span>
         )}
@@ -108,12 +108,12 @@ const numbered = (index: number) => String(index).padStart(2, "0")
       {languages.map((entry) => (
         <li>
           <p class="font-medium">{pick(lang, entry.name)}</p>
-          <p class="text-sm text-base-content/55">{pick(lang, entry.level)}</p>
+          <p class="text-sm text-base-content/65">{pick(lang, entry.level)}</p>
         </li>
       ))}
     </ul>
     <div>
-      <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/45">
+      <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/65">
         {t("cv.interests")}
       </h3>
       <ul class="mt-3 flex flex-wrap gap-2">
@@ -135,13 +135,13 @@ const numbered = (index: number) => String(index).padStart(2, "0")
         </li>
       ))}
     </ul>
-    <ul class="space-y-2 text-sm leading-relaxed text-base-content/55">
+    <ul class="space-y-2 text-sm leading-relaxed text-base-content/65">
       {bitcoin.events.map((entry) => (
         <li>{pick(lang, entry)}</li>
       ))}
     </ul>
   </div>
-  <p class="mt-8 max-w-3xl border-t border-primary/15 pt-5 text-xs leading-relaxed text-base-content/45">
+  <p class="mt-8 max-w-3xl border-t border-primary/15 pt-5 text-xs leading-relaxed text-base-content/65">
     {t("cv.note")}
   </p>
 </Section>
