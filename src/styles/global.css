@@ -10,37 +10,49 @@
   prefersdark: false;
   color-scheme: light;
 
-  --color-base-100: oklch(98.2% 0.006 92);
-  --color-base-200: oklch(95.9% 0.008 92);
-  --color-base-300: oklch(90.4% 0.01 92);
-  --color-base-content: oklch(21% 0.008 92);
+  --color-base-100: oklch(99% 0.005 95);
+  --color-base-200: oklch(97% 0.008 95);
+  --color-base-300: oklch(93.3% 0.012 95);
+  --color-base-content: oklch(24% 0.012 95);
 
-  --color-primary: oklch(38% 0.06 165);
-  --color-primary-content: oklch(98% 0.01 165);
-  --color-secondary: oklch(55% 0.11 65);
-  --color-secondary-content: oklch(98% 0.01 65);
-  --color-accent: oklch(45% 0.06 250);
-  --color-accent-content: oklch(98% 0.01 250);
-  --color-neutral: oklch(30% 0.008 92);
-  --color-neutral-content: oklch(96% 0.006 92);
+  --color-primary: oklch(47% 0.12 164);
+  --color-primary-content: oklch(99% 0.01 164);
+  --color-secondary: oklch(54% 0.14 55);
+  --color-secondary-content: oklch(99% 0.01 55);
+  --color-accent: oklch(48% 0.12 255);
+  --color-accent-content: oklch(99% 0.01 255);
+  --color-neutral: oklch(32% 0.012 95);
+  --color-neutral-content: oklch(97% 0.006 95);
 
-  --color-info: oklch(60% 0.09 230);
-  --color-info-content: oklch(98% 0.01 230);
-  --color-success: oklch(55% 0.1 155);
-  --color-success-content: oklch(98% 0.01 155);
-  --color-warning: oklch(70% 0.13 75);
-  --color-warning-content: oklch(20% 0.03 75);
-  --color-error: oklch(55% 0.18 25);
-  --color-error-content: oklch(98% 0.01 25);
+  --color-info: oklch(50% 0.11 235);
+  --color-info-content: oklch(99% 0.01 235);
+  --color-success: oklch(47% 0.11 155);
+  --color-success-content: oklch(99% 0.01 155);
+  --color-warning: oklch(75% 0.15 78);
+  --color-warning-content: oklch(24% 0.06 78);
+  --color-error: oklch(52% 0.18 25);
+  --color-error-content: oklch(99% 0.01 25);
 
   --radius-selector: 9999px;
-  --radius-field: 0.5rem;
-  --radius-box: 0.75rem;
+  --radius-field: 0.625rem;
+  --radius-box: 1rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
   --depth: 0;
   --noise: 0;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  --color-series-1: oklch(48% 0.12 164);
+  --color-series-2: oklch(47% 0.11 195);
+  --color-series-3: oklch(48% 0.12 255);
+  --color-series-4: oklch(48% 0.13 300);
+  --color-series-5: oklch(50% 0.145 55);
+  --color-series-6: oklch(50% 0.15 348);
 }
 
 @font-face {
@@ -49,11 +61,6 @@
   font-weight: 100 900;
   font-display: swap;
   src: url("/fonts/inter-latin-var.woff2") format("woff2");
-}
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 @layer base {
@@ -69,21 +76,74 @@
 
   body {
     text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(
+        52rem 30rem at 8% -8%,
+        color-mix(in oklab, var(--color-primary) 9%, transparent),
+        transparent 72%
+      ),
+      radial-gradient(
+        46rem 26rem at 96% -4%,
+        color-mix(in oklab, var(--color-accent) 8%, transparent),
+        transparent 72%
+      );
+    background-repeat: no-repeat;
   }
 
   ::selection {
-    background: oklch(86% 0.045 165);
-    color: oklch(18% 0.01 165);
+    background: oklch(88% 0.05 164);
+    color: oklch(24% 0.03 164);
+  }
+
+  :focus-visible {
+    outline-color: var(--color-accent);
   }
 }
 
 @layer components {
   .eyebrow {
-    @apply font-mono text-[0.72rem] uppercase tracking-[0.2em] text-base-content/65;
+    @apply font-mono text-[0.72rem] uppercase tracking-[0.2em] text-accent;
+  }
+
+  .eyebrow::before {
+    content: "";
+    @apply mr-2 inline-block h-0.5 w-4 -translate-y-0.5 rounded-full bg-secondary align-middle;
+  }
+
+  .brand-rule {
+    @apply h-0.5 w-full bg-primary;
+  }
+
+  .title-rule {
+    @apply mt-4 block h-0.5 w-12 rounded-full bg-primary;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs leading-none font-medium;
+  }
+
+  .chip-primary {
+    @apply border-primary/20 bg-primary/10 text-primary;
+  }
+
+  .chip-accent {
+    @apply border-accent/20 bg-accent/10 text-accent;
+  }
+
+  .chip-secondary {
+    @apply border-secondary/20 bg-secondary/10 text-secondary;
+  }
+
+  .chip-info {
+    @apply border-info/20 bg-info/10 text-info;
+  }
+
+  .chip-neutral {
+    @apply border-base-300 bg-base-200/70 text-base-content/70;
   }
 
   .link-quiet {
-    @apply text-base-content/65 underline decoration-base-300 decoration-1 underline-offset-4 transition-colors hover:text-base-content hover:decoration-base-content/40;
+    @apply text-base-content/65 underline decoration-base-300 decoration-1 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent/40;
   }
 
   .legal h2 {
@@ -95,7 +155,7 @@
   }
 
   .legal a {
-    @apply link link-hover;
+    @apply link link-hover text-accent;
   }
 }
 

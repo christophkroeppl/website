@@ -23,7 +23,7 @@ const latestRole = roles[0]
 const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
 ---
 
-<section class="border-b border-base-300/60">
+<section>
   <div class="mx-auto w-full max-w-5xl px-4 pb-14 pt-12 sm:px-6 sm:pb-20 sm:pt-20">
     <p class="eyebrow">{pick(lang, homeContent.eyebrow)}</p>
     <h1 class="mt-4 max-w-4xl text-5xl font-semibold tracking-[-0.045em] text-balance sm:text-7xl">
@@ -42,7 +42,7 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
         <button type="button" data-contact-open class="btn btn-primary">
           {pick(lang, contact.cta)}
         </button>
-        <a class="btn btn-ghost" href={pathFor("projects", lang)}>
+        <a class="btn btn-outline btn-accent" href={pathFor("projects", lang)}>
           {pick(lang, homeContent.projectsCta)}
         </a>
       </div>
@@ -60,7 +60,7 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
   title={pick(lang, homeSections.workTitle)}
   intro={pick(lang, homeSections.workIntro)}
 >
-  <a slot="action" class="btn btn-ghost btn-sm shrink-0" href={pathFor("projects", lang)}>
+  <a slot="action" class="btn btn-outline btn-accent shrink-0" href={pathFor("projects", lang)}>
     {pick(lang, homeContent.projectsCta)}
   </a>
   <ProjectCarousel
@@ -76,7 +76,7 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
   eyebrow={pick(lang, homeSections.experienceEyebrow)}
   title={latestRoleTitle}
 >
-  <a slot="action" class="btn btn-ghost btn-sm shrink-0" href={pathFor("cv", lang)}>
+  <a slot="action" class="btn btn-outline btn-accent shrink-0" href={pathFor("cv", lang)}>
     {pick(lang, homeContent.cvCta)}
   </a>
   <Timeline roles={[latestRole]} lang={lang} compact />
@@ -87,7 +87,7 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
   eyebrow={pick(lang, homeSections.skillsEyebrow)}
   title={pick(lang, homeSections.skillsTitle)}
   intro={pick(lang, homeSections.skillsIntro)}
-  tone="muted"
+  tone="primary"
 >
   <SkillsList groups={skillGroups} lang={lang} compact />
 </Section>
@@ -99,12 +99,12 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
         <p set:html={pick(lang, paragraph)} />
       ))}
     </div>
-    <div class="flex h-full flex-col justify-between gap-6 border-l-2 border-primary pl-5">
+    <div class="flex h-full flex-col justify-between gap-6 rounded-r-box border-l-2 border-primary bg-primary/5 p-5">
       <blockquote class="text-lg leading-relaxed text-base-content/75">
         {pick(lang, about.quote)}
       </blockquote>
       <a
-        class="btn btn-ghost btn-sm self-end"
+        class="btn btn-soft btn-primary self-end"
         href="https://grugbrain.dev/"
         target="_blank"
         rel="noopener noreferrer"

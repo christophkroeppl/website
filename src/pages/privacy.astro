@@ -2,17 +2,21 @@
 import { getEntry, render } from "astro:content"
 import BaseLayout from "../layouts/BaseLayout.astro"
 import { getLocale } from "virtual:astro-localized-routes"
+import { useTranslations } from "../i18n/ui"
 
 const lang = getLocale(Astro)
+const t = useTranslations(lang)
 const entry = await getEntry("privacy", lang)
 if (!entry) throw new Error(`Missing privacy content for ${lang}`)
 const { Content } = await render(entry)
 ---
 
 <BaseLayout title={entry.data.title}>
-  <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-    <h1 class="text-3xl font-bold mb-4">{entry.data.title}</h1>
-    <div class="legal">
+  <div class="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <p class="eyebrow">{t("nav.privacy")}</p>
+    <h1 class="mt-3 text-3xl font-semibold tracking-[-0.02em]">{entry.data.title}</h1>
+    <span class="title-rule" aria-hidden="true"></span>
+    <div class="legal mt-8">
       <Content />
     </div>
     <p class="mt-8 text-xs text-base-content/60">{entry.data.updated}</p>

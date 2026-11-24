@@ -25,7 +25,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
   class="modal modal-bottom sm:modal-middle"
   aria-labelledby="contact-modal-title"
 >
-  <div class="modal-box">
+  <div class="modal-box relative overflow-hidden">
+    <div class="brand-rule absolute inset-x-0 top-0" aria-hidden="true"></div>
     <form method="dialog">
       <button
         class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -47,21 +48,21 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
     >
       <fieldset class="fieldset">
         <legend class="fieldset-legend">{t("contact.name")}</legend>
-        <input type="text" name="name" class="input w-full" required />
+        <input type="text" name="name" class="input w-full focus:border-accent" required />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">{t("contact.email")}</legend>
-        <input type="email" name="email" class="input w-full" />
+        <input type="email" name="email" class="input w-full focus:border-accent" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">{t("contact.phone")}</legend>
-        <input type="tel" name="phone" class="input w-full" />
+        <input type="tel" name="phone" class="input w-full focus:border-accent" />
       </fieldset>
       <fieldset class="fieldset">
         <legend class="fieldset-legend">{t("contact.message")}</legend>
         <textarea
           name="message"
-          class="textarea w-full"
+          class="textarea w-full focus:border-accent"
           required
           minlength="30"
           maxlength="1500"
@@ -81,7 +82,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       </div>
       <p class="mt-4 text-xs leading-relaxed text-base-content/60">
         {t("contact.privacyNote")}{" "}
-        <a class="link link-hover" href={privacyPath}>
+        <a class="link link-hover text-accent" href={privacyPath}>
           {t("contact.privacyLink")}
         </a>
         .

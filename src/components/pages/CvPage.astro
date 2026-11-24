@@ -40,12 +40,17 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 <PageHeader eyebrow={entry.data.location} title={t("cv.title")} lead={entry.data.headline}>
   <div class="mt-6 flex flex-wrap gap-3">
     {github && (
-      <a class="btn btn-primary btn-sm" href={github} target="_blank" rel="noopener noreferrer">
+      <a class="btn btn-primary" href={github} target="_blank" rel="noopener noreferrer">
         GitHub ↗
       </a>
     )}
     {linkedin && (
-      <a class="btn btn-primary btn-sm" href={linkedin} target="_blank" rel="noopener noreferrer">
+      <a
+        class="btn btn-outline btn-accent"
+        href={linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         LinkedIn ↗
       </a>
     )}
@@ -62,15 +67,15 @@ const numbered = (index: number) => String(index).padStart(2, "0")
   <Timeline roles={orderedRoles} lang={lang} />
 </Section>
 
-<Section eyebrow={numbered(3)} title={t("cv.skills")} tone="muted">
+<Section eyebrow={numbered(3)} title={t("cv.skills")} tone="primary">
   <SkillsList groups={orderedSkills} lang={lang} />
 </Section>
 
 <Section eyebrow={numbered(4)} title={t("cv.education")}>
   <ul class="space-y-6">
     {education.map((entry) => (
-      <li class="grid gap-1 border-t border-base-300/60 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
-        <span class="font-mono text-xs leading-relaxed text-base-content/45">{entry.period}</span>
+      <li class="grid gap-1 border-t border-primary/15 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+        <span class="font-mono text-xs leading-relaxed text-accent/90">{entry.period}</span>
         <div>
           <p class="font-medium tracking-[-0.01em]">{entry.org}</p>
           <p class="mt-1 text-sm leading-relaxed text-base-content/60">
@@ -85,7 +90,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 <Section eyebrow={numbered(5)} title={t("cv.certifications")}>
   <ul class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
     {certifications.map((entry) => (
-      <li class="flex gap-4 border-t border-base-300/60 pt-3">
+      <li class="flex gap-4 border-l-2 border-secondary/40 pt-1 pl-3">
         {entry.period && (
           <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/45">
             {entry.period}
@@ -97,7 +102,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
   </ul>
 </Section>
 
-<Section eyebrow={numbered(6)} title={t("cv.languages")} tone="muted">
+<Section eyebrow={numbered(6)} title={t("cv.languages")} tone="accent">
   <div class="grid gap-10 md:grid-cols-2">
     <ul class="space-y-5">
       {languages.map((entry) => (
@@ -113,9 +118,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
       </h3>
       <ul class="mt-3 flex flex-wrap gap-2">
         {interests.map((interest) => (
-          <li class="rounded-full border border-base-300/80 px-3 py-1 text-xs text-base-content/65">
-            {pick(lang, interest)}
-          </li>
+          <li class="chip chip-accent">{pick(lang, interest)}</li>
         ))}
       </ul>
     </div>
@@ -138,7 +141,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
       ))}
     </ul>
   </div>
-  <p class="mt-8 max-w-3xl border-t border-base-300/60 pt-5 text-xs leading-relaxed text-base-content/45">
+  <p class="mt-8 max-w-3xl border-t border-primary/15 pt-5 text-xs leading-relaxed text-base-content/45">
     {t("cv.note")}
   </p>
 </Section>

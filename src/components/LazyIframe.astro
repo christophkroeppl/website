@@ -19,7 +19,10 @@ const embedSrc = `${srcBase}${srcBase.includes("?") ? "&" : "?"}embed=1${srcHash
 ---
 
 <div
-  class:list={["relative rounded-box border border-base-300/70 bg-base-200/40", className]}
+  class:list={[
+    "relative rounded-box border border-base-300/70 bg-base-200/40 shadow-sm",
+    className,
+  ]}
   style={`--frame-aspect:${aspect}; --iframe-zoom:${zoom}`}
   data-iframe-frame
   data-diagram-ratio={diagramRatio}

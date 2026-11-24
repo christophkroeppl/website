@@ -11,11 +11,14 @@ const name = import.meta.env.PUBLIC_CONTACT_NAME
 ---
 
 <BaseLayout title={t("impressum.title")}>
-  <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-    <h1 class="text-3xl font-bold mb-4">{t("impressum.title")}</h1>
-    <p class="mb-4 leading-relaxed text-sm text-base-content/80">{t("impressum.notice")}</p>
+  <div class="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
+    <p class="eyebrow">{t("nav.impressum")}</p>
+    <h1 class="mt-3 text-3xl font-semibold tracking-[-0.02em]">{t("impressum.title")}</h1>
+    <span class="title-rule" aria-hidden="true"></span>
+    <p class="mt-8 mb-4 leading-relaxed text-sm text-base-content/80">{t("impressum.notice")}</p>
     <p class="mb-6 text-xs text-base-content/60">
       <a
+        class="link link-hover text-accent"
         href="https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25"
         target="_blank"
         rel="noopener noreferrer"
