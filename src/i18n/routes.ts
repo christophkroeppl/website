@@ -1,4 +1,5 @@
 import type { Locale } from "./locales"
+import type { TranslationKey } from "./ui"
 
 export type { Locale }
 
@@ -11,6 +12,14 @@ export const pagePaths = {
 } as const satisfies Record<string, Record<Locale, string>>
 
 export type PageId = keyof typeof pagePaths
+
+export const pageTitleKey = {
+  home: "home.title",
+  contact: "impressum.title",
+  cv: "cv.title",
+  projects: "projects.title",
+  privacy: "nav.privacy",
+} as const satisfies Record<PageId, TranslationKey>
 
 export const routePage = {
   "/": "home",

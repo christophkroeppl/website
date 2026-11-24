@@ -1,25 +1,17 @@
-import { pagePaths, type PageId } from "../i18n/routes"
-import { locales, type Locale } from "../i18n/locales"
-import { useTranslations, type TranslationKey } from "../i18n/ui"
+import { pagePaths, pageTitleKey, type PageId } from "../i18n/routes"
+import { localeMeta, locales, type Locale } from "../i18n/locales"
+import { useTranslations } from "../i18n/ui"
 import { person } from "../content/site"
 import { links } from "../generated/links"
 import { isProfile } from "./schema"
-import { pageDescription } from "./seo"
+import { otherLocale, pageDescription } from "./seo"
 import { stripFrontmatter } from "./text"
 import { absoluteUrl, markdownPath } from "./urls"
 
 const pages = Object.keys(pagePaths) as PageId[]
 
-const titleKey = {
-  home: "home.title",
-  contact: "impressum.title",
-  cv: "cv.title",
-  projects: "projects.title",
-  privacy: "nav.privacy",
-} as const satisfies Record<PageId, TranslationKey>
-
 export function pageTitle(lang: Locale, page: PageId): string {
-  return useTranslations(lang)(titleKey[page])
+  return useTranslations(lang)(pageTitleKey[page])
 }
 
 function entries(lang: Locale): string[] {
@@ -30,7 +22,8 @@ function entries(lang: Locale): string[] {
 }
 
 export function llmsIndex(lang: Locale): string {
-  const other: Locale = lang === "de" ? "en" : "de"
+  const other = otherLocale(lang)
+  const t = useTranslations(lang)
 
   return [
     `# ${person.name}`,
@@ -51,9 +44,9 @@ export function llmsIndex(lang: Locale): string {
     "",
     ...entries(other),
     "",
-    "## Full text",
+    `## ${t("llms.fullText.heading")}`,
     "",
-    `- [${person.name} — ${lang.toUpperCase()}](${absoluteUrl(lang === "de" ? "/llms-full.txt" : "/en/llms-full.txt")}): every page of this locale concatenated`,
+    `- [${person.name} — ${lang.toUpperCase()}](${absoluteUrl(`${localeMeta[lang].prefix}/llms-full.txt`)}): ${t("llms.fullText.description")}`,
     "",
     "## Optional",
     "",

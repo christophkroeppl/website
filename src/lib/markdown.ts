@@ -15,21 +15,12 @@ import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
 import { pickById, projectsFor } from "./content"
-import { inLanguage, pageDescription } from "./seo"
+import { formatPageTitle, inLanguage, pageDescription } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
 
-const extras = {
-  de: { stats: "Kennzahlen", stack: "Stack", status: "Status", links: "Links" },
-  en: { stats: "Key facts", stack: "Stack", status: "Status", links: "Links" },
-} as const
-
 function bullets(items: string[]): string {
   return items.map((item) => `- ${inline(item)}`).join("\n")
-}
-
-function pageTitle(title: string, personName: string): string {
-  return title === personName ? title : `${title} — ${personName}`
 }
 
 function document({
@@ -62,7 +53,6 @@ function document({
 
 async function homeBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
-  const label = extras[lang]
   const projects = await projectsFor(lang)
   const latest = roles[0]
   if (!latest) throw new Error("No roles to render")
@@ -77,7 +67,7 @@ async function homeBody(lang: Locale): Promise<string> {
       "",
       inline(pick(lang, home.secondary)),
       "",
-      `## ${label.stats}`,
+      `## ${t("md.stats")}`,
       "",
       ...proof.map((item) => `- **${item.value}** — ${inline(pick(lang, item.label))}`),
       "",
@@ -119,13 +109,12 @@ function contactLink(lang: Locale): string {
 
 async function projectsBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
-  const label = extras[lang]
   const projects = await projectsFor(lang)
 
   return document({
     lang,
     page: "projects",
-    title: pageTitle(t("projects.title"), person.name),
+    title: formatPageTitle(t("projects.title")),
     headingText: t("projects.title"),
     sections: [
       inline(t("projects.intro")),
@@ -140,11 +129,11 @@ async function projectsBody(lang: Locale): Promise<string> {
         ...(stripFrontmatter(source ?? "") ? [stripFrontmatter(source ?? "")] : []),
         bullets(data.highlights),
         "",
-        `**${label.stack}:** ${data.stack.map(inline).join(", ")}`,
+        `**${t("md.stack")}:** ${data.stack.map(inline).join(", ")}`,
         "",
-        `**${label.status}:** ${inline(data.status)}`,
+        `**${t("md.status")}:** ${inline(data.status)}`,
         "",
-        `**${label.links}:** ${data.links.map((link) => `[${link.label}](${link.href})`).join(", ")}`,
+        `**${t("md.links")}:** ${data.links.map((link) => `[${link.label}](${link.href})`).join(", ")}`,
         "",
       ]),
     ],
@@ -155,14 +144,13 @@ async function cvBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const entry = await getEntry("cv", lang)
   if (!entry) throw new Error(`Missing CV content for ${lang}`)
-  const label = extras[lang]
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
 
   return document({
     lang,
     page: "cv",
-    title: pageTitle(t("cv.title"), person.name),
+    title: formatPageTitle(t("cv.title")),
     headingText: t("cv.title"),
     sections: [
       `> ${inline(entry.data.headline)}`,
@@ -243,7 +231,7 @@ async function privacyBody(lang: Locale): Promise<string> {
   return document({
     lang,
     page: "privacy",
-    title: pageTitle(entry.data.title, person.name),
+    title: formatPageTitle(entry.data.title),
     headingText: entry.data.title,
     sections: [stripFrontmatter(entry.body ?? ""), "", entry.data.updated],
   })
@@ -256,7 +244,7 @@ function contactBody(lang: Locale): string {
   return document({
     lang,
     page: "contact",
-    title: pageTitle(t("impressum.title"), person.name),
+    title: formatPageTitle(t("impressum.title")),
     headingText: t("impressum.title"),
     sections: [
       inline(t("impressum.notice")),

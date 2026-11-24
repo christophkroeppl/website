@@ -3,10 +3,18 @@ import "../styles/global.css"
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
 import { getAlternates, getLocale } from "virtual:astro-localized-routes"
+import { localeMeta } from "../i18n/locales"
 import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
-import { inLanguage, pageDescription, siteUrl } from "../lib/seo"
+import {
+  formatPageTitle,
+  inLanguage,
+  ogLocale,
+  otherLocale,
+  pageDescription,
+  siteUrl,
+} from "../lib/seo"
 import { markdownPath } from "../lib/urls"
 import {
   breadcrumbNode,
@@ -32,7 +40,7 @@ const page = activePage(Astro.url.pathname)
 const site = Astro.site ?? new URL(siteUrl)
 const canonical = new URL(Astro.url.pathname, site).href
 const metaDescription = description ?? (page ? pageDescription(lang, page) : "")
-const pageTitle = title === person.name ? title : `${title} — ${person.name}`
+const pageTitle = formatPageTitle(title)
 const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
 const ogImage = new URL(image ?? brandImage, site).href
 const ogImageAlt = image ? pageTitle : `${person.name} — ${og.subtitle[lang]}`
@@ -64,9 +72,8 @@ const structuredData = noindex
     ])
 const markdownAlternate =
   !noindex && page ? new URL(markdownPath(lang, page), site).href : undefined
-const llmsPath = lang === "en" ? "/en/llms.txt" : "/llms.txt"
-const ogLocale = lang === "de" ? "de_AT" : "en_US"
-const ogLocaleAlternate = lang === "de" ? "en_US" : "de_AT"
+const llmsPath = localeMeta[lang].llmsPath
+const ogLocaleAlternate = ogLocale(otherLocale(lang))
 const nameParts = page === "home" ? person.name.split(" ") : []
 const firstName = nameParts[0] ?? ""
 const lastName = nameParts.slice(1).join(" ")
@@ -95,7 +102,7 @@ const lastName = nameParts.slice(1).join(" ")
     {!image && <meta property="og:image:height" content="630" />}
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:site_name" content={person.name} />
-    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale" content={ogLocale(lang)} />
     {page === "home" && <meta property="profile:first_name" content={firstName} />}
     {page === "home" && <meta property="profile:last_name" content={lastName} />}
     {!noindex && alternates.length > 0 && (

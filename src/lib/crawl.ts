@@ -1,3 +1,4 @@
+import { defaultLocale, locales } from "../i18n/locales"
 import { pagePaths, type PageId } from "../i18n/routes"
 import { inLanguage, siteUrl } from "./seo"
 import { absoluteUrl } from "./urls"
@@ -27,9 +28,8 @@ export function sitemapXml(origin: URL | string = siteUrl): string {
   const entries = ids.flatMap((id) => {
     const pair = pagePaths[id]
     const pairs: [string, string][] = [
-      [inLanguage("de"), pair.de],
-      ["en", pair.en],
-      ["x-default", pair.de],
+      ...locales.map((lang): [string, string] => [inLanguage(lang), pair[lang]]),
+      ["x-default", pair[defaultLocale]],
     ]
     const alternates = pairs
       .map(

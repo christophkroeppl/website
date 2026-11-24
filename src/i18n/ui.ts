@@ -31,10 +31,16 @@ const de = {
   "contact.privacyNote": "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben gemäß der",
   "contact.privacyLink": "Datenschutzerklärung",
   "projects.title": "Projekte",
+  "projects.eyebrow": "Open Source & Kundenarbeit",
+  "projects.single": "Projekt",
   "projects.intro":
     "Open Source, Kundenarbeit und die Werkzeuge, die dabei entstanden sind. Die Auswahl ist klein, weil ich lieber wenige Dinge zu Ende bringe.",
   "projects.compare.alt": "Screenshot der Go-Nutzung: {label}",
   "projects.compare.aria": "{before} und {after} vergleichen",
+  "md.stats": "Kennzahlen",
+  "md.stack": "Stack",
+  "md.status": "Status",
+  "md.links": "Links",
   "cv.title": "Lebenslauf",
   "cv.profile": "Profil",
   "cv.experience": "Berufserfahrung",
@@ -50,6 +56,8 @@ const de = {
   "notFound.title": "Seite nicht gefunden",
   "notFound.body": "Die angeforderte Seite existiert nicht oder wurde verschoben.",
   "notFound.back": "Zur Startseite",
+  "llms.fullText.heading": "Volltext",
+  "llms.fullText.description": "alle Seiten dieser Sprache, aneinandergereiht",
 } as const
 
 export type TranslationKey = keyof typeof de
@@ -88,10 +96,16 @@ export const ui = {
       "By submitting, you agree to the processing of your data as described in the",
     "contact.privacyLink": "Privacy Policy",
     "projects.title": "Projects",
+    "projects.eyebrow": "Open source & client work",
+    "projects.single": "Project",
     "projects.intro":
       "Open source, client work and the tools that came out of it. The selection is small because I prefer finishing fewer things.",
     "projects.compare.alt": "Go usage screenshot: {label}",
     "projects.compare.aria": "Compare {before} and {after}",
+    "md.stats": "Key facts",
+    "md.stack": "Stack",
+    "md.status": "Status",
+    "md.links": "Links",
     "cv.title": "CV",
     "cv.profile": "Profile",
     "cv.experience": "Professional experience",
@@ -107,6 +121,8 @@ export const ui = {
     "notFound.title": "Page not found",
     "notFound.body": "The requested page does not exist or has moved.",
     "notFound.back": "Back to home",
+    "llms.fullText.heading": "Full text",
+    "llms.fullText.description": "every page of this locale concatenated",
   },
 } as const satisfies Record<Locale, Record<TranslationKey, string>>
 
