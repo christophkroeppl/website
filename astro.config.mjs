@@ -28,6 +28,7 @@ export default defineConfig({
     ogImages(),
   ],
   prefetch: {
+    prefetchAll: true,
     defaultStrategy: "viewport",
   },
   vite: {
