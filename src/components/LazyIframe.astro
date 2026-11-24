@@ -3,21 +3,30 @@ interface Props {
   src: string
   title: string
   aspect: string
+  zoom?: number
   class?: string
 }
 
-const { src, title, aspect, class: className } = Astro.props
+const { src, title, aspect, zoom = 2, class: className } = Astro.props
+
+const [aspectWidth, aspectHeight] = aspect.split("/").map((value) => Number(value.trim()))
+const diagramRatio = aspectWidth / aspectHeight
+
+const hashIndex = src.indexOf("#")
+const srcBase = hashIndex === -1 ? src : src.slice(0, hashIndex)
+const srcHash = hashIndex === -1 ? "" : src.slice(hashIndex)
+const embedSrc = `${srcBase}${srcBase.includes("?") ? "&" : "?"}embed=1${srcHash}`
 ---
 
 <div
-  class:list={[
-    "relative overflow-hidden rounded-box border border-base-300/70 bg-base-200/40",
-    className,
-  ]}
-  style={`aspect-ratio:${aspect}`}
+  class:list={["relative rounded-box border border-base-300/70 bg-base-200/40", className]}
+  style={`--frame-aspect:${aspect}; --iframe-zoom:${zoom}`}
+  data-iframe-frame
+  data-diagram-ratio={diagramRatio}
+  data-iframe-zoom={zoom}
 >
   <iframe
-    data-src={src}
+    data-src={embedSrc}
     title={title}
     class="absolute inset-0 h-full w-full"
     loading="lazy"
@@ -33,6 +42,29 @@ const { src, title, aspect, class: className } = Astro.props
   </noscript>
 </div>
 
+<style>
+  [data-iframe-frame] {
+    aspect-ratio: var(--frame-aspect);
+    overflow: hidden;
+  }
+
+  @media (max-width: 639px) {
+    [data-iframe-frame] {
+      aspect-ratio: 4 / 5;
+      overflow: auto;
+      overscroll-behavior-x: contain;
+    }
+
+    [data-iframe-frame] > iframe {
+      top: 0;
+      right: auto;
+      bottom: auto;
+      left: 0;
+      width: calc(100% * var(--iframe-zoom, 2));
+    }
+  }
+</style>
+
 <script>
   const load = (frame: HTMLIFrameElement) => {
     const src = frame.dataset.src
@@ -41,7 +73,7 @@ const { src, title, aspect, class: className } = Astro.props
     delete frame.dataset.src
   }
 
-  const frames = [...document.querySelectorAll<HTMLIFrameElement>("iframe[data-src]")]
+  const lazyFrames = [...document.querySelectorAll<HTMLIFrameElement>("iframe[data-src]")]
 
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
@@ -55,8 +87,48 @@ const { src, title, aspect, class: className } = Astro.props
       { rootMargin: "600px 0px" },
     )
 
-    for (const frame of frames) observer.observe(frame)
+    for (const frame of lazyFrames) observer.observe(frame)
   } else {
-    for (const frame of frames) load(frame)
+    for (const frame of lazyFrames) load(frame)
   }
+
+  const MOBILE_QUERY = "(max-width: 639px)"
+  const mobile = window.matchMedia(MOBILE_QUERY)
+  const wrappers = [...document.querySelectorAll<HTMLElement>("[data-iframe-frame]")]
+  const widths = new WeakMap<HTMLElement, number>()
+
+  const layout = (frame: HTMLElement, recenter: boolean) => {
+    const iframe = frame.querySelector<HTMLIFrameElement>("iframe")
+    if (!iframe) return
+
+    if (!mobile.matches) {
+      iframe.style.removeProperty("height")
+      frame.scrollTo(0, 0)
+      return
+    }
+
+    const ratio = Number(frame.dataset.diagramRatio) || 1
+    const zoom = Number(frame.dataset.iframeZoom) || 2
+    const height = Math.max(frame.clientHeight, (frame.clientWidth * zoom) / ratio)
+
+    iframe.style.height = `${height}px`
+
+    if (recenter) {
+      frame.scrollLeft = (frame.scrollWidth - frame.clientWidth) / 2
+      frame.scrollTop = (frame.scrollHeight - frame.clientHeight) / 2
+    }
+  }
+
+  const layoutAll = (recenter: boolean) => {
+    for (const frame of wrappers) {
+      const width = frame.clientWidth
+      const widthChanged = widths.get(frame) !== width
+      widths.set(frame, width)
+      layout(frame, recenter || widthChanged)
+    }
+  }
+
+  requestAnimationFrame(() => layoutAll(true))
+  mobile.addEventListener("change", () => requestAnimationFrame(() => layoutAll(true)))
+  window.addEventListener("resize", () => requestAnimationFrame(() => layoutAll(false)))
 </script>
