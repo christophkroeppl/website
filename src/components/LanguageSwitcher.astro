@@ -2,12 +2,9 @@
 import { getAlternates, getLocale } from "virtual:astro-localized-routes"
 import { languages } from "../i18n/locales"
 import { inLanguage } from "../lib/seo"
-import { useTranslations } from "../i18n/ui"
 
 const locale = getLocale(Astro)
-const t = useTranslations(locale)
 const alternates = getAlternates(Astro).filter((alternate) => alternate.locale !== locale)
-const currentLabel = languages[locale]
 
 const linkClass =
   "grid h-9 min-w-9 place-items-center rounded-full px-2 text-sm font-semibold text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -19,39 +16,13 @@ const linkClass =
     hreflang={inLanguage(alternates[0].locale)}
     lang={alternates[0].locale}
     title={languages[alternates[0].locale]}
+    aria-label={`${alternates[0].locale.toUpperCase()} — ${languages[alternates[0].locale]}`}
     data-astro-prefetch="false"
     class:list={["group ml-1", linkClass]}
   >
-    <span class="group-hover:hidden group-focus-visible:hidden">
-      {locale.toUpperCase()}
-      <span class="sr-only"> — {currentLabel}</span>
-    </span>
-    <span class="hidden group-hover:inline group-focus-visible:inline">
+    <span class="group-hover:hidden group-focus-visible:hidden">{locale.toUpperCase()}</span>
+    <span class="hidden group-hover:inline group-focus-visible:inline" aria-hidden="true">
       {alternates[0].locale.toUpperCase()}
-      <span class="sr-only"> — {languages[alternates[0].locale]}</span>
     </span>
   </a>
-) : alternates.length > 1 ? (
-  <nav aria-label={t("nav.language")} class="ml-1 flex items-center gap-1">
-    <span
-      aria-current="true"
-      class="grid h-9 min-w-9 place-items-center rounded-full px-2 text-sm font-semibold text-accent underline decoration-accent/40 decoration-2 underline-offset-4"
-    >
-      {locale.toUpperCase()}
-      <span class="sr-only"> — {currentLabel}</span>
-    </span>
-    {alternates.map((alternate) => (
-      <a
-        href={alternate.path}
-        hreflang={inLanguage(alternate.locale)}
-        lang={alternate.locale}
-        title={languages[alternate.locale]}
-        data-astro-prefetch="false"
-        class:list={[linkClass]}
-      >
-        {alternate.locale.toUpperCase()}
-        <span class="sr-only"> — {languages[alternate.locale]}</span>
-      </a>
-    ))}
-  </nav>
 ) : null}
