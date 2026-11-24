@@ -7,6 +7,7 @@ import { localizedRoutes as routes } from "./src/i18n/routes.ts"
 import { projectMedia } from "./integrations/project-media"
 import { revealOutlines } from "./integrations/reveals"
 import { links } from "./integrations/links"
+import { ogImages } from "./integrations/og-images"
 import { siteUrl } from "./src/lib/seo"
 
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
     projectMedia(),
     revealOutlines(),
     links(),
+    ogImages(),
   ],
   prefetch: {
     defaultStrategy: "viewport",

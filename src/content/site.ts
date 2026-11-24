@@ -7,6 +7,13 @@ export const person = {
   name: "Christoph Kröppl",
 }
 
+export const og = {
+  subtitle: {
+    de: "IT-Projektmanager & Odoo ERP · Wien",
+    en: "IT project manager & Odoo ERP · Vienna",
+  } satisfies Bilingual,
+}
+
 export const home = {
   eyebrow: {
     de: "Remote, Wien, Österreich · IT-Projektmanagement, Web, ERP & Infrastruktur",

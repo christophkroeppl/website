@@ -5,7 +5,7 @@ import Footer from "../components/Footer.astro"
 import { getAlternates, getLocale } from "virtual:astro-localized-routes"
 import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
-import { person } from "../content/site"
+import { og, person } from "../content/site"
 import { inLanguage, pageDescription, siteUrl } from "../lib/seo"
 
 interface Props {
@@ -25,11 +25,7 @@ const metaDescription = description ?? (page ? pageDescription(lang, page) : "")
 const pageTitle = title === person.name ? title : `${title} — ${person.name}`
 const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
 const ogImage = new URL(image ?? brandImage, site).href
-const ogImageAlt = image
-  ? pageTitle
-  : lang === "de"
-    ? `${person.name} — IT-Projektmanager & Odoo ERP`
-    : `${person.name} — IT project manager & Odoo ERP`
+const ogImageAlt = image ? pageTitle : `${person.name} — ${og.subtitle[lang]}`
 const alternates = noindex
   ? []
   : getAlternates(Astro).map((alternate) => ({
