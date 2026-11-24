@@ -31,14 +31,19 @@ export function parseLinkSources(env: LinkEnv): LinkSource[] {
     if (!value) continue
 
     const [, platform, variant] = match
+    if (!platform) continue
+
+    const trimmedVariant = variant?.trim()
+    const label = labels.get(key)
+    const icon = icons.get(key)
 
     sources.push({
       key,
       href: parseHref(key, value),
       slug: platform.toLowerCase().replace(/_/g, "-"),
-      variant: variant?.trim() || undefined,
-      label: labels.get(key),
-      icon: icons.get(key),
+      ...(trimmedVariant ? { variant: trimmedVariant } : {}),
+      ...(label === undefined ? {} : { label }),
+      ...(icon === undefined ? {} : { icon }),
     })
   }
 

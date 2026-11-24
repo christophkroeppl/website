@@ -26,11 +26,12 @@ export function sitemapXml(origin: URL | string = siteUrl): string {
 
   const entries = ids.flatMap((id) => {
     const pair = pagePaths[id]
-    const alternates = [
+    const pairs: [string, string][] = [
       [inLanguage("de"), pair.de],
       ["en", pair.en],
       ["x-default", pair.de],
     ]
+    const alternates = pairs
       .map(
         ([hreflang, path]) =>
           `    <xhtml:link rel="alternate" hreflang="${hreflang}" href="${xmlEscape(absoluteUrl(path, origin))}" />`,

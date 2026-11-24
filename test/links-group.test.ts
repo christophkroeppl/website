@@ -26,7 +26,10 @@ describe("groupLinks", () => {
     ])
 
     expect(groups.map((group) => group.length)).toEqual([1, 2, 1])
-    expect(groups[1].map((entry) => entry.key)).toEqual(["BITCR_LINK_HOME", "BITCR_LINK_USE_CASES"])
+    expect(groups[1]?.map((entry) => entry.key)).toEqual([
+      "BITCR_LINK_HOME",
+      "BITCR_LINK_USE_CASES",
+    ])
   })
 
   it("does not merge links that are not adjacent", () => {

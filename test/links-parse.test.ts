@@ -10,7 +10,7 @@ describe("parseLinkSources", () => {
     })
 
     expect(links.map((link) => link.slug)).toEqual(["github", "linkedin"])
-    expect(links[1].href).toBe("https://www.linkedin.com/in/christoph-kroeppl/")
+    expect(links[1]?.href).toBe("https://www.linkedin.com/in/christoph-kroeppl/")
   })
 
   it("ignores keys that are not links", () => {
@@ -26,13 +26,13 @@ describe("parseLinkSources", () => {
 
   it("tolerates a PUBLIC_ prefix", () => {
     const [link] = parseLinkSources({ PUBLIC_FACEBOOK_LINK: "https://facebook.com/x" })
-    expect(link.slug).toBe("facebook")
-    expect(link.key).toBe("PUBLIC_FACEBOOK_LINK")
+    expect(link?.slug).toBe("facebook")
+    expect(link?.key).toBe("PUBLIC_FACEBOOK_LINK")
   })
 
   it("derives the slug from the whole platform part", () => {
     const [link] = parseLinkSources({ SOME_PLATFORM_LINK: "https://example.com" })
-    expect(link.slug).toBe("some-platform")
+    expect(link?.slug).toBe("some-platform")
   })
 
   it("applies _LABEL overrides without treating them as links", () => {
@@ -75,7 +75,7 @@ describe("parseHref", () => {
       ["http://example.com", "http://example.com/"],
       ["mailto:mail@example.com", "mailto:mail@example.com"],
       ["tel:+4312345678", "tel:+4312345678"],
-    ]) {
+    ] satisfies [string, string][]) {
       expect(parseHref("X_LINK", value)).toBe(expected)
     }
   })

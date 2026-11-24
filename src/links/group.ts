@@ -5,7 +5,7 @@ export function groupLinks(links: Link[]): Link[][] {
 
   for (const link of links) {
     const group = groups[groups.length - 1]
-    if (group && group[0].slug === link.slug) group.push(link)
+    if (group && group[0]?.slug === link.slug) group.push(link)
     else groups.push([link])
   }
 

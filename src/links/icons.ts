@@ -68,11 +68,12 @@ function resolveCustomIcon(projectRoot: string, slug: string): LinkIcon | undefi
 
     if (extension === "svg") {
       const source = fs.readFileSync(file, "utf8")
+      const fillRule = readFillRule(source)
       return {
         kind: "svg",
         viewBox: readViewBox(source),
         paths: readPaths(source, relative),
-        fillRule: readFillRule(source),
+        ...(fillRule ? { fillRule } : {}),
       }
     }
 
@@ -87,7 +88,10 @@ function readViewBox(source: string): string {
 }
 
 function readPaths(source: string, relative: string): string[] {
-  const paths = [...source.matchAll(/<path\b[^>]*\sd="([^"]+)"/g)].map((match) => match[1])
+  const paths = [...source.matchAll(/<path\b[^>]*\sd="([^"]+)"/g)].flatMap((match) => {
+    const d = match[1]
+    return d ? [d] : []
+  })
 
   if (paths.length === 0) throw new Error(`${relative}: no <path d="..."> to inline`)
   return paths

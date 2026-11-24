@@ -65,6 +65,7 @@ async function homeBody(lang: Locale): Promise<string> {
   const label = extras[lang]
   const projects = await projectsFor(lang)
   const latest = roles[0]
+  if (!latest) throw new Error("No roles to render")
 
   return document({
     lang,

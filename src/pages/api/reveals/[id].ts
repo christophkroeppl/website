@@ -28,7 +28,8 @@ export const GET: APIRoute = ({ request, params }) => {
     return respond(400)
   }
 
-  const entry: GeneratedReveal = (revealOutlines as Record<string, GeneratedReveal>)[id]
+  const entry = (revealOutlines as Record<string, GeneratedReveal | undefined>)[id]
+  if (!entry) return respond(404)
   const lines = entry.lines[lang]
   if (lines.length === 0) {
     return respond(503)

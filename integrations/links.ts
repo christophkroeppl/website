@@ -35,8 +35,9 @@ function envKeyOrder(root: string, mode: string): Map<string, number> {
 
     for (const line of fs.readFileSync(pathname, "utf8").split("\n")) {
       const match = /^\s*(?:export\s+)?([A-Za-z0-9_]+)\s*=/.exec(line)
-      if (!match || order.has(match[1])) continue
-      order.set(match[1], order.size)
+      const key = match?.[1]
+      if (!key || order.has(key)) continue
+      order.set(key, order.size)
     }
   }
 

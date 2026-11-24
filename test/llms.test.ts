@@ -7,7 +7,10 @@ import { markdownPath } from "../src/lib/urls"
 const ids = Object.keys(pagePaths) as PageId[]
 
 function urls(lang: "de" | "en"): string[] {
-  return [...llmsIndex(lang).matchAll(/\((https:\/\/[^)]+)\)/g)].map((match) => match[1])
+  return [...llmsIndex(lang).matchAll(/\((https:\/\/[^)]+)\)/g)].flatMap((match) => {
+    const url = match[1]
+    return url ? [url] : []
+  })
 }
 
 describe("llmsIndex", () => {
