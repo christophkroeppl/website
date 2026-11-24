@@ -1,0 +1,85 @@
+---
+import ProjectCard from "./ProjectCard.astro"
+import type { ProjectData } from "../content.config"
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  projects: { data: ProjectData }[]
+  lang: Locale
+  basePath: string
+  label: string
+}
+
+const { projects, lang, basePath, label } = Astro.props
+---
+
+<div class="relative -mx-4 sm:hidden">
+  <div
+    class="overflow-hidden"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label={label}
+    data-carousel-viewport
+  >
+    <div class="flex touch-pan-y" data-carousel-container>
+      {projects.map((project, index) => (
+        <div
+          class="min-w-0 flex-[0_0_84%] px-2"
+          role="group"
+          aria-roledescription="slide"
+          data-carousel-slide
+        >
+          <ProjectCard
+            project={project.data}
+            lang={lang}
+            index={index + 1}
+            href={`${basePath}#${project.data.id}`}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+  <div
+    class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-base-100 to-transparent"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-base-100 to-transparent"
+    aria-hidden="true"
+  ></div>
+</div>
+
+<div class="hidden gap-x-10 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+  {projects.map((project, index) => (
+    <ProjectCard
+      project={project.data}
+      lang={lang}
+      index={index + 1}
+      href={`${basePath}#${project.data.id}`}
+    />
+  ))}
+</div>
+
+<script>
+  import EmblaCarousel from "embla-carousel"
+
+  const mobile = window.matchMedia("(max-width: 639px)")
+  const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
+  let carousel: ReturnType<typeof EmblaCarousel> | undefined
+
+  const sync = () => {
+    if (mobile.matches && viewport && !carousel) {
+      carousel = EmblaCarousel(viewport, {
+        align: "center",
+        containScroll: false,
+        loop: true,
+      })
+    } else if (!mobile.matches && carousel) {
+      carousel.destroy()
+      carousel = undefined
+    }
+  }
+
+  sync()
+  mobile.addEventListener("change", sync)
+</script>

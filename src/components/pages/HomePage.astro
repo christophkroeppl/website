@@ -1,10 +1,16 @@
 ---
 import Section from "../Section.astro"
 import ProofGrid from "../ProofGrid.astro"
+import ProjectCarousel from "../ProjectCarousel.astro"
+import Timeline from "../Timeline.astro"
+import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactModal from "../ContactModal.astro"
-import { about, contact, home as homeContent } from "../../content/site"
+import { about, contact, home as homeContent, homeSections } from "../../content/site"
+import { roles } from "../../content/experience"
+import { skillGroups } from "../../content/skills"
 import { pick } from "../../content/types"
+import { projectsFor } from "../../lib/content"
 import { pathFor, type Locale } from "../../i18n/routes"
 
 interface Props {
@@ -12,6 +18,9 @@ interface Props {
 }
 
 const { lang } = Astro.props
+const projects = await projectsFor(lang)
+const latestRole = roles[0]
+const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
 ---
 
 <section class="border-b border-base-300/60">
@@ -45,6 +54,44 @@ const { lang } = Astro.props
   </div>
 </section>
 
+<Section
+  id="work"
+  eyebrow={pick(lang, homeSections.workEyebrow)}
+  title={pick(lang, homeSections.workTitle)}
+  intro={pick(lang, homeSections.workIntro)}
+>
+  <a slot="action" class="btn btn-ghost btn-sm shrink-0" href={pathFor("projects", lang)}>
+    {pick(lang, homeContent.projectsCta)}
+  </a>
+  <ProjectCarousel
+    projects={projects}
+    lang={lang}
+    basePath={pathFor("projects", lang)}
+    label={pick(lang, homeSections.workTitle)}
+  />
+</Section>
+
+<Section
+  id="experience"
+  eyebrow={pick(lang, homeSections.experienceEyebrow)}
+  title={latestRoleTitle}
+>
+  <a slot="action" class="btn btn-ghost btn-sm shrink-0" href={pathFor("cv", lang)}>
+    {pick(lang, homeContent.cvCta)}
+  </a>
+  <Timeline roles={[latestRole]} lang={lang} compact />
+</Section>
+
+<Section
+  id="skills"
+  eyebrow={pick(lang, homeSections.skillsEyebrow)}
+  title={pick(lang, homeSections.skillsTitle)}
+  intro={pick(lang, homeSections.skillsIntro)}
+  tone="muted"
+>
+  <SkillsList groups={skillGroups} lang={lang} compact />
+</Section>
+
 <Section id="about" eyebrow={pick(lang, about.eyebrow)} title={pick(lang, about.title)}>
   <div class="grid gap-10 md:grid-cols-[1fr_16rem]">
     <div class="max-w-2xl space-y-5 text-base leading-relaxed text-base-content/70">
@@ -56,8 +103,13 @@ const { lang } = Astro.props
       <blockquote class="text-lg leading-relaxed text-base-content/75">
         {pick(lang, about.quote)}
       </blockquote>
-      <a class="btn btn-ghost btn-sm self-end" href={pathFor("cv", lang)}>
-        {pick(lang, homeContent.cvCta)}
+      <a
+        class="btn btn-ghost btn-sm self-end"
+        href="https://grugbrain.dev/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {pick(lang, homeContent.philosophyCta)} ↗
       </a>
     </div>
   </div>

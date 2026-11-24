@@ -29,8 +29,12 @@ export const home = {
     en: "See selected work",
   } satisfies Bilingual,
   cvCta: {
-    de: "Lebenslauf lesen",
-    en: "Read the CV",
+    de: "Lebenslauf ansehen",
+    en: "View the CV",
+  } satisfies Bilingual,
+  philosophyCta: {
+    de: "Meine Philosophie",
+    en: "My Philosophy",
   } satisfies Bilingual,
 }
 
@@ -65,10 +69,26 @@ export const proof = [
   },
 ]
 
+export const homeSections = {
+  workEyebrow: { de: "01 · Arbeit", en: "01 · Work" } satisfies Bilingual,
+  workTitle: { de: "Ausgewählte Projekte", en: "Selected work" } satisfies Bilingual,
+  workIntro: {
+    de: "Open Source, gebaut für den Betrieb.",
+    en: "Open source, built for operations.",
+  } satisfies Bilingual,
+  experienceEyebrow: { de: "02 · Werdegang", en: "02 · Track record" } satisfies Bilingual,
+  skillsEyebrow: { de: "03 · Kenntnisse", en: "03 · Skills" } satisfies Bilingual,
+  skillsTitle: { de: "Technische Kenntnisse", en: "Technical skills" } satisfies Bilingual,
+  skillsIntro: {
+    de: "Breite mit Tiefe an den Stellen, die zählen.",
+    en: "Breadth, with depth where it matters.",
+  } satisfies Bilingual,
+}
+
 export const about = {
   eyebrow: {
-    de: "Über mich",
-    en: "About",
+    de: "04 · Über mich",
+    en: "04 · About",
   } satisfies Bilingual,
   title: {
     de: "Wie ich arbeite",
