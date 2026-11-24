@@ -1,5 +1,4 @@
 import { getEntry } from "astro:content"
-import { roles } from "../content/experience"
 import {
   bitcoin,
   certifications,
@@ -14,7 +13,7 @@ import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
-import { pickById, projectsFor } from "./content"
+import { pickById, projectsFor, rolesFor } from "./content"
 import { formatPageTitle, inLanguage, pageDescription } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
@@ -54,6 +53,7 @@ function document({
 async function homeBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const projects = await projectsFor(lang)
+  const roles = await rolesFor(lang)
   const latest = roles[0]
   if (!latest) throw new Error("No roles to render")
 
@@ -80,7 +80,7 @@ async function homeBody(lang: Locale): Promise<string> {
       "",
       `## ${t("cv.experience")}`,
       "",
-      `- **${inline(pick(lang, latest.title))}**, ${inline(latest.org)} (${latest.period}): ${inline(pick(lang, latest.summary))}`,
+      `- **${inline(latest.data.title)}**, ${inline(latest.data.org)} (${latest.data.period}): ${inline(latest.data.summary)}`,
       "",
       `## ${t("cv.skills")}`,
       "",
@@ -147,6 +147,7 @@ async function cvBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const entry = await getEntry("cv", lang)
   if (!entry) throw new Error(`Missing CV content for ${lang}`)
+  const roles = await rolesFor(lang)
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
 
@@ -171,14 +172,14 @@ async function cvBody(lang: Locale): Promise<string> {
       `## ${t("cv.experience")}`,
       "",
       ...pickById(roles, entry.data.roles, "cv.roles").flatMap((role) => [
-        `### ${inline(pick(lang, role.title))} — ${inline(role.org)}`,
+        `### ${inline(role.data.title)} — ${inline(role.data.org)}`,
         "",
-        ...(role.orgNote ? [inline(pick(lang, role.orgNote)), ""] : []),
-        `${role.period} · ${inline(pick(lang, role.location))}`,
+        ...(role.data.orgNote ? [inline(role.data.orgNote), ""] : []),
+        `${role.data.period} · ${inline(role.data.location)}`,
         "",
-        inline(pick(lang, role.summary)),
+        inline(role.data.summary),
         "",
-        bullets(role.bullets.map((bullet) => pick(lang, bullet))),
+        bullets(role.data.bullets),
         "",
       ]),
       `## ${t("cv.skills")}`,

@@ -18,6 +18,14 @@ export async function projectsFor(lang: Locale): Promise<CollectionEntry<"projec
     .toSorted((a, b) => a.data.order - b.data.order)
 }
 
+export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experience">[]> {
+  const entries = await getCollection("experience")
+  return entries
+    .filter((entry) => entry.data.locale === lang)
+    .toSorted((a, b) => a.data.order - b.data.order)
+    .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
+}
+
 export function pickById<T extends { id: string }>(items: T[], ids: string[], source: string): T[] {
   const byId = new Map(items.map((item) => [item.id, item]))
   return ids.map((id) => {

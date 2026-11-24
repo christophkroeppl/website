@@ -1,40 +1,37 @@
 ---
-import { pick } from "../content/types"
-import type { Role } from "../content/experience"
-import type { Locale } from "../i18n/locales"
+import type { CollectionEntry } from "astro:content"
 
 interface Props {
-  roles: Role[]
-  lang: Locale
+  roles: CollectionEntry<"experience">[]
   compact?: boolean
 }
 
-const { roles, lang, compact = false } = Astro.props
+const { roles, compact = false } = Astro.props
 ---
 
 <ol class="space-y-8">
   {roles.map((role) => (
     <li class="grid gap-2 border-t border-primary/15 pt-6 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-8">
-      <div class="font-mono text-xs leading-relaxed text-accent/90">{role.period}</div>
+      <div class="font-mono text-xs leading-relaxed text-accent/90">{role.data.period}</div>
       <div>
         <h3 class="flex items-center gap-2.5 text-base font-semibold tracking-[-0.01em]">
           <span
             aria-hidden="true"
             class="size-2 shrink-0 rounded-full bg-primary ring-2 ring-primary/20"
           />
-          {pick(lang, role.title)}
+          {role.data.title}
         </h3>
         <p class="mt-0.5 text-sm text-base-content/65">
-          {role.org} · {pick(lang, role.location)}
+          {role.data.org} · {role.data.location}
         </p>
-        {role.orgNote && (
-          <p class="mt-0.5 text-xs text-base-content/65">{pick(lang, role.orgNote)}</p>
+        {role.data.orgNote && (
+          <p class="mt-0.5 text-xs text-base-content/65">{role.data.orgNote}</p>
         )}
-        <p class="mt-3 text-sm leading-relaxed text-base-content/70">{pick(lang, role.summary)}</p>
+        <p class="mt-3 text-sm leading-relaxed text-base-content/70">{role.data.summary}</p>
         {!compact && (
           <ul class="mt-3 list-disc space-y-1.5 pl-4 text-sm leading-relaxed text-base-content/65 marker:text-secondary/70">
-            {role.bullets.map((bullet) => (
-              <li>{pick(lang, bullet)}</li>
+            {role.data.bullets.map((bullet) => (
+              <li>{bullet}</li>
             ))}
           </ul>
         )}

@@ -5,7 +5,6 @@ import Timeline from "../Timeline.astro"
 import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactModal from "../ContactModal.astro"
-import { roles } from "../../content/experience"
 import {
   bitcoin,
   certifications,
@@ -18,7 +17,7 @@ import { pick } from "../../content/types"
 import { linkHref } from "../../links/urls"
 import { type Locale } from "../../i18n/routes"
 import { useTranslations } from "../../i18n/ui"
-import { cvFor, pickById, renderEntry } from "../../lib/content"
+import { cvFor, pickById, renderEntry, rolesFor } from "../../lib/content"
 
 interface Props {
   lang: Locale
@@ -31,6 +30,7 @@ const linkedin = linkHref("linkedin")
 
 const entry = await cvFor(lang)
 const { Content } = await renderEntry(entry)
+const roles = await rolesFor(lang)
 const orderedRoles = pickById(roles, entry.data.roles, "cv.roles")
 const orderedSkills = pickById(skillGroups, entry.data.skills, "cv.skills")
 
@@ -64,7 +64,7 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 </Section>
 
 <Section eyebrow={numbered(2)} title={t("cv.experience")}>
-  <Timeline roles={orderedRoles} lang={lang} />
+  <Timeline roles={orderedRoles} />
 </Section>
 
 <Section eyebrow={numbered(3)} title={t("cv.skills")} tone="primary">

@@ -35,6 +35,25 @@ const cv = defineCollection({
   }),
 })
 
+const experience = defineCollection({
+  loader: glob({
+    pattern: "experience/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    org: z.string().min(1),
+    title: z.string().min(1),
+    location: z.string().min(1),
+    period: z.string().min(1),
+    order: z.number().int().positive(),
+    summary: z.string().min(1),
+    bullets: z.array(z.string().min(1)).min(1),
+    orgNote: z.string().min(1).optional(),
+  }),
+})
+
 const projectArtifact = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("html"),
@@ -86,4 +105,4 @@ const projects = defineCollection({
 
 export type ProjectData = z.infer<typeof projectSchema>
 
-export const collections = { privacy, cv, projects }
+export const collections = { privacy, cv, experience, projects }

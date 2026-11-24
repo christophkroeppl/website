@@ -7,10 +7,9 @@ import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactModal from "../ContactModal.astro"
 import { about, contact, home as homeContent, homeSections } from "../../content/site"
-import { roles } from "../../content/experience"
 import { skillGroups } from "../../content/skills"
 import { pick } from "../../content/types"
-import { projectsFor } from "../../lib/content"
+import { projectsFor, rolesFor } from "../../lib/content"
 import { pathFor, type Locale } from "../../i18n/routes"
 
 interface Props {
@@ -19,8 +18,9 @@ interface Props {
 
 const { lang } = Astro.props
 const projects = await projectsFor(lang)
+const roles = await rolesFor(lang)
 const latestRole = roles[0]
-const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
+const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
 ---
 
 <section>
@@ -79,7 +79,7 @@ const latestRoleTitle = `${pick(lang, latestRole.title)} · ${latestRole.org}`
   <a slot="action" class="btn btn-outline btn-accent shrink-0" href={pathFor("cv", lang)}>
     {pick(lang, homeContent.cvCta)}
   </a>
-  <Timeline roles={[latestRole]} lang={lang} compact />
+  <Timeline roles={[latestRole]} compact />
 </Section>
 
 <Section
