@@ -6,8 +6,25 @@ import { markdownPath } from "../src/lib/urls"
 
 const ids = Object.keys(pagePaths) as PageId[]
 
+const de: Record<PageId, string> = {
+  home: "Startbeschreibung",
+  contact: "Kontaktbeschreibung",
+  cv: "Lebenslaufbeschreibung",
+  projects: "Projektbeschreibung",
+  privacy: "Datenschutzbeschreibung",
+}
+const en: Record<PageId, string> = {
+  home: "Home description",
+  contact: "Contact description",
+  cv: "CV description",
+  projects: "Projects description",
+  privacy: "Privacy description",
+}
+const index = (lang: "de" | "en") =>
+  lang === "de" ? llmsIndex("de", de, en) : llmsIndex("en", en, de)
+
 function urls(lang: "de" | "en"): string[] {
-  return [...llmsIndex(lang).matchAll(/\((https:\/\/[^)]+)\)/g)].flatMap((match) => {
+  return [...index(lang).matchAll(/\((https:\/\/[^)]+)\)/g)].flatMap((match) => {
     const url = match[1]
     return url ? [url] : []
   })
@@ -15,11 +32,11 @@ function urls(lang: "de" | "en"): string[] {
 
 describe("llmsIndex", () => {
   it("starts with the site name and the home summary", () => {
-    const body = llmsIndex("de")
+    const body = index("de")
 
     expect(body.startsWith("# Christoph Kröppl\n\n> ")).toBe(true)
     expect(body).toContain("Deutsch ist die Standardsprache")
-    expect(llmsIndex("en")).toContain("German is the default language")
+    expect(index("en")).toContain("German is the default language")
   })
 
   it("links the markdown twin of every page in both locales", () => {
@@ -38,7 +55,7 @@ describe("llmsIndex", () => {
   })
 
   it("lists only profile links as optional", () => {
-    const body = llmsIndex("de")
+    const body = index("de")
 
     expect(body).toContain("https://www.linkedin.com/in/christoph-kroeppl/")
     expect(body).not.toContain("https://bitcoin.org/en/bitcoin-paper")
@@ -46,7 +63,7 @@ describe("llmsIndex", () => {
   })
 
   it("points at the sitemap", () => {
-    expect(llmsIndex("en")).toContain(`Sitemap: ${siteUrl}/sitemap.xml`)
+    expect(index("en")).toContain(`Sitemap: ${siteUrl}/sitemap.xml`)
   })
 })
 

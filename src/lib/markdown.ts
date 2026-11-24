@@ -4,8 +4,16 @@ import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
-import { contactFor, homeFor, pickById, projectsFor, rolesFor, skillsFor } from "./content"
-import { formatPageTitle, inLanguage, pageDescription } from "./seo"
+import {
+  contactFor,
+  descriptionFor,
+  homeFor,
+  pickById,
+  projectsFor,
+  rolesFor,
+  skillsFor,
+} from "./content"
+import { formatPageTitle, inLanguage } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
 
@@ -13,7 +21,7 @@ function bullets(items: string[]): string {
   return items.map((item) => `- ${inline(item)}`).join("\n")
 }
 
-function document({
+async function document({
   lang,
   page,
   title,
@@ -25,13 +33,13 @@ function document({
   title: string
   headingText: string
   sections: string[]
-}): string {
+}): Promise<string> {
   return [
     renderFrontmatter({
       title,
       canonical: absoluteUrl(pathFor(page, lang)),
       lang: inLanguage(lang),
-      summary: pageDescription(lang, page),
+      summary: await descriptionFor(lang, page),
     }),
     "",
     `# ${inline(headingText)}`,

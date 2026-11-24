@@ -7,15 +7,8 @@ import { localeMeta } from "../i18n/locales"
 import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
-import { cvFor, skillsFor } from "../lib/content"
-import {
-  formatPageTitle,
-  inLanguage,
-  ogLocale,
-  otherLocale,
-  pageDescription,
-  siteUrl,
-} from "../lib/seo"
+import { cvFor, descriptionFor, skillsFor } from "../lib/content"
+import { formatPageTitle, inLanguage, ogLocale, otherLocale, siteUrl } from "../lib/seo"
 import { markdownPath } from "../lib/urls"
 import {
   breadcrumbNode,
@@ -40,7 +33,7 @@ const t = useTranslations(lang)
 const page = activePage(Astro.url.pathname)
 const site = Astro.site ?? new URL(siteUrl)
 const canonical = new URL(Astro.url.pathname, site).href
-const metaDescription = description ?? (page ? pageDescription(lang, page) : "")
+const metaDescription = description
 const pageTitle = formatPageTitle(title)
 const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
 const ogImage = new URL(image ?? brandImage, site).href
@@ -52,13 +45,17 @@ const alternates = noindex
       href: new URL(alternate.path, site).href,
     }))
 const xDefault = alternates.find((alternate) => alternate.hreflang === inLanguage("de"))?.href
-const [skills, cv] = await Promise.all([skillsFor(lang), cvFor(lang)])
+const [skills, cv, homeDescription] = await Promise.all([
+  skillsFor(lang),
+  cvFor(lang),
+  descriptionFor(lang, "home"),
+])
 const knowsAbout = skills.map((group) => group.data.label)
 const knowsLanguage = cv.data.languages.map((language) => language.code)
 const structuredData = noindex
   ? undefined
   : graph([
-      personNode(lang, { knowsAbout, knowsLanguage }),
+      personNode(lang, { knowsAbout, knowsLanguage, description: homeDescription }),
       websiteNode(),
       ...(page
         ? [

@@ -1,5 +1,6 @@
 import { getCollection, getEntry, render, type CollectionEntry } from "astro:content"
 import type { Locale } from "../i18n/locales"
+import type { PageId } from "../i18n/routes"
 
 export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
   const entry = await getEntry("cv", lang)
@@ -17,6 +18,33 @@ export async function contactFor(lang: Locale): Promise<CollectionEntry<"contact
   const entry = await getEntry("contact", lang)
   if (!entry) throw new Error(`No contact content for locale "${lang}"`)
   return entry
+}
+
+export async function descriptionFor(lang: Locale, page: PageId): Promise<string> {
+  if (page === "projects") {
+    const entries = await getCollection("pageMeta")
+    const entry = entries.find(
+      (entry) => entry.data.page === "projects" && entry.data.locale === lang,
+    )
+    if (!entry) throw new Error(`No projects meta for locale "${lang}"`)
+    return entry.data.description
+  }
+
+  const entry = await getEntry(page, lang)
+  if (!entry) throw new Error(`No ${page} content for locale "${lang}"`)
+  return entry.data.description
+}
+
+export async function descriptionsFor(lang: Locale): Promise<Record<PageId, string>> {
+  const [home, contact, cv, projects, privacy] = await Promise.all([
+    descriptionFor(lang, "home"),
+    descriptionFor(lang, "contact"),
+    descriptionFor(lang, "cv"),
+    descriptionFor(lang, "projects"),
+    descriptionFor(lang, "privacy"),
+  ])
+
+  return { home, contact, cv, projects, privacy }
 }
 
 export function renderEntry(

@@ -4,7 +4,7 @@ import { useTranslations } from "../i18n/ui"
 import { person } from "../content/site"
 import { links } from "../generated/links"
 import { isProfile } from "./schema"
-import { otherLocale, pageDescription } from "./seo"
+import { otherLocale } from "./seo"
 import { stripFrontmatter } from "./text"
 import { absoluteUrl, markdownPath } from "./urls"
 
@@ -14,21 +14,25 @@ export function pageTitle(lang: Locale, page: PageId): string {
   return useTranslations(lang)(pageTitleKey[page])
 }
 
-function entries(lang: Locale): string[] {
+function entries(lang: Locale, descriptions: Record<PageId, string>): string[] {
   return pages.map(
     (page) =>
-      `- [${pageTitle(lang, page)}](${absoluteUrl(markdownPath(lang, page))}): ${pageDescription(lang, page)}`,
+      `- [${pageTitle(lang, page)}](${absoluteUrl(markdownPath(lang, page))}): ${descriptions[page]}`,
   )
 }
 
-export function llmsIndex(lang: Locale): string {
+export function llmsIndex(
+  lang: Locale,
+  descriptions: Record<PageId, string>,
+  otherDescriptions: Record<PageId, string>,
+): string {
   const other = otherLocale(lang)
   const t = useTranslations(lang)
 
   return [
     `# ${person.name}`,
     "",
-    `> ${pageDescription(lang, "home")}`,
+    `> ${descriptions.home}`,
     "",
     lang === "de"
       ? "Deutsch ist die Standardsprache, englische Inhalte liegen unter /en/. Die verlinkten Markdown-Dateien spiegeln die kanonischen Seiten und nennen ihre HTML-URL."
@@ -38,11 +42,11 @@ export function llmsIndex(lang: Locale): string {
     "",
     lang === "de" ? "## Deutsch" : "## English",
     "",
-    ...entries(lang),
+    ...entries(lang, descriptions),
     "",
     lang === "de" ? "## English" : "## Deutsch",
     "",
-    ...entries(other),
+    ...entries(other, otherDescriptions),
     "",
     `## ${t("llms.fullText.heading")}`,
     "",

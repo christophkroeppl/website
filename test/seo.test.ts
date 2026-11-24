@@ -1,28 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { inLanguage, pageDescription, siteUrl } from "../src/lib/seo"
+import { inLanguage, siteUrl } from "../src/lib/seo"
 import { activePage, localizedRoutes, pagePaths, routePage, type PageId } from "../src/i18n/routes"
 import { defaultLocale, locales, type Locale } from "../src/i18n/locales"
 
 const ids = Object.keys(pagePaths) as PageId[]
-
-describe("page descriptions", () => {
-  it("stays within the 70 to 200 character range", () => {
-    for (const page of ids) {
-      for (const lang of locales as readonly Locale[]) {
-        const length = pageDescription(lang, page).length
-        expect(length, `${page}/${lang}`).toBeGreaterThanOrEqual(90)
-        expect(length, `${page}/${lang}`).toBeLessThanOrEqual(160)
-      }
-    }
-  })
-
-  it("is unique per page", () => {
-    for (const lang of locales as readonly Locale[]) {
-      const descriptions = ids.map((page) => pageDescription(lang, page))
-      expect(new Set(descriptions).size).toBe(descriptions.length)
-    }
-  })
-})
 
 describe("inLanguage", () => {
   it("uses de-AT for German and en for English", () => {

@@ -1,5 +1,6 @@
 ---
 locale: de
+description: "Datenschutzerklärung von kroeppl.ch: Hosting, Kontaktformular, Telegram und Ihre Rechte nach DSGVO."
 title: Datenschutz
 updated: "Stand: November 2026"
 ---

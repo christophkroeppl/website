@@ -4,11 +4,12 @@ import HomePage from "../components/pages/HomePage.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { useTranslations } from "../i18n/ui"
 import { pageTitleKey } from "../i18n/routes"
+import { descriptionFor } from "../lib/content"
 
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
 ---
 
-<BaseLayout title={t(pageTitleKey.home)}>
+<BaseLayout title={t(pageTitleKey.home)} description={await descriptionFor(lang, "home")}>
   <HomePage lang={lang} />
 </BaseLayout>

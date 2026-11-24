@@ -4,7 +4,6 @@ import type { Locale } from "../i18n/locales"
 import { programmingLanguages } from "../content/programming-languages"
 import { person } from "../content/site"
 import { pick } from "../content/types"
-import { pageDescription } from "./seo"
 import type { ProjectData } from "../content.config"
 import { inLanguage } from "./seo"
 import { absoluteUrl } from "./urls"
@@ -53,14 +52,18 @@ export function isProfile(href: string): boolean {
 
 export function personNode(
   lang: Locale,
-  { knowsAbout, knowsLanguage }: { knowsAbout: string[]; knowsLanguage: string[] },
+  {
+    knowsAbout,
+    knowsLanguage,
+    description,
+  }: { knowsAbout: string[]; knowsLanguage: string[]; description: string },
 ): Node {
   return {
     "@type": "Person",
     "@id": personId,
     name: person.name,
     url: absoluteUrl(pathFor("home", "de")),
-    description: pageDescription(lang, "home"),
+    description,
     jobTitle: pick(lang, person.jobTitle),
     knowsAbout,
     knowsLanguage,

@@ -1,5 +1,6 @@
 ---
 locale: de
+description: "Lebenslauf von Christoph Kröppl: IT-Projektmanagement, Odoo ERP, Infrastruktur und Softwareentwicklung im Überblick."
 headline: IT-Projektmanager & Key Account Manager — Odoo ERP
 location: Remote, Wien, Österreich
 roles:

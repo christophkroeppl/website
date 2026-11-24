@@ -36,7 +36,11 @@ const knowsAbout = {
   ],
 }
 const knowsLanguage = ["de", "en", "fr"]
-const facts = (lang: "de" | "en") => ({ knowsAbout: knowsAbout[lang], knowsLanguage })
+const facts = (lang: "de" | "en") => ({
+  knowsAbout: knowsAbout[lang],
+  knowsLanguage,
+  description: `${lang} description`,
+})
 
 const project: ProjectData = {
   locale: "de",

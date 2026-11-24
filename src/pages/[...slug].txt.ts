@@ -1,7 +1,9 @@
 import type { APIRoute } from "astro"
 import type { Locale } from "../i18n/locales"
+import { descriptionsFor } from "../lib/content"
 import { llmsIndex } from "../lib/llms"
 import { llmsFull } from "../lib/llms-full"
+import { otherLocale } from "../lib/seo"
 
 export const prerender = false
 
@@ -26,7 +28,11 @@ export const GET: APIRoute = async ({ params }) => {
     })
   }
 
-  const body = route.full ? await llmsFull(route.lang) : llmsIndex(route.lang)
+  const descriptions = await descriptionsFor(route.lang)
+  const otherDescriptions = await descriptionsFor(otherLocale(route.lang))
+  const body = route.full
+    ? await llmsFull(route.lang)
+    : llmsIndex(route.lang, descriptions, otherDescriptions)
 
   return new Response(body, {
     headers: {

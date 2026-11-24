@@ -4,11 +4,12 @@ import CvPage from "../components/pages/CvPage.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { useTranslations } from "../i18n/ui"
 import { pageTitleKey } from "../i18n/routes"
+import { descriptionFor } from "../lib/content"
 
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
 ---
 
-<BaseLayout title={t(pageTitleKey.cv)}>
+<BaseLayout title={t(pageTitleKey.cv)} description={await descriptionFor(lang, "cv")}>
   <CvPage lang={lang} />
 </BaseLayout>

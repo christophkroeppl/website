@@ -16,6 +16,7 @@ const privacy = defineCollection({
   schema: z.object({
     locale,
     title: z.string().min(1),
+    description: z.string().min(1),
     updated: z.string().min(1),
   }),
 })
@@ -28,6 +29,7 @@ const cv = defineCollection({
   }),
   schema: z.object({
     locale,
+    description: z.string().min(1),
     headline: z.string().min(1),
     location: z.string().min(1),
     roles: z.array(z.string().min(1)).min(1),
@@ -150,6 +152,19 @@ const projects = defineCollection({
 
 export type ProjectData = z.infer<typeof projectSchema>
 
+const pageMeta = defineCollection({
+  loader: glob({
+    pattern: "meta/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    page: z.literal("projects"),
+    description: z.string().min(1),
+  }),
+})
+
 const home = defineCollection({
   loader: glob({
     pattern: "home/*.md",
@@ -158,6 +173,7 @@ const home = defineCollection({
   }),
   schema: z.object({
     locale,
+    description: z.string().min(1),
     eyebrow: z.string().min(1),
     title: z.string().min(1),
     lead: z.string().min(1),
@@ -189,9 +205,10 @@ const contact = defineCollection({
   schema: z.object({
     locale,
     title: z.string().min(1),
+    description: z.string().min(1),
     body: z.string().min(1),
     cta: z.string().min(1),
   }),
 })
 
-export const collections = { privacy, cv, experience, projects, skills, home, contact }
+export const collections = { privacy, cv, experience, projects, pageMeta, skills, home, contact }
