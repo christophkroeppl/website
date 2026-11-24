@@ -5,19 +5,10 @@ import Timeline from "../Timeline.astro"
 import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactModal from "../ContactModal.astro"
-import {
-  bitcoin,
-  certifications,
-  education,
-  interests,
-  languages,
-  skillGroups,
-} from "../../content/skills"
-import { pick } from "../../content/types"
 import { linkHref } from "../../links/urls"
 import { type Locale } from "../../i18n/routes"
 import { useTranslations } from "../../i18n/ui"
-import { cvFor, pickById, renderEntry, rolesFor } from "../../lib/content"
+import { cvFor, pickById, renderEntry, rolesFor, skillsFor } from "../../lib/content"
 
 interface Props {
   lang: Locale
@@ -31,8 +22,9 @@ const linkedin = linkHref("linkedin")
 const entry = await cvFor(lang)
 const { Content } = await renderEntry(entry)
 const roles = await rolesFor(lang)
+const skills = await skillsFor(lang)
 const orderedRoles = pickById(roles, entry.data.roles, "cv.roles")
-const orderedSkills = pickById(skillGroups, entry.data.skills, "cv.skills")
+const orderedSkills = pickById(skills, entry.data.skills, "cv.skills")
 
 const numbered = (index: number) => String(index).padStart(2, "0")
 ---
@@ -68,19 +60,17 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 </Section>
 
 <Section eyebrow={numbered(3)} title={t("cv.skills")} tone="primary">
-  <SkillsList groups={orderedSkills} lang={lang} />
+  <SkillsList groups={orderedSkills.map((group) => group.data)} />
 </Section>
 
 <Section eyebrow={numbered(4)} title={t("cv.education")}>
   <ul class="space-y-6">
-    {education.map((entry) => (
+    {entry.data.education.map((item) => (
       <li class="grid gap-1 border-t border-primary/15 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
-        <span class="font-mono text-xs leading-relaxed text-accent/90">{entry.period}</span>
+        <span class="font-mono text-xs leading-relaxed text-accent/90">{item.period}</span>
         <div>
-          <p class="font-medium tracking-[-0.01em]">{entry.org}</p>
-          <p class="mt-1 text-sm leading-relaxed text-base-content/65">
-            {pick(lang, entry.detail)}
-          </p>
+          <p class="font-medium tracking-[-0.01em]">{item.org}</p>
+          <p class="mt-1 text-sm leading-relaxed text-base-content/65">{item.detail}</p>
         </div>
       </li>
     ))}
@@ -89,14 +79,14 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 
 <Section eyebrow={numbered(5)} title={t("cv.certifications")}>
   <ul class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
-    {certifications.map((entry) => (
+    {entry.data.certifications.map((item) => (
       <li class="flex gap-4 border-l-2 border-secondary/40 pt-1 pl-3">
-        {entry.period && (
+        {item.period && (
           <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/65">
-            {entry.period}
+            {item.period}
           </span>
         )}
-        <span class="text-sm leading-relaxed text-base-content/70">{pick(lang, entry.detail)}</span>
+        <span class="text-sm leading-relaxed text-base-content/70">{item.detail}</span>
       </li>
     ))}
   </ul>
@@ -105,10 +95,10 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 <Section eyebrow={numbered(6)} title={t("cv.languages")} tone="accent">
   <div class="grid gap-10 md:grid-cols-2">
     <ul class="space-y-5">
-      {languages.map((entry) => (
+      {entry.data.languages.map((item) => (
         <li>
-          <p class="font-medium">{pick(lang, entry.name)}</p>
-          <p class="text-sm text-base-content/65">{pick(lang, entry.level)}</p>
+          <p class="font-medium">{item.name}</p>
+          <p class="text-sm text-base-content/65">{item.level}</p>
         </li>
       ))}
     </ul>
@@ -117,8 +107,8 @@ const numbered = (index: number) => String(index).padStart(2, "0")
         {t("cv.interests")}
       </h3>
       <ul class="mt-3 flex flex-wrap gap-2">
-        {interests.map((interest) => (
-          <li class="chip chip-accent">{pick(lang, interest)}</li>
+        {entry.data.interests.map((interest) => (
+          <li class="chip chip-accent">{interest}</li>
         ))}
       </ul>
     </div>
@@ -128,16 +118,16 @@ const numbered = (index: number) => String(index).padStart(2, "0")
 <Section eyebrow={numbered(7)} title={t("cv.bitcoin")}>
   <div class="grid gap-8 md:grid-cols-2">
     <ul class="space-y-3 text-sm leading-relaxed text-base-content/70">
-      {bitcoin.own.map((entry) => (
+      {entry.data.bitcoin.own.map((item) => (
         <li class="flex gap-3">
           <span aria-hidden="true" class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-secondary" />
-          <span>{pick(lang, entry)}</span>
+          <span>{item}</span>
         </li>
       ))}
     </ul>
     <ul class="space-y-2 text-sm leading-relaxed text-base-content/65">
-      {bitcoin.events.map((entry) => (
-        <li>{pick(lang, entry)}</li>
+      {entry.data.bitcoin.events.map((item) => (
+        <li>{item}</li>
       ))}
     </ul>
   </div>

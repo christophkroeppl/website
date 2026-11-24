@@ -1,19 +1,11 @@
 import { getEntry } from "astro:content"
-import {
-  bitcoin,
-  certifications,
-  education,
-  interests,
-  languages,
-  skillGroups,
-} from "../content/skills"
 import { about, contact, home, homeSections, person, proof } from "../content/site"
 import { pick } from "../content/types"
 import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
-import { pickById, projectsFor, rolesFor } from "./content"
+import { pickById, projectsFor, rolesFor, skillsFor } from "./content"
 import { formatPageTitle, inLanguage, pageDescription } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
@@ -54,6 +46,7 @@ async function homeBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const projects = await projectsFor(lang)
   const roles = await rolesFor(lang)
+  const skills = await skillsFor(lang)
   const latest = roles[0]
   if (!latest) throw new Error("No roles to render")
 
@@ -84,9 +77,9 @@ async function homeBody(lang: Locale): Promise<string> {
       "",
       `## ${t("cv.skills")}`,
       "",
-      ...skillGroups.map(
+      ...skills.map(
         (group) =>
-          `- **${inline(pick(lang, group.label))}**: ${group.items.map((item) => inline(pick(lang, item))).join("; ")}`,
+          `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
       ),
       "",
       `## ${pick(lang, about.title)}`,
@@ -148,6 +141,7 @@ async function cvBody(lang: Locale): Promise<string> {
   const entry = await getEntry("cv", lang)
   if (!entry) throw new Error(`Missing CV content for ${lang}`)
   const roles = await rolesFor(lang)
+  const skills = await skillsFor(lang)
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
 
@@ -184,38 +178,36 @@ async function cvBody(lang: Locale): Promise<string> {
       ]),
       `## ${t("cv.skills")}`,
       "",
-      ...pickById(skillGroups, entry.data.skills, "cv.skills").map(
+      ...pickById(skills, entry.data.skills, "cv.skills").map(
         (group) =>
-          `- **${inline(pick(lang, group.label))}**: ${group.items.map((item) => inline(pick(lang, item))).join("; ")}`,
+          `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
       ),
       "",
       `## ${t("cv.education")}`,
       "",
-      ...education.map(
-        (item) => `- **${inline(item.org)}** (${item.period}): ${inline(pick(lang, item.detail))}`,
+      ...entry.data.education.map(
+        (item) => `- **${inline(item.org)}** (${item.period}): ${inline(item.detail)}`,
       ),
       "",
       `## ${t("cv.certifications")}`,
       "",
-      ...certifications.map(
-        (item) => `- ${item.period ? `${item.period} — ` : ""}${inline(pick(lang, item.detail))}`,
+      ...entry.data.certifications.map(
+        (item) => `- ${item.period ? `${item.period} — ` : ""}${inline(item.detail)}`,
       ),
       "",
       `## ${t("cv.languages")}`,
       "",
-      ...languages.map(
-        (item) => `- ${inline(pick(lang, item.name))}: ${inline(pick(lang, item.level))}`,
-      ),
+      ...entry.data.languages.map((item) => `- ${inline(item.name)}: ${inline(item.level)}`),
       "",
       `## ${t("cv.interests")}`,
       "",
-      ...interests.map((item) => `- ${inline(pick(lang, item))}`),
+      ...entry.data.interests.map((item) => `- ${inline(item)}`),
       "",
       `## ${t("cv.bitcoin")}`,
       "",
-      ...bitcoin.own.map((paragraph) => `- ${inline(pick(lang, paragraph))}`),
+      ...entry.data.bitcoin.own.map((paragraph) => `- ${inline(paragraph)}`),
       "",
-      ...bitcoin.events.map((event) => `- ${inline(pick(lang, event))}`),
+      ...entry.data.bitcoin.events.map((event) => `- ${inline(event)}`),
       "",
       inline(t("cv.note")),
       "",

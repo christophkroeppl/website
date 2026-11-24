@@ -26,6 +26,14 @@ export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experienc
     .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
 }
 
+export async function skillsFor(lang: Locale): Promise<CollectionEntry<"skills">[]> {
+  const entries = await getCollection("skills")
+  return entries
+    .filter((entry) => entry.data.locale === lang)
+    .toSorted((a, b) => a.data.order - b.data.order)
+    .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
+}
+
 export function pickById<T extends { id: string }>(items: T[], ids: string[], source: string): T[] {
   const byId = new Map(items.map((item) => [item.id, item]))
   return ids.map((id) => {

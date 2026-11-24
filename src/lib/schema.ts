@@ -1,7 +1,7 @@
 import { links } from "../generated/links"
 import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
-import { languages as spokenLanguages, programmingLanguages, skillGroups } from "../content/skills"
+import { programmingLanguages } from "../content/programming-languages"
 import { person } from "../content/site"
 import { pick } from "../content/types"
 import { pageDescription } from "./seo"
@@ -51,7 +51,10 @@ export function isProfile(href: string): boolean {
   return profileHosts.some((candidate) => host === candidate)
 }
 
-export function personNode(lang: Locale): Node {
+export function personNode(
+  lang: Locale,
+  { knowsAbout, knowsLanguage }: { knowsAbout: string[]; knowsLanguage: string[] },
+): Node {
   return {
     "@type": "Person",
     "@id": personId,
@@ -59,8 +62,8 @@ export function personNode(lang: Locale): Node {
     url: absoluteUrl(pathFor("home", "de")),
     description: pageDescription(lang, "home"),
     jobTitle: pick(lang, person.jobTitle),
-    knowsAbout: skillGroups.map((group) => pick(lang, group.label)),
-    knowsLanguage: spokenLanguages.map((language) => language.code),
+    knowsAbout,
+    knowsLanguage,
     address: {
       "@type": "PostalAddress",
       addressLocality: pick(lang, person.addressLocality),

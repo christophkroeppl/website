@@ -7,6 +7,7 @@ import { localeMeta } from "../i18n/locales"
 import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
+import { cvFor, skillsFor } from "../lib/content"
 import {
   formatPageTitle,
   inLanguage,
@@ -51,10 +52,13 @@ const alternates = noindex
       href: new URL(alternate.path, site).href,
     }))
 const xDefault = alternates.find((alternate) => alternate.hreflang === inLanguage("de"))?.href
+const [skills, cv] = await Promise.all([skillsFor(lang), cvFor(lang)])
+const knowsAbout = skills.map((group) => group.data.label)
+const knowsLanguage = cv.data.languages.map((language) => language.code)
 const structuredData = noindex
   ? undefined
   : graph([
-      personNode(lang),
+      personNode(lang, { knowsAbout, knowsLanguage }),
       websiteNode(),
       ...(page
         ? [

@@ -32,6 +32,51 @@ const cv = defineCollection({
     location: z.string().min(1),
     roles: z.array(z.string().min(1)).min(1),
     skills: z.array(z.string().min(1)).min(1),
+    education: z
+      .array(
+        z.object({
+          period: z.string().min(1),
+          org: z.string().min(1),
+          detail: z.string().min(1),
+        }),
+      )
+      .min(1),
+    certifications: z
+      .array(
+        z.object({
+          period: z.string(),
+          detail: z.string().min(1),
+        }),
+      )
+      .min(1),
+    languages: z
+      .array(
+        z.object({
+          code: z.enum(["de", "en", "fr"]),
+          name: z.string().min(1),
+          level: z.string().min(1),
+        }),
+      )
+      .min(1),
+    interests: z.array(z.string().min(1)).min(1),
+    bitcoin: z.object({
+      own: z.array(z.string().min(1)).min(1),
+      events: z.array(z.string().min(1)).min(1),
+    }),
+  }),
+})
+
+const skills = defineCollection({
+  loader: glob({
+    pattern: "skills/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    label: z.string().min(1),
+    items: z.array(z.string().min(1)).min(1),
+    order: z.number().int().positive(),
   }),
 })
 
@@ -105,4 +150,4 @@ const projects = defineCollection({
 
 export type ProjectData = z.infer<typeof projectSchema>
 
-export const collections = { privacy, cv, experience, projects }
+export const collections = { privacy, cv, experience, projects, skills }

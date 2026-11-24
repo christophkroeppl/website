@@ -10,13 +10,33 @@ import {
   websiteNode,
 } from "../src/lib/schema"
 import type { ProjectData } from "../src/content.config"
-import { languages, skillGroups } from "../src/content/skills"
 import { person } from "../src/content/site"
 import { links } from "../src/generated/links"
 import { pagePaths } from "../src/i18n/routes"
 import { siteUrl } from "../src/lib/seo"
 
 const url = `${siteUrl}${pagePaths.projects.de}`
+
+const knowsAbout = {
+  de: [
+    "ERP & Unternehmenssoftware",
+    "Sprachen & Laufzeiten",
+    "Frontend & Produkt",
+    "Infrastruktur & Betrieb",
+    "Agentic Engineering & KI",
+    "Delivery & Methodik",
+  ],
+  en: [
+    "ERP & business software",
+    "Languages & runtimes",
+    "Frontend & product",
+    "Infrastructure & operations",
+    "Agentic engineering & AI",
+    "Delivery & practice",
+  ],
+}
+const knowsLanguage = ["de", "en", "fr"]
+const facts = (lang: "de" | "en") => ({ knowsAbout: knowsAbout[lang], knowsLanguage })
 
 const project: ProjectData = {
   locale: "de",
@@ -42,10 +62,10 @@ const project: ProjectData = {
 
 describe("personNode", () => {
   it("is stable across locales and lists only profile links", () => {
-    const sameAs = personNode("de").sameAs as string[]
+    const sameAs = personNode("de", facts("de")).sameAs as string[]
 
-    expect(personNode("de")["@id"]).toBe(personNode("en")["@id"])
-    expect(personNode("en").url).toBe(`${siteUrl}/`)
+    expect(personNode("de", facts("de"))["@id"]).toBe(personNode("en", facts("en"))["@id"])
+    expect(personNode("en", facts("en")).url).toBe(`${siteUrl}/`)
     expect(sameAs).toContain("https://www.linkedin.com/in/christoph-kroeppl/")
     expect(sameAs).toContain("https://github.com/christophkroeppl/")
     expect(sameAs).not.toContain(`${siteUrl}/`)
@@ -60,7 +80,7 @@ describe("websiteNode", () => {
     const node = websiteNode()
 
     expect(node.url).toBe(`${siteUrl}/`)
-    expect(node.publisher).toEqual({ "@id": personNode("de")["@id"] })
+    expect(node.publisher).toEqual({ "@id": personNode("de", facts("de"))["@id"] })
   })
 })
 
@@ -143,15 +163,15 @@ describe("project node text", () => {
 
 describe("locale placement", () => {
   it("keeps inLanguage on pages only", () => {
-    expect("inLanguage" in personNode("de")).toBe(false)
+    expect("inLanguage" in personNode("de", facts("de"))).toBe(false)
     expect("inLanguage" in websiteNode()).toBe(false)
     expect(webPageNode({ lang: "en", page: "home", title: "T", url }).inLanguage).toBe("en")
     expect(webPageNode({ lang: "de", page: "home", title: "T", url }).inLanguage).toBe("de-AT")
   })
 
   it("localises person fields but keeps the identity url stable", () => {
-    const de = personNode("de")
-    const en = personNode("en")
+    const de = personNode("de", facts("de"))
+    const en = personNode("en", facts("en"))
 
     expect(de.jobTitle).not.toBe(en.jobTitle)
     expect(de.description).not.toBe(en.description)
@@ -165,15 +185,15 @@ describe("locale placement", () => {
     expect("image" in de).toBe(false)
   })
 
-  it("derives knowledge fields from the content sources", () => {
-    const de = personNode("de")
-    const en = personNode("en")
+  it("uses the supplied knowledge fields", () => {
+    const de = personNode("de", facts("de"))
+    const en = personNode("en", facts("en"))
 
     expect(de.jobTitle).toBe(person.jobTitle.de)
     expect(en.jobTitle).toBe(person.jobTitle.en)
-    expect(de.knowsAbout).toEqual(skillGroups.map((group) => group.label.de))
-    expect(en.knowsAbout).toEqual(skillGroups.map((group) => group.label.en))
-    expect(de.knowsLanguage).toEqual(languages.map((language) => language.code))
+    expect(de.knowsAbout).toEqual(knowsAbout.de)
+    expect(en.knowsAbout).toEqual(knowsAbout.en)
+    expect(de.knowsLanguage).toEqual(["de", "en", "fr"])
     expect(en.knowsLanguage).toEqual(de.knowsLanguage)
   })
 })
@@ -183,9 +203,9 @@ describe("page relations", () => {
     const page = (id: Parameters<typeof webPageNode>[0]["page"]) =>
       (webPageNode({ lang: "de", page: id, title: "T", url }).about as { "@id": string })["@id"]
 
-    expect(page("home")).toBe(personNode("de")["@id"])
-    expect(page("cv")).toBe(personNode("de")["@id"])
-    expect(page("contact")).toBe(personNode("de")["@id"])
+    expect(page("home")).toBe(personNode("de", facts("de"))["@id"])
+    expect(page("cv")).toBe(personNode("de", facts("de"))["@id"])
+    expect(page("contact")).toBe(personNode("de", facts("de"))["@id"])
     expect(page("privacy")).toBe(websiteNode()["@id"])
     expect(page("projects")).toBe(websiteNode()["@id"])
   })
@@ -196,8 +216,8 @@ describe("page relations", () => {
         | { "@id": string }
         | undefined
 
-    expect(main("home")?.["@id"]).toBe(personNode("de")["@id"])
-    expect(main("cv")?.["@id"]).toBe(personNode("de")["@id"])
+    expect(main("home")?.["@id"]).toBe(personNode("de", facts("de"))["@id"])
+    expect(main("cv")?.["@id"]).toBe(personNode("de", facts("de"))["@id"])
     expect(main("projects")?.["@id"]).toBe(`${url}#projects`)
     expect(main("privacy")).toBeUndefined()
   })
@@ -205,7 +225,7 @@ describe("page relations", () => {
 
 describe("graph", () => {
   it("wraps nodes and drops empty entries", () => {
-    const result = graph([personNode("de"), undefined]) as {
+    const result = graph([personNode("de", facts("de")), undefined]) as {
       "@context": string
       "@graph": unknown[]
     }
@@ -289,7 +309,9 @@ describe("graph dedupe", () => {
   })
 
   it("keeps anonymous nodes", () => {
-    const result = graph([{ "@type": "Thing" }, personNode("de")]) as { "@graph": unknown[] }
+    const result = graph([{ "@type": "Thing" }, personNode("de", facts("de"))]) as {
+      "@graph": unknown[]
+    }
 
     expect(result["@graph"]).toHaveLength(2)
   })
