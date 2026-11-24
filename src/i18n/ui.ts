@@ -33,6 +33,8 @@ const de = {
   "projects.title": "Projekte",
   "projects.intro":
     "Open Source, Kundenarbeit und die Werkzeuge, die dabei entstanden sind. Die Auswahl ist klein, weil ich lieber wenige Dinge zu Ende bringe.",
+  "projects.compare.alt": "Screenshot der Go-Nutzung: {label}",
+  "projects.compare.aria": "{before} und {after} vergleichen",
   "cv.title": "Lebenslauf",
   "cv.profile": "Profil",
   "cv.experience": "Berufserfahrung",
@@ -88,6 +90,8 @@ export const ui = {
     "projects.title": "Projects",
     "projects.intro":
       "Open source, client work and the tools that came out of it. The selection is small because I prefer finishing fewer things.",
+    "projects.compare.alt": "Go usage screenshot: {label}",
+    "projects.compare.aria": "Compare {before} and {after}",
     "cv.title": "CV",
     "cv.profile": "Profile",
     "cv.experience": "Professional experience",

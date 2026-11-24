@@ -1,4 +1,7 @@
 ---
+import { getLocale } from "virtual:astro-localized-routes"
+import { useTranslations } from "../i18n/ui"
+
 interface Props {
   before: string
   after: string
@@ -19,6 +22,10 @@ const {
   orientation = "horizontal",
 } = Astro.props
 
+const t = useTranslations(getLocale(Astro))
+const interpolate = (template: string, values: Record<string, string>) =>
+  template.replace(/\{(\w+)\}/g, (_, key: string) => values[key] ?? "")
+
 const vertical = orientation === "vertical"
 ---
 
@@ -34,14 +41,18 @@ const vertical = orientation === "vertical"
   >
     <img
       src={before}
-      alt={`${beforeLabel} Go usage screenshot`}
+      alt={interpolate(t("projects.compare.alt"), { label: beforeLabel })}
+      width={1600}
+      height={1000}
       class="absolute inset-0 size-full object-cover"
       loading="lazy"
       decoding="async"
     />
     <img
       src={after}
-      alt={`${afterLabel} Go usage screenshot`}
+      alt={interpolate(t("projects.compare.alt"), { label: afterLabel })}
+      width={1600}
+      height={1000}
       class="compare-after absolute inset-0 size-full object-cover"
       loading="lazy"
       decoding="async"
@@ -72,7 +83,10 @@ const vertical = orientation === "vertical"
           max="100"
           value="50"
           step="1"
-          aria-label={`Compare ${beforeLabel} and ${afterLabel}`}
+          aria-label={interpolate(t("projects.compare.aria"), {
+            before: beforeLabel,
+            after: afterLabel,
+          })}
           aria-orientation="vertical"
           class="sr-only"
           data-compare-range
@@ -96,7 +110,10 @@ const vertical = orientation === "vertical"
           max="100"
           value="50"
           step="1"
-          aria-label={`Compare ${beforeLabel} and ${afterLabel}`}
+          aria-label={interpolate(t("projects.compare.aria"), {
+            before: beforeLabel,
+            after: afterLabel,
+          })}
           aria-orientation="horizontal"
           class="absolute inset-0 z-20 h-full w-full cursor-ew-resize opacity-0"
           data-compare-range
