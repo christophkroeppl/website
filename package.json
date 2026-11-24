@@ -9,6 +9,7 @@
     "check": "astro sync && cf workers types && vp check",
     "format": "vp fmt",
     "prepare": "vp config --no-agent",
+    "pretest": "astro sync",
     "test": "vp test",
     "typecheck": "astro sync && cf workers types && vp check --no-fmt --no-lint"
   },
