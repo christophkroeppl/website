@@ -73,7 +73,7 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
     let loaded: Promise<Payload> | undefined
 
     const request = () => {
-      loaded ??= fetch(`/api/reveals/${encodeURIComponent(id)}?lang=${encodeURIComponent(lang)}`, {
+      loaded ??= fetch(`/api/reveals/${encodeURIComponent(id)}/?lang=${encodeURIComponent(lang)}`, {
         headers: { Accept: "application/json" },
       })
         .then((response) => {

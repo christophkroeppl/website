@@ -47,25 +47,55 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       data-error={t("contact.error")}
     >
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">{t("contact.name")}</legend>
-        <input type="text" name="name" class="input w-full focus:border-accent" required />
+        <legend class="fieldset-legend" id="contact-name-label">
+          {t("contact.name")}
+        </legend>
+        <input
+          type="text"
+          name="name"
+          class="input w-full focus:border-accent"
+          required
+          autocomplete="name"
+          aria-labelledby="contact-name-label"
+          aria-required="true"
+        />
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">{t("contact.email")}</legend>
-        <input type="email" name="email" class="input w-full focus:border-accent" />
+        <legend class="fieldset-legend" id="contact-email-label">
+          {t("contact.email")}
+        </legend>
+        <input
+          type="email"
+          name="email"
+          class="input w-full focus:border-accent"
+          autocomplete="email"
+          aria-labelledby="contact-email-label"
+        />
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">{t("contact.phone")}</legend>
-        <input type="tel" name="phone" class="input w-full focus:border-accent" />
+        <legend class="fieldset-legend" id="contact-phone-label">
+          {t("contact.phone")}
+        </legend>
+        <input
+          type="tel"
+          name="phone"
+          class="input w-full focus:border-accent"
+          autocomplete="tel"
+          aria-labelledby="contact-phone-label"
+        />
       </fieldset>
       <fieldset class="fieldset">
-        <legend class="fieldset-legend">{t("contact.message")}</legend>
+        <legend class="fieldset-legend" id="contact-message-label">
+          {t("contact.message")}
+        </legend>
         <textarea
           name="message"
           class="textarea w-full focus:border-accent"
           required
           minlength="30"
           maxlength="1500"
+          aria-labelledby="contact-message-label"
+          aria-required="true"
         ></textarea>
         <p class="label">{t("contact.messageHint")}</p>
       </fieldset>
@@ -94,7 +124,6 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
   </form>
 </dialog>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
 <script>
   type Turnstile = { reset: () => void }
   type StatusKind = "success" | "error"
@@ -110,6 +139,8 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
   const submit = document.querySelector<HTMLButtonElement>("#contact-submit")
 
   const turnstile = () => (window as Window & { turnstile?: Turnstile }).turnstile
+
+  let turnstileLoaded = false
 
   if (dialog && form && status && submit) {
     const messages = form.dataset as {
@@ -130,10 +161,23 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       status.textContent = ""
     }
 
+    const loadTurnstile = () => {
+      if (turnstileLoaded) return
+      turnstileLoaded = true
+      const script = document.createElement("script")
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js"
+      script.onerror = () => {
+        setStatus("error", messages.error)
+        turnstileLoaded = false
+      }
+      document.head.appendChild(script)
+    }
+
     for (const button of document.querySelectorAll("[data-contact-open]")) {
       button.addEventListener("click", () => {
         clearStatus()
         dialog.showModal()
+        if (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY) loadTurnstile()
       })
     }
 
@@ -160,7 +204,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       }
 
       try {
-        const response = await fetch("/api/contact", {
+        const response = await fetch("/api/contact/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
