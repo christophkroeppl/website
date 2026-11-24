@@ -28,4 +28,4 @@ Anschrift, E-Mail-Adresse und Telefonnummer werden nicht mit dem Seitenquelltext
 
 ## Ihre Rechte
 
-Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch gegen die Verarbeitung (Art. 15 bis 21 DSGVO). Zudem können Sie sich bei der Österreichischen Datenschutzbehörde beschweren: <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer">Barichgasse 40–42, 1030 Wien (dsb.gv.at)</a>.
+Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch gegen die Verarbeitung (Art. 15 bis 21 DSGVO). Zudem können Sie sich bei der Österreichischen Datenschutzbehörde beschweren: [Barichgasse 40–42, 1030 Wien (dsb.gv.at)](https://www.dsb.gv.at).

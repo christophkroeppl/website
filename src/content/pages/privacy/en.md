@@ -28,4 +28,4 @@ The postal address, email address and phone number are not shipped with the page
 
 ## Your rights
 
-You have the right to access, rectification, erasure, restriction of processing, data portability and objection to processing (Art. 15 to 21 GDPR). You may also lodge a complaint with the Austrian Data Protection Authority: <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer">Barichgasse 40–42, 1030 Vienna (dsb.gv.at)</a>.
+You have the right to access, rectification, erasure, restriction of processing, data portability and objection to processing (Art. 15 to 21 GDPR). You may also lodge a complaint with the Austrian Data Protection Authority: [Barichgasse 40–42, 1030 Vienna (dsb.gv.at)](https://www.dsb.gv.at).
