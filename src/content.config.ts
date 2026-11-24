@@ -150,4 +150,48 @@ const projects = defineCollection({
 
 export type ProjectData = z.infer<typeof projectSchema>
 
-export const collections = { privacy, cv, experience, projects, skills }
+const home = defineCollection({
+  loader: glob({
+    pattern: "home/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    eyebrow: z.string().min(1),
+    title: z.string().min(1),
+    lead: z.string().min(1),
+    secondary: z.string().min(1),
+    projectsCta: z.string().min(1),
+    cvCta: z.string().min(1),
+    philosophyCta: z.string().min(1),
+    workTitle: z.string().min(1),
+    workIntro: z.string().min(1),
+    aboutTitle: z.string().min(1),
+    aboutQuote: z.string().min(1),
+    proof: z
+      .array(
+        z.object({
+          value: z.string().min(1),
+          label: z.string().min(1),
+        }),
+      )
+      .min(1),
+  }),
+})
+
+const contact = defineCollection({
+  loader: glob({
+    pattern: "contact/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    title: z.string().min(1),
+    body: z.string().min(1),
+    cta: z.string().min(1),
+  }),
+})
+
+export const collections = { privacy, cv, experience, projects, skills, home, contact }

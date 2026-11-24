@@ -5,7 +5,7 @@ import { Resvg } from "@resvg/resvg-js"
 import satori, { type FontWeight } from "satori"
 import sharp from "sharp"
 import type { AstroIntegration } from "astro"
-import { home, og, person } from "../src/content/site"
+import { og, person } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/locales"
 import { siteUrl } from "../src/lib/seo"
 import { readThemeTokens, type ThemeTokens } from "./theme"
@@ -34,6 +34,17 @@ const image = (src: string, size: number, style: Style): Node => ({
   type: "img",
   props: { src, width: size, height: size, style },
 })
+
+function readHomeTitle(root: string, lang: Locale): string {
+  const raw = fs.readFileSync(path.join(root, "src/content/pages/home", `${lang}.md`), "utf8")
+  const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw)?.[1] ?? ""
+  const m = /^title:\s*(.+)$/m.exec(fm)
+  if (!m?.[1]) throw new Error("missing home title")
+  let v = m[1].trim()
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))
+    v = v.slice(1, -1)
+  return v
+}
 
 function oklch(value: string): [number, number, number] {
   const match = /oklch\(\s*([\d.]+)(%)?\s+([\d.]+)\s+([\d.]+)\s*\)/.exec(value)
@@ -248,7 +259,7 @@ export function ogImages(): AstroIntegration {
 
         for (const lang of locales) {
           const png = await render({
-            title: home.title[lang],
+            title: readHomeTitle(root, lang),
             subtitle: og.subtitle[lang],
             domain: new URL(siteUrl).host,
             portrait,

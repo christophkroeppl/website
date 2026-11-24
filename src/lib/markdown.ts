@@ -1,11 +1,10 @@
 import { getEntry } from "astro:content"
-import { about, contact, home, homeSections, person, proof } from "../content/site"
-import { pick } from "../content/types"
+import { person } from "../content/site"
 import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
-import { pickById, projectsFor, rolesFor, skillsFor } from "./content"
+import { contactFor, homeFor, pickById, projectsFor, rolesFor, skillsFor } from "./content"
 import { formatPageTitle, inLanguage, pageDescription } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
@@ -47,6 +46,10 @@ async function homeBody(lang: Locale): Promise<string> {
   const projects = await projectsFor(lang)
   const roles = await rolesFor(lang)
   const skills = await skillsFor(lang)
+  const entry = await homeFor(lang)
+  const home = entry.data
+  const contact = (await contactFor(lang)).data
+  const paragraphs = stripFrontmatter(entry.body ?? "").split(/\n\s*\n/)
   const latest = roles[0]
   if (!latest) throw new Error("No roles to render")
 
@@ -54,17 +57,17 @@ async function homeBody(lang: Locale): Promise<string> {
     lang,
     page: "home",
     title: person.name,
-    headingText: pick(lang, home.title),
+    headingText: home.title,
     sections: [
-      `> ${inline(pick(lang, home.lead))}`,
+      `> ${inline(home.lead)}`,
       "",
-      inline(pick(lang, home.secondary)),
+      inline(home.secondary),
       "",
       `## ${t("md.stats")}`,
       "",
-      ...proof.map((item) => `- **${item.value}** — ${inline(pick(lang, item.label))}`),
+      ...home.proof.map((item) => `- **${item.value}** — ${inline(item.label)}`),
       "",
-      `## ${pick(lang, homeSections.workTitle)}`,
+      `## ${home.workTitle}`,
       "",
       ...projects.map(
         (project) =>
@@ -82,22 +85,23 @@ async function homeBody(lang: Locale): Promise<string> {
           `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
       ),
       "",
-      `## ${pick(lang, about.title)}`,
+      `## ${home.aboutTitle}`,
       "",
-      ...about.paragraphs.flatMap((paragraph) => [inline(pick(lang, paragraph)), ""]),
-      `> ${inline(pick(lang, about.quote))}`,
+      ...paragraphs.flatMap((paragraph) => [inline(paragraph), ""]),
+      `> ${inline(home.aboutQuote)}`,
       "",
       `## ${t("nav.contact")}`,
       "",
-      `${inline(pick(lang, contact.title))} ${inline(pick(lang, contact.body))}`,
+      `${inline(contact.title)} ${inline(contact.body)}`,
       "",
-      contactLink(lang),
+      await contactLink(lang),
     ],
   })
 }
 
-function contactLink(lang: Locale): string {
-  return `[${pick(lang, contact.cta)}](${absoluteUrl(pathFor("contact", lang))})`
+async function contactLink(lang: Locale): Promise<string> {
+  const contact = (await contactFor(lang)).data
+  return `[${contact.cta}](${absoluteUrl(pathFor("contact", lang))})`
 }
 
 async function projectsBody(lang: Locale): Promise<string> {
@@ -144,6 +148,7 @@ async function cvBody(lang: Locale): Promise<string> {
   const skills = await skillsFor(lang)
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
+  const contact = (await contactFor(lang)).data
 
   return document({
     lang,
@@ -213,9 +218,9 @@ async function cvBody(lang: Locale): Promise<string> {
       "",
       `## ${t("nav.contact")}`,
       "",
-      `${inline(pick(lang, contact.title))} ${inline(pick(lang, contact.body))}`,
+      `${inline(contact.title)} ${inline(contact.body)}`,
       "",
-      contactLink(lang),
+      await contactLink(lang),
     ],
   })
 }
@@ -233,7 +238,7 @@ async function privacyBody(lang: Locale): Promise<string> {
   })
 }
 
-function contactBody(lang: Locale): string {
+async function contactBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const name = import.meta.env.PUBLIC_CONTACT_NAME
 
@@ -248,7 +253,7 @@ function contactBody(lang: Locale): string {
       `[§ 25 Mediengesetz (RIS)](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25)`,
       "",
       ...(name ? [`## ${t("impressum.owner")}`, "", name, ""] : []),
-      contactLink(lang),
+      await contactLink(lang),
     ],
   })
 }

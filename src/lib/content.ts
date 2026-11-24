@@ -7,7 +7,21 @@ export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
   return entry
 }
 
-export function renderEntry(entry: CollectionEntry<"cv"> | CollectionEntry<"projects">) {
+export async function homeFor(lang: Locale): Promise<CollectionEntry<"home">> {
+  const entry = await getEntry("home", lang)
+  if (!entry) throw new Error(`No home content for locale "${lang}"`)
+  return entry
+}
+
+export async function contactFor(lang: Locale): Promise<CollectionEntry<"contact">> {
+  const entry = await getEntry("contact", lang)
+  if (!entry) throw new Error(`No contact content for locale "${lang}"`)
+  return entry
+}
+
+export function renderEntry(
+  entry: CollectionEntry<"cv"> | CollectionEntry<"home"> | CollectionEntry<"projects">,
+) {
   return render(entry)
 }
 

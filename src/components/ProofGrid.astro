@@ -1,26 +1,20 @@
 ---
-import { proof } from "../content/site"
-import { pick } from "../content/types"
-import type { Locale } from "../i18n/locales"
-
 interface Props {
-  lang: Locale
+  items: { value: string; label: string }[]
 }
 
-const { lang } = Astro.props
+const { items } = Astro.props
 ---
 
 <dl class="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-primary/25 pt-8 sm:grid-cols-4">
-  {proof.map((item) => (
+  {items.map((item) => (
     <div>
-      <dt class="sr-only">{pick(lang, item.label)}</dt>
+      <dt class="sr-only">{item.label}</dt>
       <dd>
         <span class="block font-mono text-3xl font-medium tracking-tight text-primary sm:text-4xl">
           {item.value}
         </span>
-        <span class="mt-2 block text-xs leading-relaxed text-base-content/65">
-          {pick(lang, item.label)}
-        </span>
+        <span class="mt-2 block text-xs leading-relaxed text-base-content/65">{item.label}</span>
       </dd>
     </div>
   ))}
