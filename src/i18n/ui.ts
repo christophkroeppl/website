@@ -45,6 +45,9 @@ const de = {
   "cv.note":
     "Diese Seite zeigt den PM-/Team-Lead-Zuschnitt. Zugeschnittene Versionen für Odoo-Beratung, Start-ups, regulierte Umgebungen und Vertrieb gibt es auf Anfrage.",
   "a11y.skip": "Zum Inhalt springen",
+  "notFound.title": "Seite nicht gefunden",
+  "notFound.body": "Die angeforderte Seite existiert nicht oder wurde verschoben.",
+  "notFound.back": "Zur Startseite",
 } as const
 
 export type TranslationKey = keyof typeof de
@@ -97,6 +100,9 @@ export const ui = {
     "cv.note":
       "This page shows the PM/team-lead cut. Tailored versions for Odoo consulting, startups, regulated environments and sales are available on request.",
     "a11y.skip": "Skip to content",
+    "notFound.title": "Page not found",
+    "notFound.body": "The requested page does not exist or has moved.",
+    "notFound.back": "Back to home",
   },
 } as const satisfies Record<Locale, Record<TranslationKey, string>>
 
