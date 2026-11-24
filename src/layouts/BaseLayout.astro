@@ -7,15 +7,24 @@ import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
 import { inLanguage, pageDescription, siteUrl } from "../lib/seo"
+import {
+  breadcrumbNode,
+  graph,
+  personNode,
+  webPageNode,
+  websiteNode,
+  type Node,
+} from "../lib/schema"
 
 interface Props {
   title?: string
   description?: string
   image?: string
   noindex?: boolean
+  schema?: Node[]
 }
 
-const { title = person.name, description, image, noindex = false } = Astro.props
+const { title = person.name, description, image, noindex = false, schema = [] } = Astro.props
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
 const page = activePage(Astro.url.pathname)
@@ -33,6 +42,25 @@ const alternates = noindex
       href: new URL(alternate.path, site).href,
     }))
 const xDefault = alternates.find((alternate) => alternate.hreflang === inLanguage("de"))?.href
+const structuredData = noindex
+  ? undefined
+  : graph([
+      personNode(lang),
+      websiteNode(),
+      ...(page
+        ? [
+            webPageNode({
+              lang,
+              page,
+              title: pageTitle,
+              description: metaDescription,
+              url: canonical,
+            }),
+            breadcrumbNode({ lang, page, title, url: canonical }),
+          ]
+        : []),
+      ...schema,
+    ])
 const ogLocale = lang === "de" ? "de_AT" : "en_US"
 const ogLocaleAlternate = lang === "de" ? "en_US" : "de_AT"
 const nameParts = page === "home" ? person.name.split(" ") : []
@@ -73,6 +101,12 @@ const lastName = nameParts.slice(1).join(" ")
     {metaDescription && <meta name="twitter:description" content={metaDescription} />}
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
+    {structuredData && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(structuredData).replace(/</g, "\\u003c")}
+      />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="preload"

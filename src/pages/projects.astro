@@ -3,11 +3,19 @@ import BaseLayout from "../layouts/BaseLayout.astro"
 import ProjectsPage from "../components/pages/ProjectsPage.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { useTranslations } from "../i18n/ui"
+import { pathFor } from "../i18n/routes"
+import { projectsFor } from "../lib/content"
+import { itemListNode, projectNode } from "../lib/schema"
+import { absoluteUrl } from "../lib/urls"
 
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
+const url = absoluteUrl(pathFor("projects", lang))
+const projects = await projectsFor(lang)
+const nodes = projects.map((project) => projectNode(project.data, url))
+const schema = [...nodes, itemListNode(nodes, url)]
 ---
 
-<BaseLayout title={t("projects.title")}>
+<BaseLayout title={t("projects.title")} schema={schema}>
   <ProjectsPage lang={lang} />
 </BaseLayout>
