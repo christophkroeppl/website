@@ -30,6 +30,9 @@ const de = {
   "contact.reveal": "Kontaktdaten anzeigen",
   "contact.privacyNote": "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben gemäß der",
   "contact.privacyLink": "Datenschutzerklärung",
+  "projects.title": "Projekte",
+  "projects.intro":
+    "Open Source, Kundenarbeit und die Werkzeuge, die dabei entstanden sind. Die Auswahl ist klein, weil ich lieber wenige Dinge zu Ende bringe.",
   "cv.title": "Lebenslauf",
   "cv.profile": "Profil",
   "cv.experience": "Berufserfahrung",
@@ -79,6 +82,9 @@ export const ui = {
     "contact.privacyNote":
       "By submitting, you agree to the processing of your data as described in the",
     "contact.privacyLink": "Privacy Policy",
+    "projects.title": "Projects",
+    "projects.intro":
+      "Open source, client work and the tools that came out of it. The selection is small because I prefer finishing fewer things.",
     "cv.title": "CV",
     "cv.profile": "Profile",
     "cv.experience": "Professional experience",

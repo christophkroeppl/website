@@ -4,6 +4,7 @@ import localizedRoutes from "astro-localized-routes"
 import tailwindcss from "@tailwindcss/vite"
 import { defaultLocale, locales } from "./src/i18n/locales.ts"
 import { localizedRoutes as routes } from "./src/i18n/routes.ts"
+import { projectMedia } from "./integrations/project-media"
 import { revealOutlines } from "./integrations/reveals"
 import { links } from "./integrations/links"
 
@@ -18,6 +19,7 @@ export default defineConfig({
       routes,
       removeOriginalPageRoutes: true,
     }),
+    projectMedia(),
     revealOutlines(),
     links(),
   ],

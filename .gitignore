@@ -11,3 +11,4 @@ dist/
 .astro/
 tsconfig.astro.json
 src/generated/
+public/generated/

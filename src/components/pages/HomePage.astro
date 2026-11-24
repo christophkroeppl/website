@@ -4,7 +4,6 @@ import ProofGrid from "../ProofGrid.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactModal from "../ContactModal.astro"
 import { about, contact, home as homeContent } from "../../content/site"
-import { linkHref } from "../../links/urls"
 import { pick } from "../../content/types"
 import { pathFor, type Locale } from "../../i18n/routes"
 
@@ -13,7 +12,6 @@ interface Props {
 }
 
 const { lang } = Astro.props
-const github = linkHref("github")
 ---
 
 <section class="border-b border-base-300/60">
@@ -35,11 +33,9 @@ const github = linkHref("github")
         <button type="button" data-contact-open class="btn btn-primary">
           {pick(lang, contact.cta)}
         </button>
-        {github && (
-          <a class="btn btn-ghost" href={github} target="_blank" rel="noopener noreferrer">
-            GitHub ↗
-          </a>
-        )}
+        <a class="btn btn-ghost" href={pathFor("projects", lang)}>
+          {pick(lang, homeContent.projectsCta)}
+        </a>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import { getEntry, render, type CollectionEntry } from "astro:content"
+import { getCollection, getEntry, render, type CollectionEntry } from "astro:content"
 import type { Locale } from "../i18n/locales"
 
 export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
@@ -7,8 +7,15 @@ export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
   return entry
 }
 
-export function renderEntry(entry: CollectionEntry<"cv">) {
+export function renderEntry(entry: CollectionEntry<"cv"> | CollectionEntry<"projects">) {
   return render(entry)
+}
+
+export async function projectsFor(lang: Locale): Promise<CollectionEntry<"projects">[]> {
+  const entries = await getCollection("projects")
+  return entries
+    .filter((entry) => entry.data.locale === lang)
+    .toSorted((a, b) => a.data.order - b.data.order)
 }
 
 export function pickById<T extends { id: string }>(items: T[], ids: string[], source: string): T[] {

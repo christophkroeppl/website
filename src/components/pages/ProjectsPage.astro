@@ -1,0 +1,38 @@
+---
+import PageHeader from "../PageHeader.astro"
+import CaseStudy from "../CaseStudy.astro"
+import ContactCta from "../ContactCta.astro"
+import ContactModal from "../ContactModal.astro"
+import { projectsFor, renderEntry } from "../../lib/content"
+import { type Locale } from "../../i18n/routes"
+import { useTranslations } from "../../i18n/ui"
+
+interface Props {
+  lang: Locale
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const entries = await projectsFor(lang)
+const projects = await Promise.all(
+  entries.map(async (entry) => ({ entry, ...(await renderEntry(entry)) })),
+)
+---
+
+<PageHeader
+  eyebrow={lang === "de" ? "Open Source & Kundenarbeit" : "Open source & client work"}
+  title={t("projects.title")}
+  lead={t("projects.intro")}
+/>
+
+<div class="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6 sm:py-20">
+  {projects.map(({ entry, Content }, index) => (
+    <CaseStudy project={entry.data} index={index + 1}>
+      <Content />
+    </CaseStudy>
+  ))}
+</div>
+
+<ContactCta />
+
+<ContactModal lang={lang} trigger={false} />

@@ -82,6 +82,10 @@
     @apply font-mono text-[0.72rem] uppercase tracking-[0.2em] text-base-content/65;
   }
 
+  .link-quiet {
+    @apply text-base-content/65 underline decoration-base-300 decoration-1 underline-offset-4 transition-colors hover:text-base-content hover:decoration-base-content/40;
+  }
+
   .legal h2 {
     @apply mt-8 mb-2 text-lg font-semibold;
   }

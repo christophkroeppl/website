@@ -35,4 +35,55 @@ const cv = defineCollection({
   }),
 })
 
-export const collections = { privacy, cv }
+const projectArtifact = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("html"),
+    src: z.string().min(1),
+    title: z.string().min(1),
+    aspect: z.string().default("16/10"),
+  }),
+  z.object({
+    kind: z.literal("compare"),
+    before: z.string().min(1),
+    after: z.string().min(1),
+    beforeLabel: z.string().min(1),
+    afterLabel: z.string().min(1),
+    caption: z.string().min(1),
+    aspect: z.string().default("16/10"),
+    orientation: z.enum(["horizontal", "vertical"]).default("horizontal"),
+  }),
+])
+
+const projectSchema = z.object({
+  locale,
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  order: z.number().int().positive(),
+  name: z.string().min(1),
+  tagline: z.string().min(1),
+  summary: z.string().min(1),
+  stack: z.array(z.string().min(1)).min(1),
+  status: z.string().min(1),
+  links: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        href: z.url(),
+      }),
+    )
+    .min(1),
+  highlights: z.array(z.string().min(1)).min(1),
+  artifact: projectArtifact,
+})
+
+const projects = defineCollection({
+  loader: glob({
+    pattern: "projects/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: projectSchema,
+})
+
+export type ProjectData = z.infer<typeof projectSchema>
+
+export const collections = { privacy, cv, projects }

@@ -1,0 +1,62 @@
+---
+interface Props {
+  src: string
+  title: string
+  aspect: string
+  class?: string
+}
+
+const { src, title, aspect, class: className } = Astro.props
+---
+
+<div
+  class:list={[
+    "relative overflow-hidden rounded-box border border-base-300/70 bg-base-200/40",
+    className,
+  ]}
+  style={`aspect-ratio:${aspect}`}
+>
+  <iframe
+    data-src={src}
+    title={title}
+    class="absolute inset-0 h-full w-full"
+    loading="lazy"
+    sandbox="allow-scripts"
+  ></iframe>
+  <noscript>
+    <a
+      href={src}
+      class="absolute inset-0 grid place-items-center bg-base-200/40 text-sm font-medium text-base-content/70 underline underline-offset-4"
+    >
+      {title}
+    </a>
+  </noscript>
+</div>
+
+<script>
+  const load = (frame: HTMLIFrameElement) => {
+    const src = frame.dataset.src
+    if (!src) return
+    frame.src = src
+    delete frame.dataset.src
+  }
+
+  const frames = [...document.querySelectorAll<HTMLIFrameElement>("iframe[data-src]")]
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          load(entry.target as HTMLIFrameElement)
+          observer.unobserve(entry.target)
+        }
+      },
+      { rootMargin: "600px 0px" },
+    )
+
+    for (const frame of frames) observer.observe(frame)
+  } else {
+    for (const frame of frames) load(frame)
+  }
+</script>

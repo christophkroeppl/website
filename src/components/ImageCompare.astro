@@ -1,0 +1,182 @@
+---
+interface Props {
+  before: string
+  after: string
+  beforeLabel: string
+  afterLabel: string
+  caption: string
+  aspect?: string
+  orientation?: "horizontal" | "vertical"
+}
+
+const {
+  before,
+  after,
+  beforeLabel,
+  afterLabel,
+  caption,
+  aspect = "16/10",
+  orientation = "horizontal",
+} = Astro.props
+
+const vertical = orientation === "vertical"
+---
+
+<figure>
+  <div
+    class:list={[
+      "compare relative overflow-hidden rounded-box border border-base-300/70 bg-base-100",
+      vertical && "compare-vertical",
+    ]}
+    style={`aspect-ratio:${aspect}`}
+    data-compare
+    data-orientation={orientation}
+  >
+    <img
+      src={before}
+      alt={`${beforeLabel} Go usage screenshot`}
+      class="absolute inset-0 size-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+    <img
+      src={after}
+      alt={`${afterLabel} Go usage screenshot`}
+      class="compare-after absolute inset-0 size-full object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+    <span
+      class:list={[
+        "absolute rounded-full bg-base-100/90 px-2 py-1 text-xs font-medium text-base-content/70 shadow-sm",
+        "left-3 top-3",
+      ]}
+    >
+      {beforeLabel}
+    </span>
+    <span
+      class:list={[
+        "absolute rounded-full bg-base-100/90 px-2 py-1 text-xs font-medium text-base-content/70 shadow-sm",
+        vertical ? "bottom-3 left-3" : "right-3 top-3",
+      ]}
+    >
+      {afterLabel}
+    </span>
+
+    {vertical ? (
+      <>
+        <div class="absolute inset-0 z-20 cursor-ns-resize touch-none" data-compare-surface></div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          step="1"
+          aria-label={`Compare ${beforeLabel} and ${afterLabel}`}
+          aria-orientation="vertical"
+          class="sr-only"
+          data-compare-range
+        />
+        <span
+          class="absolute inset-x-0 z-10 h-0.5 -translate-y-1/2 bg-base-100 shadow-[0_0_0_1px_rgba(0,0,0,0.25)]"
+          style="top:50%"
+          data-compare-divider
+          aria-hidden="true"
+        >
+          <span class="absolute left-1/2 top-1/2 grid size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 text-sm text-base-content shadow">
+            ↕
+          </span>
+        </span>
+      </>
+    ) : (
+      <>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="50"
+          step="1"
+          aria-label={`Compare ${beforeLabel} and ${afterLabel}`}
+          aria-orientation="horizontal"
+          class="absolute inset-0 z-20 h-full w-full cursor-ew-resize opacity-0"
+          data-compare-range
+        />
+        <span
+          class="absolute inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-base-100 shadow-[0_0_0_1px_rgba(0,0,0,0.25)]"
+          style="left:50%"
+          data-compare-divider
+          aria-hidden="true"
+        >
+          <span class="absolute left-1/2 top-1/2 grid size-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 text-sm text-base-content shadow">
+            ↔
+          </span>
+        </span>
+      </>
+    )}
+  </div>
+  <figcaption class="mt-3 text-xs text-base-content/50">{caption}</figcaption>
+</figure>
+
+<style>
+  .compare-after {
+    clip-path: inset(0 0 0 var(--compare, 50%));
+  }
+
+  .compare-vertical .compare-after {
+    clip-path: inset(var(--compare, 50%) 0 0 0);
+  }
+
+  .compare:has(input:focus-visible) {
+    outline: 2px solid var(--color-base-content);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-compare]")) {
+    const range = root.querySelector<HTMLInputElement>("[data-compare-range]")
+    const divider = root.querySelector<HTMLElement>("[data-compare-divider]")
+    if (!range) continue
+
+    const vertical = root.dataset.orientation === "vertical"
+
+    const update = () => {
+      const value = `${range.value}%`
+      root.style.setProperty("--compare", value)
+      if (divider) divider.style[vertical ? "top" : "left"] = value
+      range.setAttribute("aria-valuenow", range.value)
+    }
+
+    const setFromPointer = (event: PointerEvent) => {
+      const rect = root.getBoundingClientRect()
+      const ratio = vertical
+        ? (event.clientY - rect.top) / rect.height
+        : (event.clientX - rect.left) / rect.width
+      range.value = String(Math.round(clamp(ratio * 100, 0, 100)))
+      update()
+    }
+
+    const surface = root.querySelector<HTMLElement>("[data-compare-surface]")
+    surface?.addEventListener("pointerdown", (event) => {
+      surface.setPointerCapture(event.pointerId)
+      setFromPointer(event)
+    })
+    surface?.addEventListener("pointermove", (event) => {
+      if (event.buttons) setFromPointer(event)
+    })
+
+    range.addEventListener("input", update)
+    range.addEventListener("keydown", (event) => {
+      if (!vertical) return
+      const delta = event.key === "ArrowUp" ? 5 : event.key === "ArrowDown" ? -5 : 0
+      if (!delta) return
+      event.preventDefault()
+      range.value = String(clamp(Number(range.value) + delta, 0, 100))
+      update()
+    })
+
+    update()
+  }
+</script>
