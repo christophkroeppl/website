@@ -61,19 +61,20 @@ const { projects, lang, basePath, label } = Astro.props
 </div>
 
 <script>
-  import EmblaCarousel from "embla-carousel"
-
   const mobile = window.matchMedia("(max-width: 639px)")
   const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
-  let carousel: ReturnType<typeof EmblaCarousel> | undefined
+  let carousel: import("embla-carousel").EmblaCarouselType | undefined
 
-  const sync = () => {
+  const sync = async () => {
     if (mobile.matches && viewport && !carousel) {
-      carousel = EmblaCarousel(viewport, {
-        align: "center",
-        containScroll: false,
-        loop: true,
-      })
+      const { default: EmblaCarousel } = await import("embla-carousel")
+      if (mobile.matches && viewport && !carousel) {
+        carousel = EmblaCarousel(viewport, {
+          align: "center",
+          containScroll: false,
+          loop: true,
+        })
+      }
     } else if (!mobile.matches && carousel) {
       carousel.destroy()
       carousel = undefined
