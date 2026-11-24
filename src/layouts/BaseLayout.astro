@@ -64,6 +64,7 @@ const structuredData = noindex
     ])
 const markdownAlternate =
   !noindex && page ? new URL(markdownPath(lang, page), site).href : undefined
+const llmsPath = lang === "en" ? "/en/llms.txt" : "/llms.txt"
 const ogLocale = lang === "de" ? "de_AT" : "en_US"
 const ogLocaleAlternate = lang === "de" ? "en_US" : "de_AT"
 const nameParts = page === "home" ? person.name.split(" ") : []
@@ -111,6 +112,10 @@ const lastName = nameParts.slice(1).join(" ")
         set:html={JSON.stringify(structuredData).replace(/</g, "\\u003c")}
       />
     )}
+    {!noindex && (
+      <link rel="sitemap" type="application/xml" href={new URL("/sitemap.xml", site).href} />
+    )}
+    {!noindex && <link rel="describedby" type="text/plain" href={new URL(llmsPath, site).href} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="preload"
