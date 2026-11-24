@@ -2,19 +2,81 @@
 import "../styles/global.css"
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
-import { getLocale } from "virtual:astro-localized-routes"
+import { getAlternates, getLocale } from "virtual:astro-localized-routes"
+import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
+import { person } from "../content/site"
+import { inLanguage, pageDescription, siteUrl } from "../lib/seo"
 
+interface Props {
+  title?: string
+  description?: string
+  image?: string
+  noindex?: boolean
+}
+
+const { title = person.name, description, image, noindex = false } = Astro.props
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
+const page = activePage(Astro.url.pathname)
+const site = Astro.site ?? new URL(siteUrl)
+const canonical = new URL(Astro.url.pathname, site).href
+const metaDescription = description ?? (page ? pageDescription(lang, page) : "")
+const pageTitle = title === person.name ? title : `${title} — ${person.name}`
+const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
+const ogImage = new URL(image ?? brandImage, site).href
+const ogImageAlt = image
+  ? pageTitle
+  : lang === "de"
+    ? `${person.name} — IT-Projektmanager & Odoo ERP`
+    : `${person.name} — IT project manager & Odoo ERP`
+const alternates = noindex
+  ? []
+  : getAlternates(Astro).map((alternate) => ({
+      hreflang: inLanguage(alternate.locale),
+      href: new URL(alternate.path, site).href,
+    }))
+const xDefault = alternates.find((alternate) => alternate.hreflang === inLanguage("de"))?.href
+const ogLocale = lang === "de" ? "de_AT" : "en_US"
+const ogLocaleAlternate = lang === "de" ? "en_US" : "de_AT"
+const nameParts = page === "home" ? person.name.split(" ") : []
+const firstName = nameParts[0] ?? ""
+const lastName = nameParts.slice(1).join(" ")
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="paper">
+<html lang={inLanguage(lang)} data-theme="paper">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{Astro.props.title ?? "Website"}</title>
+    <title>{pageTitle}</title>
+    {metaDescription && <meta name="description" content={metaDescription} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {alternates.map((alternate) => (
+      <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+    ))}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+    <meta property="og:type" content={page === "home" ? "profile" : "website"} />
+    <meta property="og:title" content={pageTitle} />
+    {metaDescription && <meta property="og:description" content={metaDescription} />}
+    {!noindex && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    {!image && <meta property="og:image:width" content="1200" />}
+    {!image && <meta property="og:image:height" content="630" />}
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:site_name" content={person.name} />
+    <meta property="og:locale" content={ogLocale} />
+    {page === "home" && <meta property="profile:first_name" content={firstName} />}
+    {page === "home" && <meta property="profile:last_name" content={lastName} />}
+    {!noindex && alternates.length > 0 && (
+      <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    {metaDescription && <meta name="twitter:description" content={metaDescription} />}
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link
       rel="preload"

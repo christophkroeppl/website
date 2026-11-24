@@ -1,6 +1,7 @@
 ---
 import { getAlternates, getLocale } from "virtual:astro-localized-routes"
 import { languages } from "../i18n/locales"
+import { inLanguage } from "../lib/seo"
 import { useTranslations } from "../i18n/ui"
 
 const locale = getLocale(Astro)
@@ -15,7 +16,7 @@ const linkClass =
 {alternates.length === 1 ? (
   <a
     href={alternates[0].path}
-    hreflang={alternates[0].locale}
+    hreflang={inLanguage(alternates[0].locale)}
     lang={alternates[0].locale}
     title={languages[alternates[0].locale]}
     data-astro-prefetch="false"
@@ -42,7 +43,7 @@ const linkClass =
     {alternates.map((alternate) => (
       <a
         href={alternate.path}
-        hreflang={alternate.locale}
+        hreflang={inLanguage(alternate.locale)}
         lang={alternate.locale}
         title={languages[alternate.locale]}
         data-astro-prefetch="false"

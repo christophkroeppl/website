@@ -12,6 +12,16 @@ export const pagePaths = {
 
 export type PageId = keyof typeof pagePaths
 
+export const routePage = {
+  "/": "home",
+  "/contact": "contact",
+  "/cv": "cv",
+  "/projects": "projects",
+  "/privacy": "privacy",
+} as const satisfies Record<RouteKey, PageId>
+
+export type RouteKey = keyof typeof localizedRoutes
+
 export const localizedRoutes = {
   "/": { de: "/", en: "/" },
   "/contact": { de: "/impressum", en: "/contact" },
@@ -22,4 +32,11 @@ export const localizedRoutes = {
 
 export function pathFor(page: PageId, lang: Locale): string {
   return pagePaths[page][lang]
+}
+
+export function activePage(pathname: string): PageId | undefined {
+  const normalized = pathname.endsWith("/") ? pathname : `${pathname}/`
+  return (Object.keys(pagePaths) as PageId[]).find(
+    (page) => pagePaths[page].de === normalized || pagePaths[page].en === normalized,
+  )
 }

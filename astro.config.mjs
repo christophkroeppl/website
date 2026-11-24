@@ -7,8 +7,10 @@ import { localizedRoutes as routes } from "./src/i18n/routes.ts"
 import { projectMedia } from "./integrations/project-media"
 import { revealOutlines } from "./integrations/reveals"
 import { links } from "./integrations/links"
+import { siteUrl } from "./src/lib/seo"
 
 export default defineConfig({
+  site: siteUrl,
   output: "server",
   trailingSlash: "always",
   adapter: cloudflare(),
