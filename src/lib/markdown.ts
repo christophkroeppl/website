@@ -119,23 +119,26 @@ async function projectsBody(lang: Locale): Promise<string> {
     sections: [
       inline(t("projects.intro")),
       "",
-      ...projects.flatMap(({ data, body: source }) => [
-        `## ${inline(data.name)}`,
-        "",
-        inline(data.tagline),
-        "",
-        inline(data.summary),
-        "",
-        ...(stripFrontmatter(source ?? "") ? [stripFrontmatter(source ?? "")] : []),
-        bullets(data.highlights),
-        "",
-        `**${t("md.stack")}:** ${data.stack.map(inline).join(", ")}`,
-        "",
-        `**${t("md.status")}:** ${inline(data.status)}`,
-        "",
-        `**${t("md.links")}:** ${data.links.map((link) => `[${link.label}](${link.href})`).join(", ")}`,
-        "",
-      ]),
+      ...projects.flatMap(({ data, body: source }) => {
+        const body = stripFrontmatter(source ?? "")
+        return [
+          `## ${inline(data.name)}`,
+          "",
+          inline(data.tagline),
+          "",
+          inline(data.summary),
+          "",
+          ...(body ? [body] : []),
+          bullets(data.highlights),
+          "",
+          `**${t("md.stack")}:** ${data.stack.map(inline).join(", ")}`,
+          "",
+          `**${t("md.status")}:** ${inline(data.status)}`,
+          "",
+          `**${t("md.links")}:** ${data.links.map((link) => `[${link.label}](${link.href})`).join(", ")}`,
+          "",
+        ]
+      }),
     ],
   })
 }

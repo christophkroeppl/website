@@ -6,11 +6,9 @@ import type { Locale } from "../i18n/locales"
 interface Props {
   groups: SkillGroup[]
   lang: Locale
-  compact?: boolean
 }
 
-const { groups, lang, compact = false } = Astro.props
-const visible = compact ? groups.filter((group) => group.id !== "bitcoin") : groups
+const { groups, lang } = Astro.props
 
 const tones = [
   "border-series-1/25 bg-series-1/10 text-series-1",
@@ -25,7 +23,7 @@ const toneFor = (index: number) => tones[index % tones.length]
 ---
 
 <div class="grid gap-4 sm:grid-cols-2">
-  {visible.map((group, index) => (
+  {groups.map((group, index) => (
     <div class:list={["rounded-box border p-4", toneFor(index)]}>
       <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em]">
         {pick(lang, group.label)}
