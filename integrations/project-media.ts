@@ -6,7 +6,7 @@ import { readThemeTokens, type ThemeTokens } from "./theme"
 
 type ProjectMedia = {
   repo: string
-  branch?: "main" | "develop"
+  rev: string
   path: string
   dest: string
 }
@@ -14,22 +14,25 @@ type ProjectMedia = {
 const assets: ProjectMedia[] = [
   {
     repo: "christophkroeppl/bases-mcp",
+    rev: "3442b72bcc5c5512de6e558b3622a9e0fa31f4d5",
     path: "docs/architecture.html",
     dest: "public/generated/projects/bases-mcp.html",
   },
   {
     repo: "christophkroeppl/guarden",
-    branch: "develop",
+    rev: "ff49d0c3d89fa5b0437c2803dec3ee7e66b5a82a",
     path: "docs/architecture.html",
     dest: "public/generated/projects/guarden.html",
   },
   {
     repo: "christophkroeppl/oc-go-usage-display",
+    rev: "8bab88e3183c9941f3f9b34e9ce07ed78d21c046",
     path: "docs/compare/opencode.webp",
     dest: "public/generated/projects/oc-go/opencode.webp",
   },
   {
     repo: "christophkroeppl/oc-go-usage-display",
+    rev: "8bab88e3183c9941f3f9b34e9ce07ed78d21c046",
     path: "docs/compare/kilo.webp",
     dest: "public/generated/projects/oc-go/kilo.webp",
   },
@@ -92,31 +95,6 @@ ${buildThemeCss(tokens)}
     : `${style}${clean}`
 }
 
-async function branchExists(repo: string, branch: string): Promise<boolean | undefined> {
-  try {
-    const response = await fetch(`https://api.github.com/repos/${repo}/branches/${branch}`, {
-      headers: {
-        accept: "application/vnd.github+json",
-        "user-agent": "website-build",
-      },
-    })
-
-    if (response.ok) return true
-    if (response.status === 404) return false
-    return undefined
-  } catch {
-    return undefined
-  }
-}
-
-async function resolveBranch(media: ProjectMedia): Promise<"main" | "develop"> {
-  if (media.branch) return media.branch
-
-  const hasMain = await branchExists(media.repo, "main")
-  if (hasMain === false) return "develop"
-  return "main"
-}
-
 export function projectMedia(): AstroIntegration {
   return {
     name: "project-media",
@@ -128,55 +106,35 @@ export function projectMedia(): AstroIntegration {
         const theme = readThemeTokens(root)
 
         for (const media of assets) {
-          const branch = await resolveBranch(media)
-          const url = `https://raw.githubusercontent.com/${media.repo}/${branch}/${media.path}`
+          const url = `https://raw.githubusercontent.com/${media.repo}/${media.rev}/${media.path}`
           const target = path.join(root, media.dest)
 
+          let buffer: Buffer
           try {
             const response = await fetch(url, {
+              signal: AbortSignal.timeout(15000),
               headers: { "user-agent": "website-build" },
             })
 
-            if (response.status === 404) {
-              throw new Error(`Missing project media: ${url}`)
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
-            if (!response.ok) {
-              throw new Error(`Failed project media fetch: ${response.status} ${url}`)
-            }
-
-            const buffer = Buffer.from(await response.arrayBuffer())
-            if (buffer.length === 0) throw new Error(`Empty project media: ${url}`)
-            const body = media.dest.endsWith(".html")
-              ? Buffer.from(embedDiagram(buffer.toString("utf8"), theme))
-              : buffer
-
-            fs.mkdirSync(path.dirname(target), { recursive: true })
-            fs.writeFileSync(target, body)
-            logger.info(`Fetched ${media.repo}/${media.path} (${branch})`)
+            buffer = Buffer.from(await response.arrayBuffer())
+            if (buffer.length === 0) throw new Error("empty response")
           } catch (error) {
-            if (responseWas404(error)) throw error
-
-            if (fs.existsSync(target)) {
-              if (media.dest.endsWith(".html")) {
-                const cached = fs.readFileSync(target, "utf8")
-                fs.writeFileSync(target, embedDiagram(cached, theme))
-              }
-
-              logger.warn(
-                `Using cached ${media.dest}; ${error instanceof Error ? error.message : String(error)}`,
-              )
-              continue
-            }
-
-            throw error
+            throw new Error(
+              `Failed project media ${media.repo}/${media.path}@${media.rev}: ${error instanceof Error ? error.message : String(error)}`,
+            )
           }
+
+          const body = media.dest.endsWith(".html")
+            ? Buffer.from(embedDiagram(buffer.toString("utf8"), theme))
+            : buffer
+
+          fs.mkdirSync(path.dirname(target), { recursive: true })
+          fs.writeFileSync(target, body)
+          logger.info(`Fetched ${media.repo}/${media.path} (${media.rev})`)
         }
       },
     },
   }
-}
-
-function responseWas404(error: unknown): boolean {
-  return error instanceof Error && error.message.startsWith("Missing project media:")
 }
