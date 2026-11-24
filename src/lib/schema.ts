@@ -1,7 +1,9 @@
 import { links } from "../generated/links"
 import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
+import { languages as spokenLanguages, programmingLanguages, skillGroups } from "../content/skills"
 import { person } from "../content/site"
+import { pick } from "../content/types"
 import { pageDescription } from "./seo"
 import type { ProjectData } from "../content.config"
 import { inLanguage } from "./seo"
@@ -21,19 +23,6 @@ const pageType: Record<PageId, string> = {
   projects: "CollectionPage",
   privacy: "WebPage",
 }
-
-const programmingLanguages = new Set([
-  "Bash",
-  "C",
-  "Go",
-  "Groovy",
-  "JavaScript",
-  "Kotlin",
-  "Python",
-  "Rust",
-  "SQL",
-  "TypeScript",
-])
 
 const profileHosts = [
   "linkedin.com",
@@ -62,34 +51,6 @@ export function isProfile(href: string): boolean {
   return profileHosts.some((candidate) => host === candidate)
 }
 
-const jobTitle: Record<Locale, string> = {
-  de: "IT-Projektmanager und Team Lead",
-  en: "IT project manager and team lead",
-}
-
-const knowsAbout: Record<Locale, string[]> = {
-  de: [
-    "IT-Projektmanagement",
-    "Odoo ERP",
-    "TypeScript",
-    "Linux",
-    "Docker",
-    "Podman",
-    "Infrastruktur",
-    "Softwareentwicklung",
-  ],
-  en: [
-    "IT project management",
-    "Odoo ERP",
-    "TypeScript",
-    "Linux",
-    "Docker",
-    "Podman",
-    "Infrastructure",
-    "Software engineering",
-  ],
-}
-
 export function personNode(lang: Locale): Node {
   return {
     "@type": "Person",
@@ -97,12 +58,12 @@ export function personNode(lang: Locale): Node {
     name: person.name,
     url: absoluteUrl(pathFor("home", "de")),
     description: pageDescription(lang, "home"),
-    jobTitle: jobTitle[lang],
-    knowsAbout: knowsAbout[lang],
-    knowsLanguage: ["de", "en", "fr"],
+    jobTitle: pick(lang, person.jobTitle),
+    knowsAbout: skillGroups.map((group) => pick(lang, group.label)),
+    knowsLanguage: spokenLanguages.map((language) => language.code),
     address: {
       "@type": "PostalAddress",
-      addressLocality: lang === "de" ? "Wien" : "Vienna",
+      addressLocality: pick(lang, person.addressLocality),
       addressCountry: "AT",
     },
     sameAs: links.map((link) => link.href).filter(isProfile),

@@ -121,6 +121,19 @@ export const skillGroups: SkillGroup[] = [
   },
 ]
 
+export const programmingLanguages: Set<string> = new Set([
+  "Bash",
+  "C",
+  "Go",
+  "Groovy",
+  "JavaScript",
+  "Kotlin",
+  "Python",
+  "Rust",
+  "SQL",
+  "TypeScript",
+])
+
 export const education: { period: string; org: string; detail: Bilingual }[] = [
   {
     period: "09/2019 – 04/2021",
@@ -180,16 +193,19 @@ export const certifications: { period: string; detail: Bilingual }[] = [
   },
 ]
 
-export const languages: { name: Bilingual; level: Bilingual }[] = [
+export const languages: { code: "de" | "en" | "fr"; name: Bilingual; level: Bilingual }[] = [
   {
+    code: "de",
     name: { de: "Deutsch", en: "German" },
     level: { de: "Muttersprache", en: "Native" },
   },
   {
+    code: "en",
     name: { de: "Englisch", en: "English" },
     level: { de: "Fließend — C1, verhandlungssicher", en: "Fluent — C1, negotiation-fluent" },
   },
   {
+    code: "fr",
     name: { de: "Französisch", en: "French" },
     level: { de: "Grundkenntnisse", en: "Basic" },
   },

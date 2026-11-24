@@ -5,6 +5,14 @@ const tagesdosisLink =
 
 export const person = {
   name: "Christoph Kröppl",
+  jobTitle: {
+    de: "IT-Projektmanager und Team Lead",
+    en: "IT project manager and team lead",
+  } satisfies Bilingual,
+  addressLocality: {
+    de: "Wien",
+    en: "Vienna",
+  } satisfies Bilingual,
 }
 
 export const og = {

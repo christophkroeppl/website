@@ -10,6 +10,8 @@ import {
   websiteNode,
 } from "../src/lib/schema"
 import type { ProjectData } from "../src/content.config"
+import { languages, skillGroups } from "../src/content/skills"
+import { person } from "../src/content/site"
 import { links } from "../src/generated/links"
 import { pagePaths } from "../src/i18n/routes"
 import { siteUrl } from "../src/lib/seo"
@@ -88,8 +90,8 @@ describe("breadcrumbNode", () => {
     const items = node?.itemListElement as { position: number; item: string }[]
 
     expect(items.map((item) => item.position)).toEqual([1, 2])
-    expect(items[0].item).toBe(`${siteUrl}/en/`)
-    expect(items[1].item).toBe(url)
+    expect(items[0]?.item).toBe(`${siteUrl}/en/`)
+    expect(items[1]?.item).toBe(url)
   })
 })
 
@@ -153,10 +155,26 @@ describe("locale placement", () => {
 
     expect(de.jobTitle).not.toBe(en.jobTitle)
     expect(de.description).not.toBe(en.description)
-    expect((de.address as { addressLocality: string }).addressLocality).toBe("Wien")
-    expect((en.address as { addressLocality: string }).addressLocality).toBe("Vienna")
+    expect((de.address as { addressLocality: string }).addressLocality).toBe(
+      person.addressLocality.de,
+    )
+    expect((en.address as { addressLocality: string }).addressLocality).toBe(
+      person.addressLocality.en,
+    )
     expect(de.url).toBe(en.url)
     expect("image" in de).toBe(false)
+  })
+
+  it("derives knowledge fields from the content sources", () => {
+    const de = personNode("de")
+    const en = personNode("en")
+
+    expect(de.jobTitle).toBe(person.jobTitle.de)
+    expect(en.jobTitle).toBe(person.jobTitle.en)
+    expect(de.knowsAbout).toEqual(skillGroups.map((group) => group.label.de))
+    expect(en.knowsAbout).toEqual(skillGroups.map((group) => group.label.en))
+    expect(de.knowsLanguage).toEqual(languages.map((language) => language.code))
+    expect(en.knowsLanguage).toEqual(de.knowsLanguage)
   })
 })
 
@@ -247,6 +265,12 @@ describe("projectNode links", () => {
     expect(node.programmingLanguage).toEqual(["Rust"])
   })
 
+  it("accepts a language declared in the skills content", () => {
+    const node = projectNode({ ...project, stack: ["Bash", "MCP"] }, url)
+
+    expect(node.programmingLanguage).toEqual(["Bash"])
+  })
+
   it("omits programmingLanguage when the stack has no language", () => {
     const node = projectNode({ ...project, stack: ["MCP", "stdio"] }, url)
 
@@ -261,7 +285,7 @@ describe("graph dedupe", () => {
     const result = graph([first, second]) as { "@graph": { name: string }[] }
 
     expect(result["@graph"]).toHaveLength(1)
-    expect(result["@graph"][0].name).toBe("new")
+    expect(result["@graph"][0]?.name).toBe("new")
   })
 
   it("keeps anonymous nodes", () => {
