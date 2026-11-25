@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [cloudflare()],
   fmt: {
     astro: true,
-    ignorePatterns: [".agents/**", "src/generated/**"],
+    ignorePatterns: [".agents/**", "src/generated/**", "docs/**/*.html"],
     overrides: [
       {
         files: [".vscode/extensions.json"],

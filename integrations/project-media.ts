@@ -36,6 +36,12 @@ const assets: ProjectMedia[] = [
     path: "docs/compare/kilo.webp",
     dest: "public/generated/projects/oc-go/kilo.webp",
   },
+  {
+    repo: "christophkroeppl/website",
+    rev: "bd1454bda11dfe5eb35c2210b6e3539d63b205a0",
+    path: "docs/architecture.html",
+    dest: "public/generated/projects/kroeppl-ch.html",
+  },
 ]
 
 const STYLE_ID = "project-media-embed"
