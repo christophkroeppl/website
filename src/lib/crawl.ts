@@ -1,5 +1,6 @@
 import { defaultLocale, locales } from "../i18n/locales"
 import { pagePaths, type PageId } from "../i18n/routes"
+import { buildTime } from "./build-time"
 import { inLanguage, siteUrl } from "./seo"
 import { absoluteUrl } from "./urls"
 
@@ -41,6 +42,7 @@ export function sitemapXml(origin: URL | string = siteUrl): string {
     return [pair.de, pair.en].map(
       (path) => `  <url>
     <loc>${xmlEscape(absoluteUrl(path, origin))}</loc>
+    <lastmod>${buildTime}</lastmod>
 ${alternates}
   </url>`,
     )

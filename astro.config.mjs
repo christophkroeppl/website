@@ -32,6 +32,7 @@ export default defineConfig({
     defaultStrategy: "viewport",
   },
   vite: {
+    define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
     plugins: [tailwindcss()],
   },
 })

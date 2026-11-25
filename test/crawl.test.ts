@@ -82,6 +82,15 @@ describe("sitemapXml", () => {
     }
   })
 
+  it("emits an ISO lastmod on every url", () => {
+    const lastmods = [...body.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1])
+
+    expect(lastmods).toHaveLength(ids.length * 2)
+    for (const lastmod of lastmods) {
+      expect(lastmod).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+    }
+  })
+
   it("never lists the links subdomain or error pages", () => {
     expect(body).not.toContain(LINKS_HOST)
     expect(body).not.toContain("/404")
