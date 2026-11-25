@@ -39,6 +39,7 @@ const assets: ProjectMedia[] = [
 ]
 
 const STYLE_ID = "project-media-embed"
+const SCRIPT_ID = "project-media-embed-viewer"
 
 function buildThemeCss(tokens: ThemeTokens): string {
   const mix = (value: string, percent: number) =>
@@ -74,25 +75,127 @@ ${category("external", tokens.baseContent)}
     }`
 }
 
-function embedDiagram(html: string, tokens: ThemeTokens): string {
+export function embedDiagram(html: string, tokens: ThemeTokens): string {
   if (!html.includes('class="diagram-container"')) {
     throw new Error("Archify output is missing .diagram-container")
   }
 
-  const clean = html.replace(new RegExp(`<style id="${STYLE_ID}">[\\s\\S]*?</style>\\s*`, "g"), "")
+  const clean = html
+    .replace(new RegExp(`<style id="${STYLE_ID}">[\\s\\S]*?</style>\\s*`, "g"), "")
+    .replace(new RegExp(`<script id="${SCRIPT_ID}">[\\s\\S]*?</script>\\s*`, "g"), "")
+
   const style = `<style id="${STYLE_ID}">
     html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; }
 ${buildThemeCss(tokens)}
     body > *:not(.container) { display: none !important; }
     .container { width: 100% !important; height: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
     .container > *:not(.diagram-container) { display: none !important; }
-    .diagram-container { width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
-    .diagram-container > svg { display: block; width: 100% !important; height: 100% !important; }
+    .diagram-container { width: 100% !important; height: 100% !important; margin: 0 !important; padding: 0 !important; border: 0 !important; touch-action: none !important; }
+    .diagram-container > svg { display: block; width: 100% !important; height: 100% !important; min-width: 0 !important; }
+    html[data-embed="true"] .diagram-nav { display: inline-flex !important; }
+    html[data-embed="true"] .diagram-nav > button:not([data-view]) { display: none !important; }
+    @media (max-width: 639px) {
+      html[data-embed="true"] .diagram-container { padding: 0 0 3.75rem !important; }
+    }
   </style>`
 
-  return clean.includes("</head>")
+  const script = `<script id="${SCRIPT_ID}">
+    (function () {
+      if (window.__projectMediaViewer) return
+      window.__projectMediaViewer = true
+
+      var attempts = 0
+      var container
+      var active = new Map()
+      var startDistance = 0
+      var startScale = 1
+
+      function clamp(scale) {
+        return Math.max(1, Math.min(3, Math.round(scale * 4) / 4))
+      }
+
+      function applyScale(scale) {
+        var view = window.Archify.view
+        var target = clamp(scale)
+        while (view.state().scale < target) view.zoomIn()
+        while (view.state().scale > target) view.zoomOut()
+      }
+
+      function distance() {
+        var points = Array.from(active.values())
+        if (points.length < 2) return 0
+        return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y)
+      }
+
+      function inDiagram(event) {
+        return container && event.target instanceof Element && container.contains(event.target)
+      }
+
+      function onDown(event) {
+        if (event.pointerType !== 'touch' || !inDiagram(event)) return
+        active.set(event.pointerId, { x: event.clientX, y: event.clientY })
+        if (active.size === 2) {
+          startDistance = Math.max(distance(), 1)
+          startScale = window.Archify.view.state().scale
+        }
+        if (active.size >= 2) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+      }
+
+      function onMove(event) {
+        if (!active.has(event.pointerId)) return
+        active.set(event.pointerId, { x: event.clientX, y: event.clientY })
+        if (active.size < 2) return
+        event.preventDefault()
+        event.stopPropagation()
+        if (startDistance > 0) applyScale(startScale * distance() / startDistance)
+      }
+
+      function onEnd(event) {
+        if (!active.delete(event.pointerId)) return
+        if (active.size >= 2) {
+          event.preventDefault()
+          event.stopPropagation()
+          return
+        }
+        startDistance = 0
+      }
+
+      function installPinch() {
+        window.addEventListener('pointerdown', onDown, true)
+        window.addEventListener('pointermove', onMove, true)
+        window.addEventListener('pointerup', onEnd, true)
+        window.addEventListener('pointercancel', onEnd, true)
+        window.addEventListener('lostpointercapture', onEnd, true)
+      }
+
+      function init() {
+        var view = window.Archify && window.Archify.view
+        if (!view || typeof view.zoomIn !== 'function') {
+          if (attempts++ < 60) requestAnimationFrame(init)
+          return
+        }
+        container = document.querySelector('.diagram-container')
+        if (!container) return
+        if (window.matchMedia('(max-width: 639px)').matches && view.state().scale === 1) {
+          for (var i = 0; i < 4; i++) view.zoomIn()
+        }
+        installPinch()
+      }
+
+      init()
+    })()
+  </script>`
+
+  const withStyle = clean.includes("</head>")
     ? clean.replace("</head>", `${style}</head>`)
     : `${style}${clean}`
+
+  return withStyle.includes("</body>")
+    ? withStyle.replace("</body>", `${script}</body>`)
+    : `${withStyle}${script}`
 }
 
 export function projectMedia(): AstroIntegration {
