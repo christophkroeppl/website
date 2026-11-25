@@ -13,6 +13,7 @@ import type { ProjectData } from "../src/content.config"
 import { person } from "../src/content/site"
 import { links } from "../src/generated/links"
 import { pagePaths } from "../src/i18n/routes"
+import { buildTime } from "../src/lib/build-time"
 import { siteUrl } from "../src/lib/seo"
 
 const url = `${siteUrl}${pagePaths.projects.de}`
@@ -36,10 +37,19 @@ const knowsAbout = {
   ],
 }
 const knowsLanguage = ["de", "en", "fr"]
+const employers = [
+  "HMG Software LLC",
+  "Hucke Media GmbH & Co. KG",
+  "ConSol Austria Software GmbH",
+  "Verkehrsverbund Ost-Region (VOR) GmbH",
+  "Kapsch BusinessCom AG",
+  "Henkel CEE",
+]
 const facts = (lang: "de" | "en") => ({
   knowsAbout: knowsAbout[lang],
   knowsLanguage,
   description: `${lang} description`,
+  employers,
 })
 
 const project: ProjectData = {
@@ -51,6 +61,7 @@ const project: ProjectData = {
   summary: "Ein MCP-Server.",
   stack: ["Rust"],
   status: "Öffentlich",
+  license: "Apache-2.0",
   links: [
     { label: "Website", href: "https://example.com/" },
     { label: "GitHub", href: "https://github.com/example/bases-mcp" },
@@ -77,6 +88,22 @@ describe("personNode", () => {
     expect(sameAs).not.toContain("https://free-cities.org/")
     expect(sameAs.length).toBeLessThan(links.length)
   })
+
+  it("lists past employers as organizations in alumniOf", () => {
+    const node = personNode("de", facts("de"))
+
+    expect(node.alumniOf).toEqual(employers.map((name) => ({ "@type": "Organization", name })))
+    expect("worksFor" in node).toBe(false)
+  })
+
+  it("sets mainEntityOfPage only when supplied", () => {
+    const cvUrl = `${siteUrl}/lebenslauf/#webpage`
+
+    expect(personNode("de", { ...facts("de"), mainEntityOfPage: cvUrl }).mainEntityOfPage).toEqual({
+      "@id": cvUrl,
+    })
+    expect("mainEntityOfPage" in personNode("de", facts("de"))).toBe(false)
+  })
 })
 
 describe("websiteNode", () => {
@@ -101,6 +128,13 @@ describe("webPageNode", () => {
   it("omits the description when there is none", () => {
     const node = webPageNode({ lang: "de", page: "home", title: "Titel", url })
     expect("description" in node).toBe(false)
+  })
+
+  it("stamps the page with the build time", () => {
+    const node = webPageNode({ lang: "de", page: "home", title: "Titel", url })
+
+    expect(node.dateModified).toBe(buildTime)
+    expect(node.dateModified).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
   })
 })
 
@@ -127,6 +161,13 @@ describe("projectNode", () => {
     expect(node.codeRepository).toBe("https://github.com/example/bases-mcp")
     expect(node.programmingLanguage).toEqual(["Rust"])
     expect(node["@id"]).toBe(`${url}#bases-mcp`)
+  })
+
+  it("emits the license as an SPDX url", () => {
+    expect(projectNode(project, url).license).toBe("https://spdx.org/licenses/Apache-2.0.html")
+    expect(projectNode({ ...project, license: "MIT" }, url).license).toBe(
+      "https://spdx.org/licenses/MIT.html",
+    )
   })
 })
 
@@ -203,15 +244,15 @@ describe("locale placement", () => {
 })
 
 describe("page relations", () => {
-  it("points about at the person only on profile pages", () => {
+  it("points about at the person on profile and projects pages", () => {
     const page = (id: Parameters<typeof webPageNode>[0]["page"]) =>
       (webPageNode({ lang: "de", page: id, title: "T", url }).about as { "@id": string })["@id"]
 
     expect(page("home")).toBe(personNode("de", facts("de"))["@id"])
     expect(page("cv")).toBe(personNode("de", facts("de"))["@id"])
     expect(page("contact")).toBe(personNode("de", facts("de"))["@id"])
+    expect(page("projects")).toBe(personNode("de", facts("de"))["@id"])
     expect(page("privacy")).toBe(websiteNode()["@id"])
-    expect(page("projects")).toBe(websiteNode()["@id"])
   })
 
   it("sets mainEntity per page", () => {

@@ -11,6 +11,7 @@ stack:
   - OpenCode plugin API
   - npm
 status: Public · MIT · npm 2.1.0
+license: MIT
 links:
   - label: GitHub
     href: https://github.com/christophkroeppl/oc-go-usage-display

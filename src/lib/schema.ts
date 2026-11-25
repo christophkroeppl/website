@@ -5,6 +5,7 @@ import { programmingLanguages } from "../content/programming-languages"
 import { person } from "../content/site"
 import { pick } from "../content/types"
 import type { ProjectData } from "../content.config"
+import { buildTime } from "./build-time"
 import { inLanguage } from "./seo"
 import { absoluteUrl } from "./urls"
 
@@ -13,7 +14,7 @@ export type Node = Record<string, unknown>
 const personId = absoluteUrl("/#person")
 const websiteId = absoluteUrl("/#website")
 
-const personNodeOnPage = new Set<PageId>(["home", "cv", "contact"])
+const personNodeOnPage = new Set<PageId>(["home", "cv", "contact", "projects"])
 
 const pageType: Record<PageId, string> = {
   home: "WebPage",
@@ -56,7 +57,15 @@ export function personNode(
     knowsAbout,
     knowsLanguage,
     description,
-  }: { knowsAbout: string[]; knowsLanguage: string[]; description: string },
+    employers,
+    mainEntityOfPage,
+  }: {
+    knowsAbout: string[]
+    knowsLanguage: string[]
+    description: string
+    employers: string[]
+    mainEntityOfPage?: string
+  },
 ): Node {
   return {
     "@type": "Person",
@@ -67,12 +76,14 @@ export function personNode(
     jobTitle: pick(lang, person.jobTitle),
     knowsAbout,
     knowsLanguage,
+    alumniOf: employers.map((name) => ({ "@type": "Organization", name })),
     address: {
       "@type": "PostalAddress",
       addressLocality: pick(lang, person.addressLocality),
       addressCountry: "AT",
     },
     sameAs: links.map((link) => link.href).filter(isProfile),
+    ...(mainEntityOfPage ? { mainEntityOfPage: { "@id": mainEntityOfPage } } : {}),
   }
 }
 
@@ -104,6 +115,7 @@ export function webPageNode({
     "@id": `${url}#webpage`,
     url,
     name: title,
+    dateModified: buildTime,
     ...(description ? { description } : {}),
     inLanguage: inLanguage(lang),
     isPartOf: { "@id": websiteId },
@@ -161,6 +173,7 @@ export function projectNode(project: ProjectData, url: string): Node {
     ...(repository ? { codeRepository: repository } : {}),
     ...(languages.length > 0 ? { programmingLanguage: languages } : {}),
     author: { "@id": personId },
+    license: `https://spdx.org/licenses/${project.license}.html`,
   }
 }
 

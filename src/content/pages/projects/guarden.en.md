@@ -13,6 +13,7 @@ stack:
   - btrfs
   - ferm
 status: Public · Apache-2.0
+license: Apache-2.0
 links:
   - label: GitHub
     href: https://github.com/christophkroeppl/guarden

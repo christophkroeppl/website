@@ -129,6 +129,7 @@ const projectSchema = z.object({
   summary: z.string().min(1),
   stack: z.array(z.string().min(1)).min(1),
   status: z.string().min(1),
+  license: z.enum(["MIT", "Apache-2.0"]),
   links: z
     .array(
       z.object({
