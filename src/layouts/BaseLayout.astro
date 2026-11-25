@@ -71,7 +71,7 @@ const structuredData = noindex
               lang,
               page,
               title: pageTitle,
-              description: metaDescription,
+              ...(metaDescription ? { description: metaDescription } : {}),
               url: canonical,
             }),
             breadcrumbNode({ lang, page, title, url: canonical }),

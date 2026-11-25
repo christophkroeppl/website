@@ -9,7 +9,7 @@ interface Props {
 
 const { src, title, aspect, zoom = 2, class: className } = Astro.props
 
-const [aspectWidth, aspectHeight] = aspect.split("/").map((value) => Number(value.trim()))
+const [aspectWidth = 1, aspectHeight = 1] = aspect.split("/").map((value) => Number(value.trim()))
 const diagramRatio = aspectWidth / aspectHeight
 
 const hashIndex = src.indexOf("#")

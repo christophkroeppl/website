@@ -98,7 +98,9 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
           render(target, payload)
           button.hidden = true
           let width = Math.round(target.clientWidth)
-          new ResizeObserver(([entry]) => {
+          new ResizeObserver((entries) => {
+            const entry = entries[0]
+            if (!entry) return
             const next = Math.round(entry.contentRect.width)
             if (next === width) return
             width = next

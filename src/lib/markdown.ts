@@ -265,19 +265,14 @@ async function contactBody(lang: Locale): Promise<string> {
   })
 }
 
-export async function pageMarkdown(lang: Locale, page: PageId): Promise<string> {
-  switch (page) {
-    case "home":
-      return homeBody(lang)
-    case "projects":
-      return projectsBody(lang)
-    case "cv":
-      return cvBody(lang)
-    case "privacy":
-      return privacyBody(lang)
-    case "contact":
-      return contactBody(lang)
-    default:
-      throw new Error(`No markdown twin for page "${page}"`)
+export function pageMarkdown(lang: Locale, page: PageId): Promise<string> {
+  const bodies: Record<PageId, (lang: Locale) => Promise<string>> = {
+    home: homeBody,
+    projects: projectsBody,
+    cv: cvBody,
+    privacy: privacyBody,
+    contact: contactBody,
   }
+
+  return bodies[page](lang)
 }

@@ -1,5 +1,5 @@
 import { pagePaths, pageTitleKey, type PageId } from "../i18n/routes"
-import { localeMeta, locales, type Locale } from "../i18n/locales"
+import { localeMeta, type Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { person } from "../content/site"
 import { links } from "../generated/links"

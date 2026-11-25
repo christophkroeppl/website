@@ -17,17 +17,19 @@ const mailPath =
 ---
 
 <LinksLayout name={person.name} tagline={tagline}>
-  {groupLinks(links).map((group) =>
-    group.length > 1 ? (
+  {groupLinks(links).map((group) => {
+    const first = group[0]
+    if (!first) return null
+    return group.length > 1 ? (
       <div class="grid grid-cols-2 gap-3">
         {group.map((link) => (
           <LinkButton link={link} />
         ))}
       </div>
     ) : (
-      <LinkButton link={group[0]} />
-    ),
-  )}
+      <LinkButton link={first} />
+    )
+  })}
 
   {contactEmail && (
     <a
@@ -68,5 +70,5 @@ const mailPath =
     <span class="truncate">Inquiries</span>
   </button>
 
-  <ContactModal lang={lang} trigger={false} privacyHref={privacyHref} />
+  <ContactModal lang={lang} trigger={false} {...(privacyHref ? { privacyHref } : {})} />
 </LinksLayout>
