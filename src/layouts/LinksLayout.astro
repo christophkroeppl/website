@@ -5,10 +5,11 @@ import bullet from "../assets/bullet.webp"
 
 type Props = {
   name: string
+  description: string
   tagline?: string
 }
 
-const { name, tagline } = Astro.props
+const { name, description, tagline } = Astro.props
 const year = new Date().getFullYear()
 ---
 
@@ -17,6 +18,7 @@ const year = new Date().getFullYear()
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
     <meta name="robots" content="noindex" />
     <title>{name}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
