@@ -13,6 +13,7 @@ import { siteUrl } from "./src/lib/seo"
 export default defineConfig({
   site: siteUrl,
   output: "server",
+  session: false,
   trailingSlash: "always",
   adapter: cloudflare(),
   integrations: [
