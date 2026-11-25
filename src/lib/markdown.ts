@@ -261,7 +261,6 @@ async function contactBody(lang: Locale): Promise<string> {
       `[§ 25 Mediengesetz (RIS)](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25)`,
       "",
       ...(name ? [`## ${t("impressum.owner")}`, "", name, ""] : []),
-      await contactLink(lang),
     ],
   })
 }
