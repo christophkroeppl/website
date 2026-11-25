@@ -44,13 +44,11 @@ function envKeyOrder(root: string, mode: string): Map<string, number> {
   return order
 }
 
-function renderModule(links: Link[], tagline: string): string {
+function renderModule(links: Link[]): string {
   return [
     `import type { Link } from "../links/types"`,
     ``,
     `export const links: Link[] = ${JSON.stringify(links, null, 2)}`,
-    ``,
-    `export const tagline = ${JSON.stringify(tagline)}`,
     ``,
   ].join("\n")
 }
@@ -59,9 +57,7 @@ export function links(): AstroIntegration {
   return {
     name: "links",
     hooks: {
-      "astro:config:setup": async ({ command, config, injectRoute, logger }) => {
-        injectRoute({ pattern: "/links", entrypoint: "./src/linktree/links.astro" })
-
+      "astro:config:setup": async ({ command, config, logger }) => {
         const root = fileURLToPath(config.root)
         const mode = command === "build" ? "production" : "development"
         const env = loadEnv(mode, root, "")
@@ -97,10 +93,7 @@ export function links(): AstroIntegration {
             }),
         )
 
-        const module = renderModule(
-          parsed,
-          env.LINKS_TAGLINE?.trim() ?? "",
-        )
+        const module = renderModule(parsed)
 
         fs.mkdirSync(path.dirname(path.join(root, OUTPUT_FILE)), { recursive: true })
         fs.writeFileSync(path.join(root, OUTPUT_FILE), module)

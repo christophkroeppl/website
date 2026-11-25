@@ -30,6 +30,8 @@ const de = {
   "contact.reveal": "Kontaktdaten anzeigen",
   "contact.privacyNote": "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben gemäß der",
   "contact.privacyLink": "Datenschutzerklärung",
+  "links.email": "E-Mail",
+  "links.inquiries": "Anfragen",
   "projects.title": "Projekte",
   "projects.eyebrow": "Open Source & Kundenarbeit",
   "projects.single": "Projekt",
@@ -95,6 +97,8 @@ export const ui = {
     "contact.privacyNote":
       "By submitting, you agree to the processing of your data as described in the",
     "contact.privacyLink": "Privacy Policy",
+    "links.email": "Email",
+    "links.inquiries": "Inquiries",
     "projects.title": "Projects",
     "projects.eyebrow": "Open source & client work",
     "projects.single": "Project",

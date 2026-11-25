@@ -11,12 +11,21 @@ export function isLinksHost(hostname: string): boolean {
 
 export function linksHostRoute(hostname: string, pathname: string): LinksHostRoute {
   if (!isLinksHost(hostname)) return "pass"
-  if (pathname === "/") return "rewrite"
-  if (pathname === "/links" || pathname.startsWith("/links/")) return "pass"
+  if (pathname === "/" || pathname === "/en" || pathname === "/en/") return "rewrite"
+  if (isLinksPath(pathname)) return "pass"
   if (SHARED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) return "pass"
   if (SHARED_PATHS.has(pathname)) return "pass"
   if (isAssetPath(pathname)) return "pass"
   return "block"
+}
+
+function isLinksPath(pathname: string): boolean {
+  return (
+    pathname === "/links" ||
+    pathname.startsWith("/links/") ||
+    pathname === "/en/links" ||
+    pathname.startsWith("/en/links/")
+  )
 }
 
 function isAssetPath(pathname: string): boolean {

@@ -20,6 +20,12 @@ export async function contactFor(lang: Locale): Promise<CollectionEntry<"contact
   return entry
 }
 
+export async function linksFor(lang: Locale): Promise<CollectionEntry<"links">> {
+  const entry = await getEntry("links", lang)
+  if (!entry) throw new Error(`No links content for locale "${lang}"`)
+  return entry
+}
+
 export async function descriptionFor(lang: Locale, page: PageId): Promise<string> {
   if (page === "projects") {
     const entries = await getCollection("pageMeta")

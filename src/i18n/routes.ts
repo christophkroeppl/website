@@ -27,7 +27,7 @@ export const routePage = {
   "/cv": "cv",
   "/projects": "projects",
   "/privacy": "privacy",
-} as const satisfies Record<RouteKey, PageId>
+} as const satisfies Partial<Record<RouteKey, PageId>>
 
 export type RouteKey = keyof typeof localizedRoutes
 
@@ -35,6 +35,7 @@ export const localizedRoutes = {
   "/": { de: "/", en: "/" },
   "/contact": { de: "/impressum", en: "/contact" },
   "/cv": { de: "/lebenslauf", en: "/cv" },
+  "/links": { de: "/links", en: "/links" },
   "/projects": { de: "/projekte", en: "/projects" },
   "/privacy": { de: "/datenschutz", en: "/privacy" },
 } as const satisfies Record<string, Record<Locale, string>>

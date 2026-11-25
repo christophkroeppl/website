@@ -10,15 +10,19 @@ describe("linksHostRoute", () => {
     }
   })
 
-  it("rewrites the subdomain root to the links page", () => {
+  it("rewrites the subdomain roots to the localized links pages", () => {
     expect(isLinksHost("links.kroeppl.ch")).toBe(true)
     expect(linksHostRoute("links.kroeppl.ch", "/")).toBe("rewrite")
+    expect(linksHostRoute("links.kroeppl.ch", "/en")).toBe("rewrite")
+    expect(linksHostRoute("links.kroeppl.ch", "/en/")).toBe("rewrite")
   })
 
   it("serves the links path and shared assets on the subdomain", () => {
     for (const pathname of [
       "/links",
       "/links/",
+      "/en/links",
+      "/en/links/",
       "/_astro/BaseLayout.css",
       "/_image/?href=%2F_astro%2Fbullet.webp&w=224&h=224&f=webp",
       "/fonts/inter-latin-var.woff2",
@@ -32,7 +36,7 @@ describe("linksHostRoute", () => {
   })
 
   it("blocks the rest of the site on the subdomain", () => {
-    for (const pathname of ["/impressum/", "/datenschutz/", "/en/", "/en/privacy/"]) {
+    for (const pathname of ["/impressum/", "/datenschutz/", "/en/privacy/"]) {
       expect(linksHostRoute("links.kroeppl.ch", pathname)).toBe("block")
     }
   })

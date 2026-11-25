@@ -2,19 +2,23 @@
 import "../styles/global.css"
 import { Image } from "astro:assets"
 import bullet from "../assets/bullet.webp"
+import LanguageSwitcher from "../components/LanguageSwitcher.astro"
+import type { Locale } from "../i18n/locales"
+import { inLanguage } from "../lib/seo"
 
 type Props = {
   name: string
   description: string
-  tagline?: string
+  tagline?: string[]
+  lang: Locale
 }
 
-const { name, description, tagline } = Astro.props
+const { name, description, tagline, lang } = Astro.props
 const year = new Date().getFullYear()
 ---
 
 <!doctype html>
-<html lang="en" data-theme="paper">
+<html lang={inLanguage(lang)} data-theme="paper">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -30,8 +34,13 @@ const year = new Date().getFullYear()
       crossorigin="anonymous"
     />
   </head>
-  <body class="min-h-dvh bg-base-100 text-base-content antialiased">
-    <main class="mx-auto flex min-h-dvh w-full max-w-sm flex-col items-center px-4 py-12">
+  <body class="flex min-h-dvh flex-col bg-base-100 text-base-content antialiased">
+    <div class="mx-auto flex w-full max-w-sm items-center px-4 pt-4">
+      <div class="ml-auto flex items-center gap-1">
+        <LanguageSwitcher />
+      </div>
+    </div>
+    <main class="mx-auto flex w-full max-w-sm flex-1 flex-col items-center px-4 pb-12 pt-4">
       <div class="avatar">
         <div class="w-28 rounded-full ring-2 ring-primary/40 ring-offset-2 ring-offset-base-100">
           <Image
@@ -46,15 +55,11 @@ const year = new Date().getFullYear()
       </div>
 
       <h1 class="mt-4 text-center text-2xl font-semibold tracking-tight">{name}</h1>
-      {tagline && (
+      {tagline && tagline.length > 0 && (
         <div class="mt-2 space-y-1">
-          {tagline
-            .split("\n")
-            .map((line) => line.trim())
-            .filter(Boolean)
-            .map((line) => (
-              <p class="text-center text-sm text-base-content/70">{line}</p>
-            ))}
+          {tagline.map((line) => (
+            <p class="text-center text-sm text-base-content/70">{line}</p>
+          ))}
         </div>
       )}
 

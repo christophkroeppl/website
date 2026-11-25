@@ -46,7 +46,10 @@ export const onRequest = defineMiddleware((context, next) => {
   const route = linksHostRoute(hostname, pathname)
 
   if (route === "block") return notFound()
-  if (route === "rewrite") return cache(noindex(next("/links/")), context.request.method)
+  if (route === "rewrite") {
+    const target = pathname === "/en" || pathname === "/en/" ? "/en/links/" : "/links/"
+    return cache(noindex(next(target)), context.request.method)
+  }
   if (isLinksHost(hostname)) return cache(noindex(next()), context.request.method)
 
   return cache(next(), context.request.method)

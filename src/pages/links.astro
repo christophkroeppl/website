@@ -2,14 +2,20 @@
 import LinksLayout from "../layouts/LinksLayout.astro"
 import ContactModal from "../components/ContactModal.astro"
 import LinkButton from "../components/LinkButton.astro"
+import { getLocale } from "virtual:astro-localized-routes"
 import { person } from "../content/site"
-import { pathFor, type Locale } from "../i18n/routes"
+import { pathFor } from "../i18n/routes"
+import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
 import { groupLinks } from "../links/group"
-import { contactEmail, links, tagline } from "../generated/links"
+import { linksFor } from "../lib/content"
+import { contactEmail, links } from "../generated/links"
 
-const lang = "en" satisfies Locale
-const description = `Links to ${person.name}'s profiles, projects and contact — ${person.jobTitle.en} for web, ERP and infrastructure.`
+const lang = getLocale(Astro)
+const t = useTranslations(lang)
+const entry = await linksFor(lang)
+const description = entry.data.description
+const tagline = entry.data.lines
 const website = linkHref("website")
 const privacyHref = website ? new URL(pathFor("privacy", lang), website).href : undefined
 
@@ -17,7 +23,7 @@ const mailPath =
   "M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"
 ---
 
-<LinksLayout name={person.name} description={description} tagline={tagline}>
+<LinksLayout name={person.name} description={description} tagline={tagline} lang={lang}>
   {groupLinks(links).map((group) => {
     const first = group[0]
     if (!first) return null
@@ -48,7 +54,7 @@ const mailPath =
       >
         <path d={mailPath} />
       </svg>
-      <span class="truncate">Email</span>
+      <span class="truncate">{t("links.email")}</span>
     </a>
   )}
 
@@ -68,7 +74,7 @@ const mailPath =
     >
       <path d={mailPath} />
     </svg>
-    <span class="truncate">Inquiries</span>
+    <span class="truncate">{t("links.inquiries")}</span>
   </button>
 
   <ContactModal lang={lang} trigger={false} {...(privacyHref ? { privacyHref } : {})} />

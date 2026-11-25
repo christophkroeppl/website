@@ -212,4 +212,27 @@ const contact = defineCollection({
   }),
 })
 
-export const collections = { privacy, cv, experience, projects, pageMeta, skills, home, contact }
+const links = defineCollection({
+  loader: glob({
+    pattern: "links/*.md",
+    base: "./src/content/pages",
+    generateId: pageId,
+  }),
+  schema: z.object({
+    locale,
+    description: z.string().min(1),
+    lines: z.array(z.string().min(1)).min(1),
+  }),
+})
+
+export const collections = {
+  privacy,
+  cv,
+  experience,
+  projects,
+  pageMeta,
+  skills,
+  home,
+  contact,
+  links,
+}

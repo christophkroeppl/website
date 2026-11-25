@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest"
 import { inLanguage, siteUrl } from "../src/lib/seo"
-import { activePage, localizedRoutes, pagePaths, routePage, type PageId } from "../src/i18n/routes"
+import {
+  activePage,
+  localizedRoutes,
+  pagePaths,
+  routePage,
+  type PageId,
+  type RouteKey,
+} from "../src/i18n/routes"
 import { defaultLocale, locales, type Locale } from "../src/i18n/locales"
 
 const ids = Object.keys(pagePaths) as PageId[]
@@ -19,22 +26,31 @@ describe("route registration", () => {
     return raw.endsWith("/") ? raw : `${raw}/`
   }
 
-  it("maps every localized route to exactly one page", () => {
+  it("maps every content route to exactly one page", () => {
     const pages = Object.values(routePage)
 
     expect(new Set(pages).size).toBe(pages.length)
     expect([...pages].sort()).toEqual([...ids].sort())
   })
 
-  it("agrees with pagePaths for every route and locale", () => {
-    for (const route of Object.keys(localizedRoutes) as (keyof typeof localizedRoutes)[]) {
+  it("agrees with pagePaths for every content route and locale", () => {
+    const pages: Partial<Record<RouteKey, PageId>> = routePage
+
+    for (const route of Object.keys(localizedRoutes) as RouteKey[]) {
+      const page = pages[route]
+      if (page === undefined) continue
+
       for (const lang of locales as readonly Locale[]) {
         const path = fullPath(route, lang)
-
-        expect(routePage[route], route).toBeDefined()
-        expect(pagePaths[routePage[route]][lang], `${route}/${lang}`).toBe(path)
+        expect(pagePaths[page][lang], `${route}/${lang}`).toBe(path)
       }
     }
+  })
+
+  it("registers the links page in both locales without listing it as a content page", () => {
+    expect(fullPath("/links", "de")).toBe("/links/")
+    expect(fullPath("/links", "en")).toBe("/en/links/")
+    expect(pagePaths).not.toHaveProperty("links")
   })
 
   it("resolves every page path back to its own id", () => {
