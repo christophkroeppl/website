@@ -6,9 +6,9 @@ import satori, { type FontWeight } from "satori"
 import sharp from "sharp"
 import type { AstroIntegration } from "astro"
 import { og, person } from "../src/content/site"
-import { locales, type Locale } from "../src/i18n/locales"
+import { locales, type Locale } from "../src/i18n/config"
 import { parseFrontmatter } from "../src/lib/frontmatter"
-import { siteUrl } from "../src/lib/seo"
+import { siteUrl } from "../src/content/site"
 import { readThemeTokens, type ThemeTokens } from "./theme"
 
 const WIDTH = 1200

@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro"
-import { localeMeta, locales, type Locale } from "../i18n/locales"
+import { localePrefix, locales, type Locale } from "../i18n/locales"
 import { MACHINE_CACHE, NO_STORE } from "../lib/cache"
 import { descriptionsFor } from "../lib/content"
 import { llmsFull, llmsIndex } from "../lib/llms"
@@ -9,7 +9,7 @@ export const prerender = false
 
 const routes = Object.fromEntries(
   locales.flatMap((lang) => {
-    const prefix = localeMeta[lang].prefix.replace(/^\//, "")
+    const prefix = localePrefix(lang).replace(/^\//, "")
     const slug = (name: string) => (prefix ? `${prefix}/${name}` : name)
     return [
       [slug("llms"), { lang, full: false }],

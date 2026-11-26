@@ -1,5 +1,5 @@
 import { pagePaths, pageTitleKey, type PageId } from "../i18n/routes"
-import { languages, localeMeta, type Locale } from "../i18n/locales"
+import { languages, localePrefix, type Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { person } from "../content/site"
 import { links } from "../generated/links"
@@ -54,7 +54,7 @@ export function llmsIndex(
     "",
     `## ${t("llms.fullText.heading")}`,
     "",
-    `- [${person.name} — ${lang.toUpperCase()}](${absoluteUrl(`${localeMeta[lang].prefix}/llms-full.txt`)}): ${t("llms.fullText.description")}`,
+    `- [${person.name} — ${lang.toUpperCase()}](${absoluteUrl(`${localePrefix(lang)}/llms-full.txt`)}): ${t("llms.fullText.description")}`,
     "",
     "## Optional",
     "",

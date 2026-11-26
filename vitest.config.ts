@@ -1,8 +1,16 @@
 import { cloudflareTest } from "@cloudflare/vitest-plugin"
+import { fileURLToPath } from "node:url"
 import { defineConfig } from "vite-plus"
 
 export default defineConfig({
   plugins: [cloudflareTest({ config: true })],
+  resolve: {
+    alias: {
+      "virtual:astro-localized-routes": fileURLToPath(
+        new URL("./test/mocks/localized-routes.ts", import.meta.url),
+      ),
+    },
+  },
   test: {
     projects: [
       {

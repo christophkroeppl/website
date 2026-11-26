@@ -1,4 +1,4 @@
-import { type Locale } from "../i18n/locales"
+import type { Locale } from "../i18n/locales"
 import { ui } from "../i18n/ui"
 
 export type RevealEnv = Readonly<Record<string, string | undefined>>

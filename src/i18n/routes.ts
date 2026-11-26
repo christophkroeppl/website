@@ -1,5 +1,5 @@
-import type { Locale } from "./locales"
-import { defaultLocale, locales } from "./locales"
+import type { Locale } from "./config"
+import { defaultLocale, locales } from "./config"
 import type { TranslationKey } from "./ui"
 
 export type { Locale }
