@@ -5,6 +5,7 @@ import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
 import { contactFor, descriptionFor, projectsFor } from "./content"
+import { canonicalFor } from "./canonical"
 import { cvPageData, homePageData } from "./page-data"
 import { cvSections } from "./page-sections"
 import { RIS_MEDIA_LAW_LABEL, RIS_MEDIA_LAW_URL } from "./page-facts"
@@ -32,7 +33,7 @@ async function document({
   return [
     renderFrontmatter({
       title,
-      canonical: absoluteUrl(pathFor(page, lang)),
+      canonical: canonicalFor(page, lang),
       lang: inLanguage(lang),
       summary: await descriptionFor(lang, page),
     }),

@@ -1,6 +1,7 @@
 import { locales } from "../i18n/locales"
 import { pagePaths, type PageId } from "../i18n/routes"
 import { buildTime } from "./build-time"
+import { canonicalFor } from "./canonical"
 import { pageAlternates } from "./alternates"
 import { siteUrl } from "./seo"
 import { absoluteUrl } from "./urls"
@@ -31,14 +32,13 @@ export function sitemapEntries(origin: URL | string = siteUrl): SitemapEntry[] {
   const ids = Object.keys(pagePaths) as PageId[]
 
   return ids.flatMap((id) => {
-    const pair = pagePaths[id]
     const alternates = pageAlternates(id).map(({ hreflang, path }) => ({
       hreflang,
       href: absoluteUrl(path, origin),
     }))
 
     return locales.map((lang) => ({
-      loc: absoluteUrl(pair[lang], origin),
+      loc: canonicalFor(id, lang),
       alternates,
       lastmod: buildTime,
     }))

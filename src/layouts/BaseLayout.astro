@@ -8,6 +8,7 @@ import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
 import { cvFor, descriptionFor, rolesFor, skillsFor } from "../lib/content"
+import { canonicalFor } from "../lib/canonical"
 import { formatPageTitle, inLanguage, ogLocale, otherLocale, siteUrl } from "../lib/seo"
 import { markdownPath } from "../lib/urls"
 import { pageMeta } from "../lib/page-meta"
@@ -35,7 +36,7 @@ const t = useTranslations(lang)
 const page = activePage(Astro.url.pathname)
 const meta = page ? pageMeta[page] : undefined
 const site = Astro.site ?? new URL(siteUrl)
-const canonical = new URL(Astro.url.pathname, site).href
+const canonical = page ? canonicalFor(page, lang) : new URL(Astro.url.pathname, site).href
 const metaDescription = description
 const pageTitle = formatPageTitle(title)
 const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
