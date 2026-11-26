@@ -6,6 +6,7 @@ import { getLocale } from "virtual:astro-localized-routes"
 import { useTranslations } from "../i18n/ui"
 import { pageTitleKey } from "../i18n/routes"
 import { descriptionFor } from "../lib/content"
+import { RIS_MEDIA_LAW_LABEL, RIS_MEDIA_LAW_URL } from "../lib/page-facts"
 
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
@@ -21,11 +22,11 @@ const name = import.meta.env.PUBLIC_CONTACT_NAME
     <p class="mb-6 text-xs text-base-content/65">
       <a
         class="link link-hover text-accent"
-        href="https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25"
+        href={RIS_MEDIA_LAW_URL}
         target="_blank"
         rel="noopener noreferrer"
       >
-        § 25 Mediengesetz (RIS)
+        {RIS_MEDIA_LAW_LABEL}
       </a>
     </p>
     <div class="mb-6 leading-relaxed">

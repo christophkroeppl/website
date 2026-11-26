@@ -13,6 +13,7 @@ import {
   rolesFor,
   skillsFor,
 } from "./content"
+import { RIS_MEDIA_LAW_LABEL, RIS_MEDIA_LAW_URL } from "./page-facts"
 import { formatPageTitle, inLanguage } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
 import { absoluteUrl } from "./urls"
@@ -56,7 +57,6 @@ async function homeBody(lang: Locale): Promise<string> {
   const skills = await skillsFor(lang)
   const entry = await homeFor(lang)
   const home = entry.data
-  const contact = (await contactFor(lang)).data
   const paragraphs = stripFrontmatter(entry.body ?? "").split(/\n\s*\n/)
   const latest = roles[0]
   if (!latest) throw new Error("No roles to render")
@@ -98,11 +98,7 @@ async function homeBody(lang: Locale): Promise<string> {
       ...paragraphs.flatMap((paragraph) => [inline(paragraph), ""]),
       `> ${inline(home.aboutQuote)}`,
       "",
-      `## ${t("nav.contact")}`,
-      "",
-      `${inline(contact.title)} ${inline(contact.body)}`,
-      "",
-      await contactLink(lang),
+      ...(await contactSection(lang)),
     ],
   })
 }
@@ -110,6 +106,18 @@ async function homeBody(lang: Locale): Promise<string> {
 async function contactLink(lang: Locale): Promise<string> {
   const contact = (await contactFor(lang)).data
   return `[${contact.cta}](${absoluteUrl(pathFor("contact", lang))})`
+}
+
+async function contactSection(lang: Locale): Promise<string[]> {
+  const t = useTranslations(lang)
+  const contact = (await contactFor(lang)).data
+  return [
+    `## ${t("nav.contact")}`,
+    "",
+    `${inline(contact.title)} ${inline(contact.body)}`,
+    "",
+    await contactLink(lang),
+  ]
 }
 
 async function projectsBody(lang: Locale): Promise<string> {
@@ -156,7 +164,6 @@ async function cvBody(lang: Locale): Promise<string> {
   const skills = await skillsFor(lang)
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
-  const contact = (await contactFor(lang)).data
 
   return document({
     lang,
@@ -224,11 +231,7 @@ async function cvBody(lang: Locale): Promise<string> {
       "",
       inline(t("cv.note")),
       "",
-      `## ${t("nav.contact")}`,
-      "",
-      `${inline(contact.title)} ${inline(contact.body)}`,
-      "",
-      await contactLink(lang),
+      ...(await contactSection(lang)),
     ],
   })
 }
@@ -258,7 +261,7 @@ async function contactBody(lang: Locale): Promise<string> {
     sections: [
       inline(t("impressum.notice")),
       "",
-      `[§ 25 Mediengesetz (RIS)](https://www.ris.bka.gv.at/NormDokument.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10000719&Paragraf=25)`,
+      `[${RIS_MEDIA_LAW_LABEL}](${RIS_MEDIA_LAW_URL})`,
       "",
       ...(name ? [`## ${t("impressum.owner")}`, "", name, ""] : []),
     ],
