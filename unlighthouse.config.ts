@@ -1,8 +1,10 @@
+import { siteUrl } from "./src/content/site.ts"
+
 export default {
-  site: "https://kroeppl.ch",
+  site: siteUrl,
   scanner: {
     device: "mobile",
-    sitemap: ["https://kroeppl.ch/sitemap.xml"],
+    sitemap: [new URL("/sitemap.xml", siteUrl).href],
     maxRoutes: 100,
     samples: 1,
   },
