@@ -1,23 +1,19 @@
 import type { APIRoute } from "astro"
 import { revealOutlines, type GeneratedReveal } from "../../../generated/reveals"
 import { isLocale } from "../../../i18n/locales"
+import { MACHINE_CACHE, NO_STORE } from "../../../lib/cache"
 
-function respond(status: number, body?: unknown) {
+function respond(status: number, body?: unknown, cache = NO_STORE) {
   return new Response(body === undefined ? null : JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-store",
+      "Cache-Control": cache,
     },
   })
 }
 
 export const GET: APIRoute = ({ request, params }) => {
-  const site = request.headers.get("sec-fetch-site")
-  if (site && site !== "same-origin") {
-    return respond(403)
-  }
-
   const id = params.id
   if (!id || !Object.hasOwn(revealOutlines, id)) {
     return respond(404)
@@ -35,5 +31,5 @@ export const GET: APIRoute = ({ request, params }) => {
     return respond(503)
   }
 
-  return respond(200, { viewBox: entry.viewBox, lines })
+  return respond(200, { viewBox: entry.viewBox, lines }, MACHINE_CACHE)
 }
