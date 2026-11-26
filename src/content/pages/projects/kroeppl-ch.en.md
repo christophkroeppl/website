@@ -1,5 +1,4 @@
 ---
-id: kroeppl-ch
 order: 4
 name: kroeppl.ch
 tagline: "Personal web presence deployed as a hardened edge service."

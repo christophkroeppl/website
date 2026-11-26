@@ -1,5 +1,4 @@
 ---
-id: guarden
 order: 3
 name: guarden
 tagline: A deployment host you can read.

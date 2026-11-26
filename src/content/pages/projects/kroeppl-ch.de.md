@@ -1,5 +1,4 @@
 ---
-id: kroeppl-ch
 order: 4
 name: kroeppl.ch
 tagline: "Persönlicher Edge-Dienst mit strikter Trennung von Build und Laufzeit."

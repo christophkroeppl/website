@@ -114,7 +114,6 @@ const projectArtifact = z.discriminatedUnion("kind", [
 ])
 
 const projectSchema = z.object({
-  id: z.string().regex(/^[a-z0-9-]+$/),
   order: z.number().int().positive(),
   name: z.string().min(1),
   tagline: z.string().min(1),
@@ -143,7 +142,7 @@ const projects = defineCollection({
   schema: projectSchema,
 })
 
-export type ProjectData = z.infer<typeof projectSchema>
+export type ProjectData = z.infer<typeof projectSchema> & { id: string }
 
 const home = defineCollection({
   loader: glob({

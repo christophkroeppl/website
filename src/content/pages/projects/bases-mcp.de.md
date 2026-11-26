@@ -1,5 +1,4 @@
 ---
-id: bases-mcp
 order: 2
 name: bases-mcp
 tagline: "Obsidian Bases, lesbar für Agenten."

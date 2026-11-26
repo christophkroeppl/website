@@ -1,5 +1,4 @@
 ---
-id: oc-go-usage-display
 order: 1
 name: oc-go-usage-display
 tagline: Your Go usage, where you already look.

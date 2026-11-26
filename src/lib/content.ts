@@ -1,4 +1,5 @@
 import { getCollection, getEntry, render, type CollectionEntry } from "astro:content"
+import type { ProjectData } from "../content.config"
 import { pageDescriptions } from "../content/site"
 import { isLocale, type Locale } from "../i18n/locales"
 import type { PageId } from "../i18n/routes"
@@ -7,6 +8,10 @@ function localeFromId(id: string): Locale {
   const candidate = id.slice(id.lastIndexOf(".") + 1)
   if (isLocale(candidate)) return candidate
   throw new Error("Cannot derive locale from content id " + JSON.stringify(id))
+}
+
+function entrySlug(id: string): string {
+  return id.replace(/\.[^.]+$/, "")
 }
 
 export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
@@ -60,11 +65,17 @@ export function renderEntry(
   return render(entry)
 }
 
-export async function projectsFor(lang: Locale): Promise<CollectionEntry<"projects">[]> {
+export async function projectsFor(
+  lang: Locale,
+): Promise<(CollectionEntry<"projects"> & { data: ProjectData })[]> {
   const entries = await getCollection("projects")
   return entries
     .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
+    .map((entry) => ({
+      ...entry,
+      data: { ...entry.data, id: entrySlug(entry.id) },
+    }))
 }
 
 export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experience">[]> {
@@ -72,7 +83,7 @@ export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experienc
   return entries
     .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
-    .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
+    .map((entry) => ({ ...entry, id: entrySlug(entry.id) }))
 }
 
 export async function skillsFor(lang: Locale): Promise<CollectionEntry<"skills">[]> {
@@ -80,7 +91,7 @@ export async function skillsFor(lang: Locale): Promise<CollectionEntry<"skills">
   return entries
     .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
-    .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
+    .map((entry) => ({ ...entry, id: entrySlug(entry.id) }))
 }
 
 export function pickById<T extends { id: string }>(items: T[], ids: string[], source: string): T[] {
