@@ -1,23 +1,36 @@
 import { describe, expect, it } from "vitest"
-import { isLinksHost, linksHostRoute } from "../src/links/host"
+import { isLinksHost, linksHostPolicy } from "../src/links/host"
 
-describe("linksHostRoute", () => {
-  it("passes every path through on other hostnames", () => {
+function kind(host: string, pathname: string) {
+  return linksHostPolicy(host, pathname).kind
+}
+
+describe("linksHostPolicy", () => {
+  it("passes every path without noindex on other hostnames", () => {
     for (const pathname of ["/", "/links/", "/impressum/", "/en/"]) {
-      expect(linksHostRoute("kroeppl.ch", pathname)).toBe("pass")
-      expect(linksHostRoute("www.kroeppl.ch", pathname)).toBe("pass")
-      expect(linksHostRoute("website.example.workers.dev", pathname)).toBe("pass")
+      for (const host of ["kroeppl.ch", "www.kroeppl.ch", "website.example.workers.dev"]) {
+        expect(linksHostPolicy(host, pathname)).toEqual({ kind: "pass", noindex: false })
+      }
     }
   })
 
   it("rewrites the subdomain roots to the localized links pages", () => {
     expect(isLinksHost("links.kroeppl.ch")).toBe(true)
-    expect(linksHostRoute("links.kroeppl.ch", "/")).toBe("rewrite")
-    expect(linksHostRoute("links.kroeppl.ch", "/en")).toBe("rewrite")
-    expect(linksHostRoute("links.kroeppl.ch", "/en/")).toBe("rewrite")
+    expect(linksHostPolicy("links.kroeppl.ch", "/")).toEqual({
+      kind: "rewrite",
+      target: "/links/",
+    })
+    expect(linksHostPolicy("links.kroeppl.ch", "/en")).toEqual({
+      kind: "rewrite",
+      target: "/en/links/",
+    })
+    expect(linksHostPolicy("links.kroeppl.ch", "/en/")).toEqual({
+      kind: "rewrite",
+      target: "/en/links/",
+    })
   })
 
-  it("serves the links path and shared assets on the subdomain", () => {
+  it("serves links paths and shared assets with noindex on the subdomain", () => {
     for (const pathname of [
       "/links",
       "/links/",
@@ -31,8 +44,12 @@ describe("linksHostRoute", () => {
       "/icons/bitcr.svg",
       "/api/contact",
       "/api/contact/",
+      "/robots.txt",
     ]) {
-      expect(linksHostRoute("links.kroeppl.ch", pathname)).toBe("pass")
+      expect(linksHostPolicy("links.kroeppl.ch", pathname)).toEqual({
+        kind: "pass",
+        noindex: true,
+      })
     }
   })
 
@@ -41,7 +58,6 @@ describe("linksHostRoute", () => {
       "/impressum/",
       "/datenschutz/",
       "/en/privacy/",
-      "/robots.txt",
       "/projekte.md",
       "/en/projects.md",
       "/datenschutz.md",
@@ -51,7 +67,7 @@ describe("linksHostRoute", () => {
       "/llms-full.txt",
       "/sitemap.xml",
     ]) {
-      expect(linksHostRoute("links.kroeppl.ch", pathname)).toBe("block")
+      expect(kind("links.kroeppl.ch", pathname)).toBe("block")
     }
   })
 })

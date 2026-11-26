@@ -1,15 +1,5 @@
 import { defineMiddleware } from "astro:middleware"
-import { isLinksHost, linksHostRoute } from "./links/host"
-
-function notFound(): Response {
-  return new Response("Not Found", {
-    status: 404,
-    headers: {
-      "content-type": "text/plain; charset=utf-8",
-      "x-robots-tag": "noindex",
-    },
-  })
-}
+import { linksHostPolicy, notFound } from "./links/host"
 
 async function htmlHeaders(
   response: Response | Promise<Response>,
@@ -43,14 +33,13 @@ async function cache(response: Response | Promise<Response>, method: string): Pr
 
 export const onRequest = defineMiddleware((context, next) => {
   const { hostname, pathname } = context.url
-  const route = linksHostRoute(hostname, pathname)
+  const policy = linksHostPolicy(hostname, pathname)
 
-  if (route === "block") return notFound()
-  if (route === "rewrite") {
-    const target = pathname === "/en" || pathname === "/en/" ? "/en/links/" : "/links/"
-    return cache(noindex(next(target)), context.request.method)
+  if (policy.kind === "block") return notFound()
+  if (policy.kind === "rewrite") {
+    return cache(noindex(next(policy.target)), context.request.method)
   }
-  if (isLinksHost(hostname)) return cache(noindex(next()), context.request.method)
+  if (policy.noindex) return cache(noindex(next()), context.request.method)
 
   return cache(next(), context.request.method)
 })

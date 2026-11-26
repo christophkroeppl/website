@@ -43,6 +43,13 @@ describe("onRequest", () => {
     expect(response.headers.get("cache-control")).toContain("s-maxage=3600")
   })
 
+  it("passes robots.txt through with noindex on the links host", async () => {
+    const next = vi.fn(html)
+    const response = await onRequest(context("https://links.kroeppl.ch/robots.txt"), next)
+    expect(next).toHaveBeenCalled()
+    expect(response.headers.get("x-robots-tag")).toBe("noindex")
+  })
+
   it("caches HTML on the main host", async () => {
     const next = vi.fn(html)
     const response = await onRequest(context("https://kroeppl.ch/"), next)
