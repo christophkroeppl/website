@@ -23,7 +23,7 @@ const embedSrc = `${srcBase}${srcBase.includes("?") ? "&" : "?"}embed=1${srcHash
   data-iframe-frame
 >
   <iframe
-    data-src={embedSrc}
+    src={embedSrc}
     title={title}
     class="absolute inset-0 h-full w-full"
     loading="lazy"
@@ -51,31 +51,3 @@ const embedSrc = `${srcBase}${srcBase.includes("?") ? "&" : "?"}embed=1${srcHash
     }
   }
 </style>
-
-<script>
-  const load = (frame: HTMLIFrameElement) => {
-    const src = frame.dataset.src
-    if (!src) return
-    frame.src = src
-    delete frame.dataset.src
-  }
-
-  const lazyFrames = [...document.querySelectorAll<HTMLIFrameElement>("iframe[data-src]")]
-
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          load(entry.target as HTMLIFrameElement)
-          observer.unobserve(entry.target)
-        }
-      },
-      { rootMargin: "600px 0px" },
-    )
-
-    for (const frame of lazyFrames) observer.observe(frame)
-  } else {
-    for (const frame of lazyFrames) load(frame)
-  }
-</script>

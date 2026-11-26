@@ -19,11 +19,8 @@ const linkClass =
     title={languages[alternate.locale]}
     aria-label={`${alternate.locale.toUpperCase()} — ${languages[alternate.locale]}`}
     data-astro-prefetch="false"
-    class:list={["group ml-1", linkClass]}
+    class:list={["ml-1", linkClass]}
   >
-    <span class="group-hover:hidden group-focus-visible:hidden">{locale.toUpperCase()}</span>
-    <span class="hidden group-hover:inline group-focus-visible:inline" aria-hidden="true">
-      {alternate.locale.toUpperCase()}
-    </span>
+    <span>{alternate.locale.toUpperCase()}</span>
   </a>
 ) : null}
