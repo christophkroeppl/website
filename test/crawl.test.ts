@@ -43,6 +43,12 @@ describe("robots endpoint", () => {
 
     expect(await response.text()).toBe(robotsTxt())
   })
+
+  it("keeps the robots body independent of the request site", async () => {
+    const a = await robots(context("https://example.com/robots.txt"))
+    const b = await robots(context("https://other.example/robots.txt"))
+    expect(await a.text()).toBe(await b.text())
+  })
 })
 
 describe("sitemap entries", () => {
