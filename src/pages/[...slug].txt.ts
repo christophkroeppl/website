@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro"
-import type { Locale } from "../i18n/locales"
+import { localeMeta, locales, type Locale } from "../i18n/locales"
 import { MACHINE_CACHE, NO_STORE } from "../lib/cache"
 import { descriptionsFor } from "../lib/content"
 import { llmsIndex } from "../lib/llms"
@@ -8,12 +8,16 @@ import { otherLocale } from "../lib/seo"
 
 export const prerender = false
 
-const routes: Record<string, { lang: Locale; full: boolean }> = {
-  llms: { lang: "de", full: false },
-  "llms-full": { lang: "de", full: true },
-  "en/llms": { lang: "en", full: false },
-  "en/llms-full": { lang: "en", full: true },
-}
+const routes = Object.fromEntries(
+  locales.flatMap((lang) => {
+    const prefix = localeMeta[lang].prefix.replace(/^\//, "")
+    const slug = (name: string) => (prefix ? `${prefix}/${name}` : name)
+    return [
+      [slug("llms"), { lang, full: false }],
+      [slug("llms-full"), { lang, full: true }],
+    ] as const
+  }),
+) as Record<string, { lang: Locale; full: boolean }>
 
 export const GET: APIRoute = async ({ params }) => {
   const route = routes[params.slug ?? ""]

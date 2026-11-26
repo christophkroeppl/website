@@ -52,7 +52,7 @@ export function pathFor(page: PageId, lang: Locale): string {
 
 export function activePage(pathname: string): PageId | undefined {
   const normalized = pathname.endsWith("/") ? pathname : pathname + "/"
-  return (Object.keys(pagePaths) as PageId[]).find(
-    (page) => pagePaths[page].de === normalized || pagePaths[page].en === normalized,
+  return (Object.keys(pagePaths) as PageId[]).find((page) =>
+    locales.some((lang) => pagePaths[page][lang] === normalized),
   )
 }

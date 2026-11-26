@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { robotsTxt, sitemapXml } from "../src/lib/crawl"
 import { LINKS_HOST } from "../src/links/host"
+import { defaultLocale, locales } from "../src/i18n/locales"
 import { pagePaths, type PageId } from "../src/i18n/routes"
-import { siteUrl } from "../src/lib/seo"
+import { inLanguage, siteUrl } from "../src/lib/seo"
 import { GET as robots } from "../src/pages/robots.txt"
 import { GET as sitemap } from "../src/pages/sitemap.xml"
 
@@ -62,7 +63,7 @@ describe("sitemapXml", () => {
   it("lists every localized page exactly once", () => {
     const locations = entries.map((entry) => entry.loc)
 
-    expect(locations).toHaveLength(ids.length * 2)
+    expect(locations).toHaveLength(ids.length * locales.length)
     expect(new Set(locations).size).toBe(locations.length)
 
     for (const page of ids) {
@@ -75,7 +76,12 @@ describe("sitemapXml", () => {
     for (const page of ids) {
       const de = `${siteUrl}${pagePaths[page].de}`
       const en = `${siteUrl}${pagePaths[page].en}`
-      const expected = { "de-AT": de, en, "x-default": de }
+      const expected = {
+        ...Object.fromEntries(
+          locales.map((lang) => [inLanguage(lang), `${siteUrl}${pagePaths[page][lang]}`]),
+        ),
+        "x-default": `${siteUrl}${pagePaths[page][defaultLocale]}`,
+      }
 
       expect(entries.find((entry) => entry.loc === de)?.alternates, page).toEqual(expected)
       expect(entries.find((entry) => entry.loc === en)?.alternates, page).toEqual(expected)

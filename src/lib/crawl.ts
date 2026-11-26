@@ -39,13 +39,15 @@ export function sitemapXml(origin: URL | string = siteUrl): string {
       )
       .join("\n")
 
-    return [pair.de, pair.en].map(
-      (path) => `  <url>
+    return locales
+      .map((lang) => pair[lang])
+      .map(
+        (path) => `  <url>
     <loc>${xmlEscape(absoluteUrl(path, origin))}</loc>
     <lastmod>${buildTime}</lastmod>
 ${alternates}
   </url>`,
-    )
+      )
   })
 
   return `<?xml version="1.0" encoding="UTF-8"?>

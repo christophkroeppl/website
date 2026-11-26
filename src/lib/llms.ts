@@ -1,5 +1,5 @@
 import { pagePaths, pageTitleKey, type PageId } from "../i18n/routes"
-import { localeMeta, type Locale } from "../i18n/locales"
+import { languages, localeMeta, type Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { person } from "../content/site"
 import { links } from "../generated/links"
@@ -34,17 +34,15 @@ export function llmsIndex(
     "",
     `> ${descriptions.home}`,
     "",
-    lang === "de"
-      ? "Deutsch ist die Standardsprache, englische Inhalte liegen unter /en/. Die verlinkten Markdown-Dateien spiegeln die kanonischen Seiten und nennen ihre HTML-URL."
-      : "German is the default language; English content lives under /en/. The linked Markdown files mirror the canonical pages and declare their HTML URL.",
+    t("llms.languageNote"),
     "",
     `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
     "",
-    lang === "de" ? "## Deutsch" : "## English",
+    `## ${languages[lang]}`,
     "",
     ...entries(lang, descriptions),
     "",
-    lang === "de" ? "## English" : "## Deutsch",
+    `## ${languages[other]}`,
     "",
     ...entries(other, otherDescriptions),
     "",

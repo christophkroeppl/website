@@ -1,6 +1,6 @@
 import { links } from "../generated/links"
 import { pathFor, type PageId } from "../i18n/routes"
-import type { Locale } from "../i18n/locales"
+import { defaultLocale, type Locale } from "../i18n/locales"
 import { programmingLanguages } from "../content/programming-languages"
 import { person } from "../content/site"
 import { pick } from "../content/types"
@@ -62,7 +62,7 @@ export function personNode(
     "@type": "Person",
     "@id": personId,
     name: person.name,
-    url: absoluteUrl(pathFor("home", "de")),
+    url: absoluteUrl(pathFor("home", defaultLocale)),
     description,
     jobTitle: pick(lang, person.jobTitle),
     knowsAbout,

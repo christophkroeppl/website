@@ -61,6 +61,8 @@ const de = {
   "notFound.back": "Zur Startseite",
   "llms.fullText.heading": "Volltext",
   "llms.fullText.description": "alle Seiten dieser Sprache, aneinandergereiht",
+  "llms.languageNote":
+    "Deutsch ist die Standardsprache, englische Inhalte liegen unter /en/. Die verlinkten Markdown-Dateien spiegeln die kanonischen Seiten und nennen ihre HTML-URL.",
 } as const
 
 export type TranslationKey = keyof typeof de
@@ -129,6 +131,8 @@ export const ui = {
     "notFound.back": "Back to home",
     "llms.fullText.heading": "Full text",
     "llms.fullText.description": "every page of this locale concatenated",
+    "llms.languageNote":
+      "German is the default language; English content lives under /en/. The linked Markdown files mirror the canonical pages and declare their HTML URL.",
   },
 } as const satisfies Record<Locale, Record<TranslationKey, string>>
 
