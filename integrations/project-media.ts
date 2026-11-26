@@ -45,7 +45,7 @@ const assets: ProjectMedia[] = [
   },
   {
     repo: "christophkroeppl/website",
-    rev: "bd1454bda11dfe5eb35c2210b6e3539d63b205a0",
+    rev: "4e3c2a1848f7776ebe4cbe853e5f8dc68fa59135",
     path: "docs/architecture.html",
     slug: "kroeppl-ch",
     kind: "src",
