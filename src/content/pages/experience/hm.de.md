@@ -1,5 +1,4 @@
 ---
-locale: de
 org: "Hucke Media GmbH & Co. KG"
 title: "IT-Projektmanager & Key Account Manager — Odoo ERP"
 location: "Remote / Oldenburg"

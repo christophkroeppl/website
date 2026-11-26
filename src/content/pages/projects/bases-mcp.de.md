@@ -1,5 +1,4 @@
 ---
-locale: de
 id: bases-mcp
 order: 2
 name: bases-mcp

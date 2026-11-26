@@ -1,5 +1,4 @@
 ---
-locale: de
 label: "Agentic Engineering & KI"
 items:
   - "LLM-Anwendungen — Tool-Calling, Agent-Workflows und Evaluations-Harnesses"

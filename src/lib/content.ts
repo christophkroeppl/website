@@ -1,6 +1,12 @@
 import { getCollection, getEntry, render, type CollectionEntry } from "astro:content"
-import type { Locale } from "../i18n/locales"
+import { isLocale, type Locale } from "../i18n/locales"
 import type { PageId } from "../i18n/routes"
+
+function localeFromId(id: string): Locale {
+  const candidate = id.slice(id.lastIndexOf(".") + 1)
+  if (isLocale(candidate)) return candidate
+  throw new Error("Cannot derive locale from content id " + JSON.stringify(id))
+}
 
 export async function cvFor(lang: Locale): Promise<CollectionEntry<"cv">> {
   const entry = await getEntry("cv", lang)
@@ -30,7 +36,7 @@ export async function descriptionFor(lang: Locale, page: PageId): Promise<string
   if (page === "projects") {
     const entries = await getCollection("pageMeta")
     const entry = entries.find(
-      (entry) => entry.data.page === "projects" && entry.data.locale === lang,
+      (entry) => entry.data.page === "projects" && localeFromId(entry.id) === lang,
     )
     if (!entry) throw new Error(`No projects meta for locale "${lang}"`)
     return entry.data.description
@@ -62,14 +68,14 @@ export function renderEntry(
 export async function projectsFor(lang: Locale): Promise<CollectionEntry<"projects">[]> {
   const entries = await getCollection("projects")
   return entries
-    .filter((entry) => entry.data.locale === lang)
+    .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
 }
 
 export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experience">[]> {
   const entries = await getCollection("experience")
   return entries
-    .filter((entry) => entry.data.locale === lang)
+    .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
     .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
 }
@@ -77,7 +83,7 @@ export async function rolesFor(lang: Locale): Promise<CollectionEntry<"experienc
 export async function skillsFor(lang: Locale): Promise<CollectionEntry<"skills">[]> {
   const entries = await getCollection("skills")
   return entries
-    .filter((entry) => entry.data.locale === lang)
+    .filter((entry) => localeFromId(entry.id) === lang)
     .toSorted((a, b) => a.data.order - b.data.order)
     .map((entry) => ({ ...entry, id: entry.id.replace(/\.[^.]+$/, "") }))
 }

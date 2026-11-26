@@ -1,5 +1,4 @@
 ---
-locale: de
 org: "Kapsch BusinessCom AG"
 title: "Mitarbeiter Projektsupport"
 location: "Wien"

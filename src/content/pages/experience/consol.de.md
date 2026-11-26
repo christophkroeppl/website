@@ -1,5 +1,4 @@
 ---
-locale: de
 org: "ConSol Austria Software GmbH"
 title: "Softwareentwickler & Berater"
 location: "Wien"

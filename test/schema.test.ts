@@ -53,7 +53,6 @@ const facts = (lang: "de" | "en") => ({
 })
 
 const project: ProjectData = {
-  locale: "de",
   id: "bases-mcp",
   order: 1,
   name: "bases-mcp",

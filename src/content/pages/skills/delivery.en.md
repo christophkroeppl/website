@@ -1,5 +1,4 @@
 ---
-locale: en
 label: "Delivery & practice"
 items:
   - "Requirements analysis · business process modelling · agile scheduling and monitoring"

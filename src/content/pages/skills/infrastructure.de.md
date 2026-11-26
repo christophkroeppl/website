@@ -1,5 +1,4 @@
 ---
-locale: de
 label: "Infrastruktur & Betrieb"
 items:
   - "Docker · Podman · Ubuntu / Debian / Arch / pop!_OS · BTRFS · LUKS"

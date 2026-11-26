@@ -1,5 +1,4 @@
 ---
-locale: de
 label: "Delivery & Methodik"
 items:
   - "Anforderungsanalyse · Geschäftsprozessmodellierung · agiles Scheduling und Monitoring"

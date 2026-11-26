@@ -1,5 +1,4 @@
 ---
-locale: en
 id: oc-go-usage-display
 order: 1
 name: oc-go-usage-display

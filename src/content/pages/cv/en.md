@@ -1,5 +1,4 @@
 ---
-locale: en
 description: "Christoph Kröppl's CV: IT project management, Odoo ERP, infrastructure and software delivery at a glance."
 headline: IT Project Manager & Key Account Manager — Odoo ERP
 location: Remote, Vienna, Austria

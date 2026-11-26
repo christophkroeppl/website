@@ -1,5 +1,4 @@
 ---
-locale: de
 label: "ERP & Unternehmenssoftware"
 items:
   - "Odoo (Experte) — Architektur, Migrationen 13→15, OCA-Module, Prozessdesign"

@@ -19,9 +19,10 @@ function description(lang: Locale, page: (typeof pages)[number]): string {
   expect(source, path).toBeDefined()
   const block = source?.match(/^---\n([\s\S]*?)\n---/)
   expect(block, path).not.toBeNull()
-  const data = parse(block?.[1] ?? "") as { locale?: string; description?: string }
+  const data = parse(block?.[1] ?? "") as { description?: string }
 
-  expect(data.locale, path).toBe(lang)
+  const fileLocale = path.match(/(?:\.|\/)(de|en)\.md$/)?.[1]
+  expect(fileLocale, path).toBe(lang)
   expect(typeof data.description, path).toBe("string")
   return data.description ?? ""
 }

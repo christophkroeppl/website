@@ -1,5 +1,4 @@
 ---
-locale: en
 label: "Languages & runtimes"
 items:
   - "Bun / Node / Deno · Python · Rust · TypeScript / JavaScript · Kotlin · Groovy · C"

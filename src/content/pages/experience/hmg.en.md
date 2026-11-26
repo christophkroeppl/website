@@ -1,5 +1,4 @@
 ---
-locale: en
 org: "HMG Software LLC"
 title: "Managing Director"
 location: "Tbilisi, Georgia"

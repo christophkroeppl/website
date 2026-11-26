@@ -1,5 +1,4 @@
 ---
-locale: de
 id: guarden
 order: 3
 name: guarden

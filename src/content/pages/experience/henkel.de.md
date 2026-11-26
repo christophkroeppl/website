@@ -1,5 +1,4 @@
 ---
-locale: de
 org: "Henkel CEE"
 title: "IT-Techniker"
 location: "Wien"

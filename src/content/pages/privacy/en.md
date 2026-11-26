@@ -1,5 +1,4 @@
 ---
-locale: en
 description: "Privacy policy for kroeppl.ch: hosting, contact form, Telegram and your rights under the GDPR."
 title: Privacy
 updated: "Last updated: November 2026"

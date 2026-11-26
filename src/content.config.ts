@@ -1,9 +1,6 @@
 import { defineCollection } from "astro:content"
 import { glob } from "astro/loaders"
 import { z } from "astro/zod"
-import { locales } from "./i18n/locales"
-
-const locale = z.enum(locales)
 
 const pageId = ({ entry }: { entry: string }) => entry.replace(/^.*\//, "").replace(/\.md$/, "")
 
@@ -14,7 +11,6 @@ const privacy = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     title: z.string().min(1),
     description: z.string().min(1),
     updated: z.string().min(1),
@@ -28,7 +24,6 @@ const cv = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     description: z.string().min(1),
     headline: z.string().min(1),
     location: z.string().min(1),
@@ -75,7 +70,6 @@ const skills = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     label: z.string().min(1),
     items: z.array(z.string().min(1)).min(1),
     order: z.number().int().positive(),
@@ -89,7 +83,6 @@ const experience = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     org: z.string().min(1),
     title: z.string().min(1),
     location: z.string().min(1),
@@ -121,7 +114,6 @@ const projectArtifact = z.discriminatedUnion("kind", [
 ])
 
 const projectSchema = z.object({
-  locale,
   id: z.string().regex(/^[a-z0-9-]+$/),
   order: z.number().int().positive(),
   name: z.string().min(1),
@@ -160,7 +152,6 @@ const pageMeta = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     page: z.literal("projects"),
     description: z.string().min(1),
   }),
@@ -173,7 +164,6 @@ const home = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     description: z.string().min(1),
     eyebrow: z.string().min(1),
     title: z.string().min(1),
@@ -204,7 +194,6 @@ const contact = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     title: z.string().min(1),
     description: z.string().min(1),
     body: z.string().min(1),
@@ -219,7 +208,6 @@ const links = defineCollection({
     generateId: pageId,
   }),
   schema: z.object({
-    locale,
     description: z.string().min(1),
     lines: z.array(z.string().min(1)).min(1),
   }),

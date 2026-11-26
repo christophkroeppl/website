@@ -1,5 +1,4 @@
 ---
-locale: en
 org: "Verkehrsverbund Ost-Region (VOR) GmbH"
 title: "IT Technician, ICT Infrastructure"
 location: "Vienna"

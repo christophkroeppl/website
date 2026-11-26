@@ -1,5 +1,4 @@
 ---
-locale: en
 org: "Kapsch BusinessCom AG"
 title: "Project Support"
 location: "Vienna"

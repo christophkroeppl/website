@@ -1,5 +1,4 @@
 ---
-locale: en
 id: kroeppl-ch
 order: 4
 name: kroeppl.ch

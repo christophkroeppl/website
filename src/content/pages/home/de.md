@@ -1,5 +1,4 @@
 ---
-locale: de
 description: "Christoph Kröppl — IT-Projektmanager und Team Lead für Web, ERP und Infrastruktur. Odoo-Migrationen, resiliente Software und Betrieb."
 eyebrow: "Remote, Wien, Österreich · IT-Projektmanagement, Web, ERP & Infrastruktur"
 title: "Resiliente Software, nach Maß."
