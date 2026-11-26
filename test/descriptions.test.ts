@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { parse } from "yaml"
 import { pageDescriptions } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/locales"
+import { parseFrontmatter } from "../src/lib/frontmatter"
 
 const pages = ["home", "contact", "cv", "projects", "privacy"] as const
 
@@ -16,9 +16,7 @@ function description(lang: Locale, page: (typeof pages)[number]): string {
   const path = `../src/content/pages/${page}/${lang}.md`
   const source = sources[path]
   expect(source, path).toBeDefined()
-  const block = source?.match(/^---\n([\s\S]*?)\n---/)
-  expect(block, path).not.toBeNull()
-  const data = parse(block?.[1] ?? "") as { description?: string }
+  const data = parseFrontmatter(source ?? "") as { description?: string }
 
   const fileLocale = path.match(/(?:\.|\/)(de|en)\.md$/)?.[1]
   expect(fileLocale, path).toBe(lang)

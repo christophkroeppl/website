@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { parse } from "yaml"
+import { parseFrontmatter } from "../src/lib/frontmatter"
 import { inline, renderFrontmatter, stripFrontmatter, tokenCount } from "../src/lib/text"
 
 describe("inline", () => {
@@ -60,13 +60,13 @@ describe("renderFrontmatter", () => {
 
     expect(block.startsWith("---\n")).toBe(true)
     expect(block.endsWith("\n---")).toBe(true)
-    expect(parse(block.replace(/^---\n|\n---$/g, ""))).toEqual(fields)
+    expect(parseFrontmatter(renderFrontmatter(fields))).toEqual(fields)
   })
 
   it("survives colons, quotes, hashes and euro signs", () => {
     const fields = { title: 'A "quoted": title # with hash — €500k', lang: "en" }
 
-    expect(parse(renderFrontmatter(fields).replace(/^---\n|\n---$/g, ""))).toEqual(fields)
+    expect(parseFrontmatter(renderFrontmatter(fields))).toEqual(fields)
   })
 })
 

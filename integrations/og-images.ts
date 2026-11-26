@@ -7,6 +7,7 @@ import sharp from "sharp"
 import type { AstroIntegration } from "astro"
 import { og, person } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/locales"
+import { parseFrontmatter } from "../src/lib/frontmatter"
 import { siteUrl } from "../src/lib/seo"
 import { readThemeTokens, type ThemeTokens } from "./theme"
 
@@ -37,13 +38,9 @@ const image = (src: string, size: number, style: Style): Node => ({
 
 function readHomeTitle(root: string, lang: Locale): string {
   const raw = fs.readFileSync(path.join(root, "src/content/pages/home", `${lang}.md`), "utf8")
-  const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(raw)?.[1] ?? ""
-  const m = /^title:\s*(.+)$/m.exec(fm)
-  if (!m?.[1]) throw new Error("missing home title")
-  let v = m[1].trim()
-  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))
-    v = v.slice(1, -1)
-  return v
+  const title = parseFrontmatter(raw).title
+  if (typeof title !== "string" || !title) throw new Error("missing home title")
+  return title
 }
 
 function oklch(value: string): [number, number, number] {
