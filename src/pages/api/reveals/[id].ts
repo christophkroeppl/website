@@ -28,13 +28,13 @@ export const GET: APIRoute = ({ url, params }) => {
   const entry = (revealOutlines as Record<string, GeneratedReveal | undefined>)[id ?? ""]
   if (!entry) return respond(404)
 
-  if (part === "label") {
-    return respond(200, { viewBox: entry.viewBox, label: entry.labels[lang] }, MACHINE_CACHE)
+  const lines = entry.lines[lang]
+  if (part !== "label" && (!lines || lines.length === 0)) {
+    return respond(404)
   }
 
-  const lines = entry.lines[lang]
-  if (lines.length === 0) {
-    return respond(503)
+  if (part === "label") {
+    return respond(200, { viewBox: entry.viewBox, label: entry.labels[lang] }, MACHINE_CACHE)
   }
 
   return respond(200, { viewBox: entry.viewBox, lines }, MACHINE_CACHE)

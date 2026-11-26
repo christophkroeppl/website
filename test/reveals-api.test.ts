@@ -19,6 +19,14 @@ vi.mock("../src/generated/reveals", () => ({
       },
       lines: { de: [], en: [] },
     },
+    partial: {
+      viewBox: { top: 0, height: 100, units: 100 },
+      labels: {
+        de: { d: "M0 0", width: 10 },
+        en: { d: "M0 0", width: 20 },
+      },
+      lines: { de: ["M0 0L10 10"] },
+    },
   },
 }))
 
@@ -82,9 +90,15 @@ describe("GET /api/reveals/[id]", () => {
     expect(invalid.headers.get("cache-control")).toBe(NO_STORE)
   })
 
-  it("returns 503 for an empty outline", async () => {
+  it("returns 404 for an empty outline", async () => {
     const response = await call("empty", "de")
-    expect(response.status).toBe(503)
+    expect(response.status).toBe(404)
+    expect(response.headers.get("cache-control")).toBe(NO_STORE)
+  })
+
+  it("returns 404 for an outline without lines in the requested locale", async () => {
+    const response = await call("partial", "en")
+    expect(response.status).toBe(404)
     expect(response.headers.get("cache-control")).toBe(NO_STORE)
   })
 })

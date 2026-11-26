@@ -83,6 +83,10 @@ describe("POST /api/contact", () => {
     fetchMock.mockRejectedValueOnce(new Error("offline"))
     const response = await POST({ request: request(valid) } as never)
     expect(response.status).toBe(502)
+    expect(await response.json()).toEqual({
+      error: "Upstream unavailable",
+      code: "TURNSTILE_UNAVAILABLE",
+    })
   })
 
   it("fails when Telegram config is missing", async () => {
@@ -105,6 +109,7 @@ describe("POST /api/contact", () => {
       .mockResolvedValueOnce(new Response("{}", { status: 500 }))
     const response = await POST({ request: request(valid) } as never)
     expect(response.status).toBe(500)
+    expect(await response.json()).toEqual({ error: "Failed to send", code: "TELEGRAM_REJECTED" })
   })
 
   it("reports an unavailable Telegram service", async () => {
@@ -113,5 +118,9 @@ describe("POST /api/contact", () => {
       .mockRejectedValueOnce(new Error("offline"))
     const response = await POST({ request: request(valid) } as never)
     expect(response.status).toBe(502)
+    expect(await response.json()).toEqual({
+      error: "Upstream unavailable",
+      code: "TELEGRAM_UNAVAILABLE",
+    })
   })
 })
