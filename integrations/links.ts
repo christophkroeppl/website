@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { loadEnv } from "vite"
 import type { AstroIntegration } from "astro"
-import { iconPacks, defaultIconPack, resolveIcon } from "../src/links/icons"
+import { resolveIcon } from "./icons"
 import { linkLabel, parseLinkSources } from "../src/links/parse"
 import { resolveSlash, slashVariants } from "../src/links/slash"
 import type { Link } from "../src/links/types"
@@ -61,15 +61,6 @@ export function links(): AstroIntegration {
         const root = fileURLToPath(config.root)
         const mode = command === "build" ? "production" : "development"
         const env = loadEnv(mode, root, "")
-        const packName = env.LINKS_ICON_PACK?.trim() || defaultIconPack
-        const pack = iconPacks[packName]
-
-        if (!pack) {
-          throw new Error(
-            `Unknown LINKS_ICON_PACK "${packName}". Known packs: ${Object.keys(iconPacks).join(", ")}`,
-          )
-        }
-
         const order = envKeyOrder(root, mode)
         const probing = command === "build" || command === "dev"
         const parsed = await Promise.all(
@@ -82,7 +73,11 @@ export function links(): AstroIntegration {
 
               if (href !== source.href) logger.info(`${source.key}: ${href}`)
 
-              const { icon, title } = resolveIcon(root, source.slug, pack, source.icon)
+              const resolved = resolveIcon(root, source.slug, source.icon ?? source.slug)
+              if (resolved.shadowed) {
+                logger.info(`${source.key}: custom icon overrides ${source.icon ?? source.slug}`)
+              }
+              const { icon, title } = resolved
               return {
                 key: source.key,
                 href,

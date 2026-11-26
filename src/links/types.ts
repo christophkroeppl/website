@@ -9,8 +9,3 @@ export type Link = {
   slug: string
   icon: LinkIcon
 }
-
-export type IconPack = {
-  name: string
-  resolve: (slug: string) => { title: string; path: string } | undefined
-}

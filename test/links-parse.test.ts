@@ -16,7 +16,6 @@ describe("parseLinkSources", () => {
   it("ignores keys that are not links", () => {
     const links = parseLinkSources({
       LINKS_TAGLINE: "hello",
-      LINKS_ICON_PACK: "simple-icons",
       CONTACT_EMAIL: "mail@example.com",
       GITHUB_LINK: "https://github.com/christophkroeppl",
     })
