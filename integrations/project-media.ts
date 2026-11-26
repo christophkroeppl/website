@@ -1,7 +1,6 @@
 import crypto from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
-import { fileURLToPath } from "node:url"
 import type { AstroIntegration } from "astro"
 import { parseFrontmatter } from "../src/lib/frontmatter"
 import { resolveTheme, type ResolvedTheme } from "./theme"
@@ -257,7 +256,8 @@ export function projectMedia(): AstroIntegration {
       "astro:config:setup": async ({ command, config, logger }) => {
         if (command === "sync") return
 
-        const root = fileURLToPath(config.root)
+        const { buildContext, emitGenerated } = await import("./build")
+        const root = buildContext(config.root, command).root
         const theme = resolveTheme(root)
         const refs = collectArtifactRefs(root)
         const produced = new Set<string>()
@@ -315,10 +315,7 @@ export function projectMedia(): AstroIntegration {
           const body = ref.url.endsWith(".html")
             ? Buffer.from(embedDiagram(buffer.toString("utf8"), theme))
             : buffer
-          const target = path.join(root, publicToDest(ref.url))
-
-          fs.mkdirSync(path.dirname(target), { recursive: true })
-          fs.writeFileSync(target, body)
+          emitGenerated(root, publicToDest(ref.url), body)
           produced.add(ref.url)
           logger.info(`Fetched ${media.repo}/${media.path} (${media.rev})`)
         }

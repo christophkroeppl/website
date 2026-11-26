@@ -1,11 +1,11 @@
 import fs from "node:fs"
 import path from "node:path"
-import { fileURLToPath } from "node:url"
 import { Resvg } from "@resvg/resvg-js"
 import satori, { type FontWeight } from "satori"
 import sharp from "sharp"
 import type { AstroIntegration } from "astro"
 import { og, person } from "../src/content/site"
+import { buildContext, emitGenerated } from "./build"
 import { locales, type Locale } from "../src/i18n/config"
 import { parseFrontmatter } from "../src/lib/frontmatter"
 import { ogImagePaths } from "../src/lib/og-image"
@@ -210,8 +210,8 @@ export function ogImages(): AstroIntegration {
   return {
     name: "og-images",
     hooks: {
-      "astro:config:setup": async ({ config }) => {
-        const root = fileURLToPath(config.root)
+      "astro:config:setup": async ({ command, config }) => {
+        const { root } = buildContext(config.root, command)
         const colors = satoriReady(palette(readThemeTokens(root)))
         const fonts = [
           font(root, "inter-latin-500.woff2", "Inter", 500),
@@ -233,7 +233,7 @@ export function ogImages(): AstroIntegration {
             colors,
             fonts,
           })
-          fs.writeFileSync(path.join(root, OUTPUTS[lang]), png)
+          emitGenerated(root, OUTPUTS[lang], png)
         }
       },
     },

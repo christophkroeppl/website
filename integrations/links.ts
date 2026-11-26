@@ -1,8 +1,5 @@
-import fs from "node:fs"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { loadEnv } from "vite"
 import type { AstroIntegration } from "astro"
+import { buildContext, emitGenerated } from "./build"
 import { resolveIcon } from "./icons"
 import { buildLinks } from "../src/links/build"
 import { parseLinkSources } from "../src/links/parse"
@@ -38,9 +35,7 @@ export function links(): AstroIntegration {
     name: "links",
     hooks: {
       "astro:config:setup": async ({ command, config, logger }) => {
-        const root = fileURLToPath(config.root)
-        const mode = command === "build" ? "production" : "development"
-        const env = loadEnv(mode, root, "")
+        const { root, env } = buildContext(config.root, command)
         const order = new Map(Object.keys(env).map((key, index) => [key, index]))
         const probing = command === "build" || command === "dev"
         const parsed = await buildLinks({
@@ -58,8 +53,7 @@ export function links(): AstroIntegration {
 
         const module = renderModule(parsed)
 
-        fs.mkdirSync(path.dirname(path.join(root, OUTPUT_FILE)), { recursive: true })
-        fs.writeFileSync(path.join(root, OUTPUT_FILE), module)
+        emitGenerated(root, OUTPUT_FILE, module)
         logger.info(`${parsed.length} link(s) generated into ${OUTPUT_FILE}`)
       },
     },

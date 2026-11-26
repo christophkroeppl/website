@@ -1,12 +1,11 @@
 import fs from "node:fs"
 import path from "node:path"
-import { fileURLToPath } from "node:url"
-import { loadEnv } from "vite"
 import opentype from "opentype.js"
 import type { AstroIntegration } from "astro"
 import { locales, type Locale } from "../src/i18n/config"
 import { useTranslations } from "../src/i18n/ui"
 import { reveals } from "../src/reveals/registry"
+import { buildContext, emitGenerated, type BuildContext } from "./build"
 import { fontViewBox, outline, type Font, type Outline } from "./outline"
 
 const FONT_FILE = "src/assets/fonts/inter-latin-400.woff"
@@ -29,17 +28,15 @@ function byLocale<T>(build: (lang: Locale) => T): Record<Locale, T> {
   return Object.fromEntries(locales.map((lang) => [lang, build(lang)])) as Record<Locale, T>
 }
 
-export function generateReveals(root: URL, mode: string) {
-  const dir = fileURLToPath(root.href)
-  const font = loadFont(dir)
-  const env = loadEnv(mode, dir, "")
+export function generateReveals(ctx: BuildContext) {
+  const font = loadFont(ctx.root)
   const viewBox = fontViewBox(font)
 
   const generated = Object.fromEntries(
     Object.entries(reveals).map(([id, revealable]) => {
       const labels = byLocale((lang) => outline(font, useTranslations(lang)(revealable.label)))
       const lines = byLocale((lang) =>
-        revealable.lines(env, lang).map((text) => outline(font, text)),
+        revealable.lines(ctx.env, lang).map((text) => outline(font, text)),
       )
       return [id, { viewBox, labels, lines } satisfies GeneratedReveal]
     }),
@@ -63,8 +60,7 @@ export function generateReveals(root: URL, mode: string) {
     ``,
   ].join("\n")
 
-  fs.mkdirSync(path.dirname(path.join(dir, OUTPUT_FILE)), { recursive: true })
-  fs.writeFileSync(path.join(dir, OUTPUT_FILE), source)
+  emitGenerated(ctx.root, OUTPUT_FILE, source)
 }
 
 export function revealOutlines(): AstroIntegration {
@@ -72,7 +68,7 @@ export function revealOutlines(): AstroIntegration {
     name: "reveal-outlines",
     hooks: {
       "astro:config:setup": ({ command, config }) => {
-        generateReveals(config.root, command === "build" ? "production" : "development")
+        generateReveals(buildContext(config.root, command))
       },
     },
   }
