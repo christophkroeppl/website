@@ -6,7 +6,8 @@ import { useTranslations } from "../i18n/ui"
 import { firstLinkHref } from "../links/urls"
 import { contactFor, descriptionFor, projectsFor } from "./content"
 import { canonicalFor } from "./canonical"
-import { cvPageData, homePageData } from "./page-data"
+import { homeComposition } from "./home-composition"
+import { cvPageData } from "./page-data"
 import { cvSections } from "./page-sections"
 import { RIS_MEDIA_LAW_LABEL, RIS_MEDIA_LAW_URL } from "./page-facts"
 import { formatPageTitle, inLanguage } from "./seo"
@@ -46,9 +47,7 @@ async function document({
 }
 
 async function homeBody(lang: Locale): Promise<string> {
-  const t = useTranslations(lang)
-  const { entry, home, projects, skills, latest } = await homePageData(lang)
-  const paragraphs = stripFrontmatter(entry.body ?? "").split(/\n\s*\n/)
+  const { home, projects, skills, latest, paragraphs, titles } = await homeComposition(lang)
 
   return document({
     lang,
@@ -60,29 +59,29 @@ async function homeBody(lang: Locale): Promise<string> {
       "",
       inline(home.secondary),
       "",
-      `## ${t("md.stats")}`,
+      `## ${titles.stats}`,
       "",
       ...home.proof.map((item) => `- **${item.value}** — ${inline(item.label)}`),
       "",
-      `## ${home.workTitle}`,
+      `## ${titles.work}`,
       "",
       ...projects.map(
         (project) =>
           `- [${inline(project.data.name)}](${absoluteUrl(pathFor("projects", lang))}#${project.data.id}): ${inline(project.data.tagline)}`,
       ),
       "",
-      `## ${t("cv.experience")}`,
+      `## ${titles.experienceHeading}`,
       "",
       `- **${inline(latest.data.title)}**, ${inline(latest.data.org)} (${latest.data.period}): ${inline(latest.data.summary)}`,
       "",
-      `## ${t("cv.skills")}`,
+      `## ${titles.skills}`,
       "",
       ...skills.map(
         (group) =>
           `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
       ),
       "",
-      `## ${home.aboutTitle}`,
+      `## ${titles.about}`,
       "",
       ...paragraphs.flatMap((paragraph) => [inline(paragraph), ""]),
       `> ${inline(home.aboutQuote)}`,

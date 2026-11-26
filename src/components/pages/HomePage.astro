@@ -6,10 +6,7 @@ import Timeline from "../Timeline.astro"
 import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
 import ContactTrigger from "../ContactTrigger.astro"
-import { about, homeSections } from "../../content/site"
-import { pick } from "../../content/types"
-import { renderEntry } from "../../lib/content"
-import { homePageData } from "../../lib/page-data"
+import { homeComposition } from "../../lib/home-composition"
 import { pathFor, type Locale } from "../../i18n/routes"
 
 interface Props {
@@ -18,15 +15,14 @@ interface Props {
 
 const { lang } = Astro.props
 const {
-  entry: homeEntry,
   home,
   projects,
   skills,
   contact,
-  latest: latestRole,
-} = await homePageData(lang)
-const { Content: AboutParagraphs } = await renderEntry(homeEntry)
-const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
+  latest,
+  titles,
+  Content: AboutParagraphs,
+} = await homeComposition(lang)
 ---
 
 <section>
@@ -55,12 +51,7 @@ const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
   </div>
 </section>
 
-<Section
-  id="work"
-  eyebrow={pick(lang, homeSections.workEyebrow)}
-  title={home.workTitle}
-  intro={home.workIntro}
->
+<Section id="work" eyebrow={titles.eyebrowWork} title={titles.work} intro={home.workIntro}>
   <a slot="action" class="btn btn-outline btn-accent shrink-0" href={pathFor("projects", lang)}>
     {home.projectsCta}
   </a>
@@ -68,32 +59,28 @@ const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
     projects={projects}
     lang={lang}
     basePath={pathFor("projects", lang)}
-    label={home.workTitle}
+    label={titles.work}
   />
 </Section>
 
-<Section
-  id="experience"
-  eyebrow={pick(lang, homeSections.experienceEyebrow)}
-  title={latestRoleTitle}
->
+<Section id="experience" eyebrow={titles.eyebrowExperience} title={titles.experience}>
   <a slot="action" class="btn btn-outline btn-accent shrink-0" href={pathFor("cv", lang)}>
     {home.cvCta}
   </a>
-  <Timeline roles={[latestRole]} compact />
+  <Timeline roles={[latest]} compact />
 </Section>
 
 <Section
   id="skills"
-  eyebrow={pick(lang, homeSections.skillsEyebrow)}
-  title={pick(lang, homeSections.skillsTitle)}
-  intro={pick(lang, homeSections.skillsIntro)}
+  eyebrow={titles.skillsEyebrow}
+  title={titles.skills}
+  intro={titles.eyebrowSkills}
   tone="primary"
 >
   <SkillsList groups={skills.map((group) => group.data)} />
 </Section>
 
-<Section id="about" eyebrow={pick(lang, about.eyebrow)} title={home.aboutTitle}>
+<Section id="about" eyebrow={titles.eyebrowAbout} title={titles.about}>
   <div class="grid gap-10 md:grid-cols-[1fr_16rem]">
     <div class="max-w-2xl space-y-5 text-base leading-relaxed text-base-content/70">
       <AboutParagraphs />
