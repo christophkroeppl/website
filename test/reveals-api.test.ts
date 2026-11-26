@@ -29,7 +29,7 @@ function call(id: string | undefined, lang?: string, part?: string) {
   if (lang) search.set("lang", lang)
   if (part) search.set("part", part)
   const url = new URL("https://example.com/api/reveals/" + (id ?? "") + "?" + search)
-  return GET({ request: new Request(url), params: { id } } as never)
+  return GET({ request: new Request(url), url: new URL(url), params: { id } } as never)
 }
 
 describe("GET /api/reveals/[id]", () => {

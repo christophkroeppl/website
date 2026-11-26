@@ -6,13 +6,16 @@ import { pageAlternates } from "./alternates"
 import { siteUrl } from "./seo"
 import { absoluteUrl } from "./urls"
 
-function xmlEscape(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;")
+const XML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&apos;",
+}
+
+export function xmlEscape(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => XML_ESCAPES[char] ?? char)
 }
 
 export function robotsTxt(origin: URL | string = siteUrl): string {

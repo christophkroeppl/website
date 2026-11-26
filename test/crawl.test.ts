@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { robotsTxt, sitemapEntries, sitemapXml } from "../src/lib/crawl"
+import { robotsTxt, sitemapEntries, sitemapXml, xmlEscape } from "../src/lib/crawl"
 import { LINKS_HOST } from "../src/links/host"
 import { defaultLocale, locales } from "../src/i18n/locales"
 import { pagePaths, type PageId } from "../src/i18n/routes"
@@ -120,5 +120,11 @@ describe("sitemap endpoint", () => {
     const response = await sitemap(context(`https://${LINKS_HOST}/sitemap.xml`))
 
     expect(response.status).toBe(404)
+  })
+})
+
+describe("xmlEscape", () => {
+  it("escapes all five XML entities in one pass", () => {
+    expect(xmlEscape(`&<>"'`)).toBe("&amp;&lt;&gt;&quot;&apos;")
   })
 })

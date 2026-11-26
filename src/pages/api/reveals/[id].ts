@@ -13,9 +13,8 @@ function respond(status: number, body?: unknown, cache = NO_STORE) {
   })
 }
 
-export const GET: APIRoute = ({ request, params }) => {
+export const GET: APIRoute = ({ url, params }) => {
   const id = params.id
-  const url = new URL(request.url)
   const lang = url.searchParams.get("lang")
   const part = url.searchParams.get("part")
 
