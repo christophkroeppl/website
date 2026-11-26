@@ -19,8 +19,10 @@ const entries = (locales as readonly Locale[]).flatMap((lang) =>
   })),
 )
 
+const bySlug = new Map(entries.map((entry) => [entry.slug, entry]))
+
 export const GET: APIRoute = async ({ params }) => {
-  const entry = entries.find((candidate) => candidate.slug === params.slug)
+  const entry = bySlug.get(params.slug ?? "")
 
   if (!entry) {
     return new Response("Not Found", {
