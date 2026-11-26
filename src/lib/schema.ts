@@ -6,6 +6,7 @@ import { person } from "../content/site"
 import { pick } from "../content/types"
 import type { ProjectData } from "../content.config"
 import { buildTime } from "./build-time"
+import { pageMeta, type PageMeta } from "./page-meta"
 import { inLanguage } from "./seo"
 import { absoluteUrl } from "./urls"
 
@@ -13,16 +14,6 @@ export type Node = Record<string, unknown>
 
 const personId = absoluteUrl("/#person")
 const websiteId = absoluteUrl("/#website")
-
-const personNodeOnPage = new Set<PageId>(["home", "cv", "contact", "projects"])
-
-const pageType: Record<PageId, string> = {
-  home: "WebPage",
-  contact: "ContactPage",
-  cv: "ProfilePage",
-  projects: "CollectionPage",
-  privacy: "WebPage",
-}
 
 const profileHosts = [
   "linkedin.com",
@@ -110,8 +101,16 @@ export function webPageNode({
   description?: string
   url: string
 }): Node {
+  const meta: PageMeta = pageMeta[page]
+  const mainEntity =
+    meta.mainEntity === "person"
+      ? personId
+      : meta.mainEntity === "projects"
+        ? `${url}#projects`
+        : undefined
+
   return {
-    "@type": pageType[page],
+    "@type": meta.type,
     "@id": `${url}#webpage`,
     url,
     name: title,
@@ -119,15 +118,9 @@ export function webPageNode({
     ...(description ? { description } : {}),
     inLanguage: inLanguage(lang),
     isPartOf: { "@id": websiteId },
-    about: { "@id": personNodeOnPage.has(page) ? personId : websiteId },
-    ...(mainEntityOf(page, url) ? { mainEntity: { "@id": mainEntityOf(page, url) } } : {}),
+    about: { "@id": meta.about === "person" ? personId : websiteId },
+    ...(mainEntity ? { mainEntity: { "@id": mainEntity } } : {}),
   }
-}
-
-function mainEntityOf(page: PageId, url: string): string | undefined {
-  if (page === "home" || page === "cv") return personId
-  if (page === "projects") return `${url}#projects`
-  return undefined
 }
 
 export function breadcrumbNode({
@@ -141,7 +134,7 @@ export function breadcrumbNode({
   title: string
   url: string
 }): Node | undefined {
-  if (page === "home") return undefined
+  if (!pageMeta[page].breadcrumb) return undefined
 
   return {
     "@type": "BreadcrumbList",

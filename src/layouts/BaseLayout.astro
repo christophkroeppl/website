@@ -10,6 +10,7 @@ import { og, person } from "../content/site"
 import { cvFor, descriptionFor, rolesFor, skillsFor } from "../lib/content"
 import { formatPageTitle, inLanguage, ogLocale, otherLocale, siteUrl } from "../lib/seo"
 import { markdownPath } from "../lib/urls"
+import { pageMeta } from "../lib/page-meta"
 import {
   breadcrumbNode,
   graph,
@@ -31,6 +32,7 @@ const { title = person.name, description, image, noindex = false, schema = [] } 
 const lang = getLocale(Astro)
 const t = useTranslations(lang)
 const page = activePage(Astro.url.pathname)
+const meta = page ? pageMeta[page] : undefined
 const site = Astro.site ?? new URL(siteUrl)
 const canonical = new URL(Astro.url.pathname, site).href
 const metaDescription = description
@@ -62,7 +64,7 @@ const structuredData = noindex
         knowsLanguage,
         description: homeDescription,
         employers,
-        ...(page === "cv" ? { mainEntityOfPage: `${canonical}#webpage` } : {}),
+        ...(meta?.personMainEntityOfPage ? { mainEntityOfPage: `${canonical}#webpage` } : {}),
       }),
       websiteNode(),
       ...(page
@@ -102,7 +104,7 @@ const lastName = nameParts.slice(1).join(" ")
       <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
     ))}
     {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
-    <meta property="og:type" content={page === "home" ? "profile" : "website"} />
+    <meta property="og:type" content={meta?.ogType ?? "website"} />
     <meta property="og:title" content={pageTitle} />
     {metaDescription && <meta property="og:description" content={metaDescription} />}
     {!noindex && <meta property="og:url" content={canonical} />}
@@ -112,8 +114,8 @@ const lastName = nameParts.slice(1).join(" ")
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:site_name" content={person.name} />
     <meta property="og:locale" content={ogLocale(lang)} />
-    {page === "home" && <meta property="profile:first_name" content={firstName} />}
-    {page === "home" && <meta property="profile:last_name" content={lastName} />}
+    {meta?.profileName && <meta property="profile:first_name" content={firstName} />}
+    {meta?.profileName && <meta property="profile:last_name" content={lastName} />}
     {!noindex && alternates.length > 0 && (
       <meta property="og:locale:alternate" content={ogLocaleAlternate} />
     )}
