@@ -1,7 +1,8 @@
-import { defaultLocale, locales } from "../i18n/locales"
+import { locales } from "../i18n/locales"
 import { pagePaths, type PageId } from "../i18n/routes"
 import { buildTime } from "./build-time"
-import { inLanguage, siteUrl } from "./seo"
+import { pageAlternates } from "./alternates"
+import { siteUrl } from "./seo"
 import { absoluteUrl } from "./urls"
 
 function xmlEscape(value: string): string {
@@ -31,13 +32,10 @@ export function sitemapEntries(origin: URL | string = siteUrl): SitemapEntry[] {
 
   return ids.flatMap((id) => {
     const pair = pagePaths[id]
-    const alternates = [
-      ...locales.map((lang) => ({
-        hreflang: inLanguage(lang),
-        href: absoluteUrl(pair[lang], origin),
-      })),
-      { hreflang: "x-default", href: absoluteUrl(pair[defaultLocale], origin) },
-    ]
+    const alternates = pageAlternates(id).map(({ hreflang, path }) => ({
+      hreflang,
+      href: absoluteUrl(path, origin),
+    }))
 
     return locales.map((lang) => ({
       loc: absoluteUrl(pair[lang], origin),
