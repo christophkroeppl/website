@@ -1,7 +1,11 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+@source "../";
 
 @plugin "daisyui" {
   themes: false;
+  include:
+    properties, rootcolor, rootscrolllock, rootscrollgutter, svg, alert, avatar, button, fab,
+    fieldset, input, label, link, modal, textarea;
 }
 
 @plugin "daisyui/theme" {
@@ -9,6 +13,7 @@
   default: true;
   prefersdark: false;
   color-scheme: light;
+  themecontroller: false;
 
   --color-base-100: oklch(99% 0.005 95);
   --color-base-200: oklch(97% 0.008 95);
@@ -166,5 +171,3 @@
     @apply link link-hover text-accent;
   }
 }
-
-@source not "../../.agents";
