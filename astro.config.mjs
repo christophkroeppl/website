@@ -28,10 +28,7 @@ export default defineConfig({
     links(),
     ogImages(),
   ],
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "viewport",
-  },
+  prefetch: false,
   vite: {
     define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
     plugins: [tailwindcss()],
