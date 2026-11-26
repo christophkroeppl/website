@@ -18,6 +18,17 @@ instead of setting `prerender = true`.
 Icon packs are build-time only: add them as devDependencies and import them from
 `integrations/` (never from a page), so the Worker bundle carries only the used icons.
 
+## Reveal is anti-crawler by design
+
+The `reveal` integration (`src/reveals/`, `integrations/reveals.ts`,
+`src/components/Reveal.astro`, `/api/reveals/[id]`) exists to show legally required
+contact details to humans while making them as hard as possible for crawlers and
+AI to read. The address, email and phone are baked into SVG outlines at build
+time; the page ships no text, the button is empty with no ARIA label, and the
+payload loads only after page load or on click. The low accessibility/SEO scores
+on `/impressum/` are deliberate — do not add fallback text, ARIA state, or
+crawlable copies to "fix" them. Do not re-add that work to the plan.
+
 ## Unlighthouse v1 beta caveats
 
 Use `unlighthouse.config.ts` for production and `unlighthouse.preview.config.ts`
