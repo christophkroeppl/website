@@ -13,117 +13,120 @@ const { lang, trigger = true, privacyHref } = Astro.props
 const t = useTranslations(lang)
 const privacyPath = privacyHref ?? pathFor("privacy", lang)
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
+const titleId = `contact-modal-title-${crypto.randomUUID()}`
 ---
 
-{trigger && !Astro.slots.has("default") && <ContactTrigger label={t("contact.open")} />}
-<slot />
+<div data-contact-root>
+  {trigger && !Astro.slots.has("default") && <ContactTrigger label={t("contact.open")} />}
+  <slot />
 
-<dialog
-  id="contact-modal"
-  class="modal modal-bottom sm:modal-middle"
-  aria-labelledby="contact-modal-title"
->
-  <div class="modal-box relative overflow-hidden">
-    <div class="brand-rule absolute inset-x-0 top-0" aria-hidden="true"></div>
-    <form method="dialog">
-      <button
-        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        aria-label={t("contact.close")}
+  <dialog class="modal modal-bottom sm:modal-middle" data-contact-dialog aria-labelledby={titleId}>
+    <div class="modal-box relative overflow-hidden">
+      <div class="brand-rule absolute inset-x-0 top-0" aria-hidden="true"></div>
+      <form method="dialog">
+        <button
+          class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          aria-label={t("contact.close")}
+        >
+          ✕
+        </button>
+      </form>
+      <h3 id={titleId} class="text-lg font-bold">
+        {t("contact.title")}
+      </h3>
+      <form
+        class="mt-4 space-y-4"
+        data-contact-form
+        data-email-required={t("contact.emailRequired")}
+        data-send={t("contact.send")}
+        data-sending={t("contact.sending")}
+        data-success={t("contact.success")}
+        data-error={t("contact.error")}
       >
-        ✕
-      </button>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend" id="contact-name-label">
+            {t("contact.name")}
+          </legend>
+          <input
+            type="text"
+            name="name"
+            class="input w-full focus:border-accent"
+            required
+            autocomplete="name"
+            aria-labelledby="contact-name-label"
+            aria-required="true"
+          />
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend" id="contact-email-label">
+            {t("contact.email")}
+          </legend>
+          <input
+            type="email"
+            name="email"
+            class="input w-full focus:border-accent"
+            autocomplete="email"
+            aria-labelledby="contact-email-label"
+          />
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend" id="contact-phone-label">
+            {t("contact.phone")}
+          </legend>
+          <input
+            type="tel"
+            name="phone"
+            class="input w-full focus:border-accent"
+            autocomplete="tel"
+            aria-labelledby="contact-phone-label"
+          />
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend" id="contact-message-label">
+            {t("contact.message")}
+          </legend>
+          <textarea
+            name="message"
+            class="textarea w-full focus:border-accent"
+            required
+            minlength="30"
+            maxlength="1500"
+            aria-labelledby="contact-message-label"
+            aria-required="true"
+          ></textarea>
+          <p class="label">{t("contact.messageHint")}</p>
+        </fieldset>
+        <div data-turnstile data-sitekey={siteKey}></div>
+        <p class="text-xs text-base-content/70">{t("contact.turnstile")}</p>
+        <div data-contact-status role="status" class="alert" hidden></div>
+        <div class="modal-action">
+          <button type="submit" data-contact-submit class="btn btn-primary" disabled>
+            {t("contact.send")}
+          </button>
+          <button type="button" data-contact-close class="btn">
+            {t("contact.close")}
+          </button>
+        </div>
+        <p class="mt-4 text-xs leading-relaxed text-base-content/65">
+          {t("contact.privacyNote")}{" "}
+          <a class="link link-hover text-accent" href={privacyPath}>
+            {t("contact.privacyLink")}
+          </a>
+          .
+        </p>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>{t("contact.close")}</button>
     </form>
-    <h3 id="contact-modal-title" class="text-lg font-bold">
-      {t("contact.title")}
-    </h3>
-    <form
-      id="contact-form"
-      class="mt-4 space-y-4"
-      data-send={t("contact.send")}
-      data-sending={t("contact.sending")}
-      data-success={t("contact.success")}
-      data-error={t("contact.error")}
-    >
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend" id="contact-name-label">
-          {t("contact.name")}
-        </legend>
-        <input
-          type="text"
-          name="name"
-          class="input w-full focus:border-accent"
-          required
-          autocomplete="name"
-          aria-labelledby="contact-name-label"
-          aria-required="true"
-        />
-      </fieldset>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend" id="contact-email-label">
-          {t("contact.email")}
-        </legend>
-        <input
-          type="email"
-          name="email"
-          class="input w-full focus:border-accent"
-          autocomplete="email"
-          aria-labelledby="contact-email-label"
-        />
-      </fieldset>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend" id="contact-phone-label">
-          {t("contact.phone")}
-        </legend>
-        <input
-          type="tel"
-          name="phone"
-          class="input w-full focus:border-accent"
-          autocomplete="tel"
-          aria-labelledby="contact-phone-label"
-        />
-      </fieldset>
-      <fieldset class="fieldset">
-        <legend class="fieldset-legend" id="contact-message-label">
-          {t("contact.message")}
-        </legend>
-        <textarea
-          name="message"
-          class="textarea w-full focus:border-accent"
-          required
-          minlength="30"
-          maxlength="1500"
-          aria-labelledby="contact-message-label"
-          aria-required="true"
-        ></textarea>
-        <p class="label">{t("contact.messageHint")}</p>
-      </fieldset>
-      <div class="cf-turnstile" data-sitekey={siteKey} data-callback="onTurnstileSuccess"></div>
-      <p class="text-xs text-base-content/70">{t("contact.turnstile")}</p>
-      <div id="contact-status" role="status" class="alert" hidden></div>
-      <div class="modal-action">
-        <button type="submit" id="contact-submit" class="btn btn-primary" disabled>
-          {t("contact.send")}
-        </button>
-        <button type="button" data-contact-close class="btn">
-          {t("contact.close")}
-        </button>
-      </div>
-      <p class="mt-4 text-xs leading-relaxed text-base-content/65">
-        {t("contact.privacyNote")}{" "}
-        <a class="link link-hover text-accent" href={privacyPath}>
-          {t("contact.privacyLink")}
-        </a>
-        .
-      </p>
-    </form>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>{t("contact.close")}</button>
-  </form>
-</dialog>
+  </dialog>
+</div>
 
 <script>
-  type Turnstile = { reset: () => void }
+  type Turnstile = {
+    render: (container: HTMLElement, options: { sitekey: string; callback: () => void }) => string
+    reset: (widgetId?: string) => void
+  }
   type StatusKind = "success" | "error"
 
   const statusClass: Record<StatusKind, string> = {
@@ -131,21 +134,23 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
     error: "alert alert-error",
   }
 
-  const dialog = document.querySelector<HTMLDialogElement>("#contact-modal")
-  const form = document.querySelector<HTMLFormElement>("#contact-form")
-  const status = document.querySelector<HTMLElement>("#contact-status")
-  const submit = document.querySelector<HTMLButtonElement>("#contact-submit")
-
   const turnstile = () => (window as Window & { turnstile?: Turnstile }).turnstile
 
-  let turnstileLoaded = false
+  for (const root of document.querySelectorAll<HTMLElement>("[data-contact-root]")) {
+    const dialog = root.querySelector<HTMLDialogElement>("[data-contact-dialog]")
+    const form = root.querySelector<HTMLFormElement>("[data-contact-form]")
+    const status = root.querySelector<HTMLElement>("[data-contact-status]")
+    const submit = root.querySelector<HTMLButtonElement>("[data-contact-submit]")
+    const container = root.querySelector<HTMLElement>("[data-turnstile]")
 
-  if (dialog && form && status && submit) {
+    if (!dialog || !form || !status || !submit || !container) continue
+
     const messages = form.dataset as {
       send: string
       sending: string
       success: string
       error: string
+      emailRequired: string
     }
 
     const setStatus = (kind: StatusKind, message: string) => {
@@ -159,11 +164,22 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       status.textContent = ""
     }
 
+    let widgetId: string | undefined
+    let turnstileLoaded = false
+
     const loadTurnstile = () => {
       if (turnstileLoaded) return
       turnstileLoaded = true
       const script = document.createElement("script")
       script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js"
+      script.onload = () => {
+        widgetId = turnstile()?.render(container, {
+          sitekey: container.dataset.sitekey ?? "",
+          callback: () => {
+            submit.disabled = false
+          },
+        })
+      }
       script.onerror = () => {
         setStatus("error", messages.error)
         turnstileLoaded = false
@@ -175,28 +191,31 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       button.addEventListener("click", () => {
         clearStatus()
         dialog.showModal()
-        if (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY) loadTurnstile()
+        if (container.dataset.sitekey) loadTurnstile()
       })
     }
 
-    for (const button of document.querySelectorAll("[data-contact-close]")) {
+    for (const button of root.querySelectorAll("[data-contact-close]")) {
       button.addEventListener("click", () => dialog.close())
-    }
-
-    ;(window as Window & { onTurnstileSuccess?: () => void }).onTurnstileSuccess = () => {
-      submit.disabled = false
     }
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault()
+      const data = new FormData(form)
+      const email = String(data.get("email") ?? "").trim()
+      const phone = String(data.get("phone") ?? "").trim()
+      if (!email && !phone) {
+        setStatus("error", messages.emailRequired)
+        return
+      }
+
       submit.disabled = true
       submit.textContent = messages.sending
 
-      const data = new FormData(form)
       const payload = {
         name: data.get("name"),
-        email: data.get("email"),
-        phone: data.get("phone"),
+        email,
+        phone,
         message: data.get("message"),
         token: data.get("cf-turnstile-response"),
       }
@@ -211,6 +230,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
         if (!response.ok) throw new Error(result.error || messages.error)
         setStatus("success", messages.success)
         form.reset()
+        turnstile()?.reset(widgetId)
       } catch (reason) {
         setStatus(
           "error",
@@ -219,7 +239,6 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
       } finally {
         submit.disabled = true
         submit.textContent = messages.send
-        turnstile()?.reset()
       }
     })
   }

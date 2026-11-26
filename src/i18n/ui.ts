@@ -26,6 +26,7 @@ const de = {
   "contact.messageHint": "Mindestens 30 Zeichen",
   "contact.success": "Nachricht gesendet. Danke!",
   "contact.error": "Fehler beim Senden. Bitte erneut versuchen.",
+  "contact.emailRequired": "E-Mail oder Telefon erforderlich",
   "contact.turnstile": "Bitte bestätige, dass du ein Mensch bist.",
   "contact.reveal": "Kontaktdaten anzeigen",
   "contact.privacyNote": "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Angaben gemäß der",
@@ -95,6 +96,7 @@ export const ui = {
     "contact.messageHint": "At least 30 characters",
     "contact.success": "Message sent. Thank you!",
     "contact.error": "Failed to send. Please try again.",
+    "contact.emailRequired": "Email or phone required",
     "contact.turnstile": "Please confirm you are human.",
     "contact.reveal": "Show contact details",
     "contact.privacyNote":
