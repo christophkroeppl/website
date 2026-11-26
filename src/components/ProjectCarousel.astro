@@ -82,7 +82,7 @@ const { featured } = splitProjects(projects)
         observer = undefined
         void start()
       },
-      { rootMargin: "400px" },
+      { threshold: 0.01 },
     )
     observer.observe(viewport)
   }
@@ -96,6 +96,16 @@ const { featured } = splitProjects(projects)
 
   const sync = () => (mobile.matches ? watch() : stop())
 
-  sync()
+  const schedule = () => {
+    const idle =
+      window.requestIdleCallback ??
+      ((callback: IdleRequestCallback) =>
+        window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 0 }), 0))
+    idle(() => sync())
+  }
+
+  if (document.readyState === "complete") schedule()
+  else window.addEventListener("load", schedule, { once: true })
+
   mobile.addEventListener("change", sync)
 </script>

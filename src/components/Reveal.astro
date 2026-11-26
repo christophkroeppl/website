@@ -75,15 +75,21 @@ const { id, lang } = Astro.props
   }
 
   window.addEventListener("load", () => {
-    for (const root of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
-      const id = root.dataset.revealId
-      const lang = root.dataset.revealLang
-      const button = root.querySelector<HTMLButtonElement>("[data-reveal-button]")
-      if (!id || !lang || !button) continue
-      get<LabelPayload>(id, lang, "label")
-        .then(({ viewBox, label }) => button.appendChild(svg(label, viewBox)))
-        .catch(() => {})
-    }
+    const idle =
+      window.requestIdleCallback ??
+      ((callback: IdleRequestCallback) =>
+        window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 0 }), 0))
+    idle(() => {
+      for (const root of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
+        const id = root.dataset.revealId
+        const lang = root.dataset.revealLang
+        const button = root.querySelector<HTMLButtonElement>("[data-reveal-button]")
+        if (!id || !lang || !button) continue
+        get<LabelPayload>(id, lang, "label")
+          .then(({ viewBox, label }) => button.appendChild(svg(label, viewBox)))
+          .catch(() => {})
+      }
+    })
   })
 
   for (const root of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
