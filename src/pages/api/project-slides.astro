@@ -4,17 +4,18 @@ import { getLocale } from "virtual:astro-localized-routes"
 import { defaultLocale } from "../../i18n/locales"
 import { pathFor } from "../../i18n/routes"
 import { projectsFor } from "../../lib/content"
+import { FEATURED_PROJECT_COUNT, splitProjects, projectPosition } from "../../lib/projects"
 
 const lang = getLocale(Astro) ?? defaultLocale
 const basePath = pathFor("projects", lang)
-const projects = (await projectsFor(lang)).slice(3)
+const { remaining } = splitProjects(await projectsFor(lang))
 ---
 
-{projects.map((project, index) => (
+{remaining.map((project, index) => (
   <ProjectSlide
     project={project.data}
     lang={lang}
-    index={index + 4}
+    index={projectPosition(FEATURED_PROJECT_COUNT, index)}
     href={`${basePath}#${project.data.id}`}
   />
 ))}

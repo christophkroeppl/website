@@ -3,6 +3,7 @@ import ProjectCard from "./ProjectCard.astro"
 import ProjectSlide from "./ProjectSlide.astro"
 import type { ProjectData } from "../content.config"
 import { localeMeta, type Locale } from "../i18n/locales"
+import { splitProjects, projectPosition } from "../lib/projects"
 
 interface Props {
   projects: { data: ProjectData }[]
@@ -12,7 +13,7 @@ interface Props {
 }
 
 const { projects, lang, basePath, label } = Astro.props
-const featured = projects.slice(0, 3)
+const { featured } = splitProjects(projects)
 ---
 
 <div
@@ -32,7 +33,7 @@ const featured = projects.slice(0, 3)
         <ProjectSlide
           project={project.data}
           lang={lang}
-          index={index + 1}
+          index={projectPosition(0, index)}
           href={`${basePath}#${project.data.id}`}
         />
       ))}
@@ -53,7 +54,7 @@ const featured = projects.slice(0, 3)
     <ProjectCard
       project={project.data}
       lang={lang}
-      index={index + 1}
+      index={projectPosition(0, index)}
       href={`${basePath}#${project.data.id}`}
     />
   ))}
