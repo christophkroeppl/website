@@ -58,6 +58,19 @@ describe("POST /api/contact", () => {
     expect(response.status).toBe(400)
   })
 
+  it("rejects a misconfigured deployment before parsing the body", async () => {
+    delete env.TURNSTILE_SECRET_KEY
+    const response = await POST({
+      request: new Request("https://example.com/api/contact/", {
+        method: "POST",
+        body: "not json",
+      }),
+    } as never)
+    expect(response.status).toBe(500)
+    expect(await response.json()).toEqual({ error: "Server misconfigured" })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it("rejects invalid input", async () => {
     const response = await POST({
       request: request({ name: "Ada", message: valid.message, token: "token" }),

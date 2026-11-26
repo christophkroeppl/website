@@ -22,12 +22,24 @@ const schema = z
     path: ["email"],
   })
 
-export const POST: APIRoute = async ({ request }) => {
+type ContactConfig = {
+  secret: string
+  botToken: string
+  chatId: string
+}
+
+function contactConfig(): ContactConfig | undefined {
   const secret = cfEnv.TURNSTILE_SECRET_KEY
   const botToken = cfEnv.TELEGRAM_BOT_TOKEN
   const chatId = cfEnv.TELEGRAM_CHAT_ID
 
-  if (!secret || !botToken || !chatId) {
+  if (!secret || !botToken || !chatId) return undefined
+  return { secret, botToken, chatId }
+}
+
+export const POST: APIRoute = async ({ request }) => {
+  const config = contactConfig()
+  if (!config) {
     return json({ error: "Server misconfigured" }, 500)
   }
 
@@ -50,7 +62,7 @@ export const POST: APIRoute = async ({ request }) => {
     const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ secret, response: token }),
+      body: new URLSearchParams({ secret: config.secret, response: token }),
       signal: AbortSignal.timeout(5000),
     })
     verify = (await verifyRes.json()) as { success: boolean }
@@ -63,10 +75,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   const text = `New contact form message\nName: ${name}\nEmail: ${email || "-"}\nPhone: ${phone || "-"}\n\n${message}`
   try {
-    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const tgRes = await fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
+      body: JSON.stringify({ chat_id: config.chatId, text }),
       signal: AbortSignal.timeout(5000),
     })
     if (!tgRes.ok) {
