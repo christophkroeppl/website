@@ -9,7 +9,7 @@ import { og, person } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/config"
 import { parseFrontmatter } from "../src/lib/frontmatter"
 import { siteUrl } from "../src/content/site"
-import { resolveTheme, type ResolvedTheme } from "./theme"
+import { readThemeTokens, type ThemeTokens } from "./theme"
 
 const WIDTH = 1200
 const HEIGHT = 630
@@ -43,20 +43,20 @@ function readHomeTitle(root: string, lang: Locale): string {
   return title
 }
 
-function palette(tokens: ResolvedTheme) {
+export function palette(tokens: ThemeTokens) {
   return {
-    base: tokens.rgb(tokens.base100),
-    ink: tokens.rgb(tokens.baseContent),
-    inkMuted: tokens.rgb(tokens.baseContent, 0.45),
-    primary: tokens.rgb(tokens.primary),
-    primaryRule: tokens.rgb(tokens.primary, 0.85),
-    primaryRing: tokens.rgb(tokens.primary, 0.22),
-    primaryGlow: tokens.rgb(tokens.primary, 0.13),
-    primaryClear: tokens.rgb(tokens.primary, 0),
-    secondary: tokens.rgb(tokens.secondary),
-    accent: tokens.rgb(tokens.accent),
-    accentGlow: tokens.rgb(tokens.accent, 0.11),
-    accentClear: tokens.rgb(tokens.accent, 0),
+    base: tokens.base100,
+    ink: tokens.baseContent,
+    inkMuted: `${tokens.baseContent} / 45%`,
+    primary: tokens.primary,
+    primaryRule: `${tokens.primary} / 85%`,
+    primaryRing: `${tokens.primary} / 22%`,
+    primaryGlow: `${tokens.primary} / 13%`,
+    primaryClear: `${tokens.primary} / 0%`,
+    secondary: tokens.secondary,
+    accent: tokens.accent,
+    accentGlow: `${tokens.accent} / 11%`,
+    accentClear: `${tokens.accent} / 0%`,
   }
 }
 
@@ -70,6 +70,15 @@ function font(root: string, file: string, name: string, weight: FontWeight) {
 }
 
 type Palette = ReturnType<typeof palette>
+
+function satoriReady(colors: Palette): Palette {
+  return Object.fromEntries(
+    Object.entries(colors).map(([key, value]) => [
+      key,
+      value.replace(/\) \/ ([\d.]+%)$/, " / $1)"),
+    ]),
+  ) as Palette
+}
 
 type CardOptions = {
   title: string
@@ -203,7 +212,7 @@ export function ogImages(): AstroIntegration {
     hooks: {
       "astro:config:setup": async ({ config }) => {
         const root = fileURLToPath(config.root)
-        const colors = palette(resolveTheme(root))
+        const colors = satoriReady(palette(readThemeTokens(root)))
         const fonts = [
           font(root, "inter-latin-500.woff2", "Inter", 500),
           font(root, "inter-latin-600.woff2", "Inter", 600),
