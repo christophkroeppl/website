@@ -13,3 +13,4 @@ tsconfig.astro.json
 src/generated/
 public/generated/
 .archify/
+.unlighthouse/
