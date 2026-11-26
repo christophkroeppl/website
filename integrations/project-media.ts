@@ -2,13 +2,15 @@ import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import type { AstroIntegration } from "astro"
+import { parseFrontmatter } from "../src/lib/frontmatter"
 import { readThemeTokens, type ThemeTokens } from "./theme"
 
 type ProjectMedia = {
   repo: string
   rev: string
   path: string
-  dest: string
+  slug: string
+  kind: "src" | "before" | "after"
 }
 
 const assets: ProjectMedia[] = [
@@ -16,33 +18,68 @@ const assets: ProjectMedia[] = [
     repo: "christophkroeppl/bases-mcp",
     rev: "3442b72bcc5c5512de6e558b3622a9e0fa31f4d5",
     path: "docs/architecture.html",
-    dest: "public/generated/projects/bases-mcp.html",
+    slug: "bases-mcp",
+    kind: "src",
   },
   {
     repo: "christophkroeppl/guarden",
     rev: "ff49d0c3d89fa5b0437c2803dec3ee7e66b5a82a",
     path: "docs/architecture.html",
-    dest: "public/generated/projects/guarden.html",
+    slug: "guarden",
+    kind: "src",
   },
   {
     repo: "christophkroeppl/oc-go-usage-display",
     rev: "8bab88e3183c9941f3f9b34e9ce07ed78d21c046",
     path: "docs/compare/opencode.webp",
-    dest: "public/generated/projects/oc-go/opencode.webp",
+    slug: "oc-go-usage-display",
+    kind: "before",
   },
   {
     repo: "christophkroeppl/oc-go-usage-display",
     rev: "8bab88e3183c9941f3f9b34e9ce07ed78d21c046",
     path: "docs/compare/kilo.webp",
-    dest: "public/generated/projects/oc-go/kilo.webp",
+    slug: "oc-go-usage-display",
+    kind: "after",
   },
   {
     repo: "christophkroeppl/website",
     rev: "bd1454bda11dfe5eb35c2210b6e3539d63b205a0",
     path: "docs/architecture.html",
-    dest: "public/generated/projects/kroeppl-ch.html",
+    slug: "kroeppl-ch",
+    kind: "src",
   },
 ]
+
+export type ArtifactRef = { slug: string; kind: "src" | "before" | "after"; url: string }
+
+export function collectArtifactRefs(root: string): ArtifactRef[] {
+  const dir = path.join(root, "src/content/pages/projects")
+  const refs: ArtifactRef[] = []
+
+  for (const file of fs.readdirSync(dir).filter((name) => name.endsWith(".md"))) {
+    const slug = file.replace(/\.(de|en)\.md$/, "")
+    const data = parseFrontmatter(fs.readFileSync(path.join(dir, file), "utf8"))
+    const artifact = data.artifact as { src?: string; before?: string; after?: string } | undefined
+    if (!artifact) continue
+
+    for (const kind of ["src", "before", "after"] as const) {
+      const url = artifact[kind]
+      if (typeof url === "string" && url.startsWith("/generated/")) {
+        refs.push({ slug, kind, url })
+      }
+    }
+  }
+
+  return refs.filter(
+    (ref, index, all) =>
+      all.findIndex((other) => other.slug === ref.slug && other.kind === ref.kind) === index,
+  )
+}
+
+export function publicToDest(url: string): string {
+  return url.replace(/^\//, "public/")
+}
 
 const STYLE_ID = "project-media-embed"
 const SCRIPT_ID = "project-media-embed-viewer"
@@ -213,10 +250,16 @@ export function projectMedia(): AstroIntegration {
 
         const root = fileURLToPath(config.root)
         const theme = readThemeTokens(root)
+        const refs = collectArtifactRefs(root)
+        const produced = new Set<string>()
 
         for (const media of assets) {
+          const ref = refs.find((ref) => ref.slug === media.slug && ref.kind === media.kind)
+          if (!ref) {
+            throw new Error(`No content reference for project media ${media.slug}/${media.kind}`)
+          }
           const url = `https://raw.githubusercontent.com/${media.repo}/${media.rev}/${media.path}`
-          const target = path.join(root, media.dest)
+          const target = path.join(root, publicToDest(ref.url))
 
           let buffer: Buffer
           try {
@@ -235,13 +278,20 @@ export function projectMedia(): AstroIntegration {
             )
           }
 
-          const body = media.dest.endsWith(".html")
+          const body = ref.url.endsWith(".html")
             ? Buffer.from(embedDiagram(buffer.toString("utf8"), theme))
             : buffer
 
           fs.mkdirSync(path.dirname(target), { recursive: true })
           fs.writeFileSync(target, body)
+          produced.add(ref.url)
           logger.info(`Fetched ${media.repo}/${media.path} (${media.rev})`)
+        }
+
+        for (const ref of refs) {
+          if (!produced.has(ref.url)) {
+            throw new Error(`No producer for generated asset ${ref.url}`)
+          }
         }
       },
     },

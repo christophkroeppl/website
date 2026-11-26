@@ -1,5 +1,21 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { embedDiagram } from "../integrations/project-media"
+import { collectArtifactRefs, embedDiagram, publicToDest } from "../integrations/project-media"
+
+function artifactRoot(): string {
+  const root = mkdtempSync(join(tmpdir(), "project-media-"))
+  const dir = join(root, "src/content/pages/projects")
+  mkdirSync(dir, { recursive: true })
+  for (const lang of ["de", "en"]) {
+    writeFileSync(
+      join(dir, `bases-mcp.${lang}.md`),
+      `---\nartifact:\n  src: /generated/projects/bases-mcp.html\n---\n`,
+    )
+  }
+  return root
+}
 
 const source = `<!DOCTYPE html>
 <html data-embed="true">
@@ -46,5 +62,30 @@ describe("embedDiagram", () => {
     expect(result).toContain("zoomIn()")
 
     expect(embedDiagram(result, tokens)).toBe(result)
+  })
+})
+
+describe("collectArtifactRefs", () => {
+  it("returns content references deduplicated across locales", () => {
+    const root = artifactRoot()
+    try {
+      expect(collectArtifactRefs(root)).toEqual([
+        {
+          slug: "bases-mcp",
+          kind: "src",
+          url: "/generated/projects/bases-mcp.html",
+        },
+      ])
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+})
+
+describe("publicToDest", () => {
+  it("maps a public URL to its build destination", () => {
+    expect(publicToDest("/generated/projects/bases-mcp.html")).toBe(
+      "public/generated/projects/bases-mcp.html",
+    )
   })
 })
