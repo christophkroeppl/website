@@ -101,6 +101,14 @@
 }
 
 @layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+  }
+
+  .section-rule {
+    @apply border-t border-primary/25;
+  }
+
   .eyebrow {
     @apply font-mono text-[0.72rem] uppercase tracking-[0.2em] text-accent;
   }

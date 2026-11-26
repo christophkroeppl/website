@@ -11,10 +11,7 @@ interface Props {
 const { project, index } = Astro.props
 ---
 
-<article
-  id={project.id}
-  class="scroll-mt-24 border-t border-primary/25 py-14 first:border-t-0 first:pt-0"
->
+<article id={project.id} class="scroll-mt-24 section-rule py-14 first:border-t-0 first:pt-0">
   <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem]">
     <div>
       <div class="flex items-baseline gap-4">

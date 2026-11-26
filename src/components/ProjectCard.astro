@@ -14,7 +14,7 @@ const { project, lang, index, href } = Astro.props
 const t = useTranslations(lang)
 ---
 
-<article class="flex h-full flex-col border-t border-primary/25 pt-5">
+<article class="flex h-full flex-col section-rule pt-5">
   <div class="flex items-baseline justify-between gap-4">
     <span class="font-mono text-xs font-medium text-accent">{String(index).padStart(2, "0")}</span>
     <span class="chip chip-info rounded-full py-0.5">{project.status}</span>

@@ -24,7 +24,7 @@ const projects = await Promise.all(
   lead={t("projects.intro")}
 />
 
-<div class="mx-auto w-full max-w-5xl border-t border-primary/25 px-4 py-14 sm:px-6 sm:py-20">
+<div class="page-container section-rule py-14 sm:py-20">
   {projects.map(({ entry, Content }, index) => (
     <CaseStudy project={entry.data} index={index + 1}>
       <Content />
