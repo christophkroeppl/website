@@ -1,4 +1,4 @@
-import { defineConfig } from "astro/config"
+import { defineConfig, fontProviders } from "astro/config"
 import cloudflare from "@astrojs/cloudflare"
 import localizedRoutes from "astro-localized-routes"
 import tailwindcss from "@tailwindcss/vite"
@@ -16,6 +16,22 @@ export default defineConfig({
   session: false,
   trailingSlash: "always",
   adapter: cloudflare(),
+  fonts: [
+    {
+      provider: fontProviders.local(),
+      name: "Inter",
+      cssVariable: "--font-inter",
+      options: {
+        variants: [
+          {
+            weight: "100 900",
+            style: "normal",
+            src: ["./src/assets/fonts/inter-latin-var.woff2"],
+          },
+        ],
+      },
+    },
+  ],
   integrations: [
     localizedRoutes({
       locales,

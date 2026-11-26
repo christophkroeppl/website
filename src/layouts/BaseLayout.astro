@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets"
 import "../styles/global.css"
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
@@ -140,13 +141,7 @@ const lastName = nameParts.slice(1).join(" ")
       <link rel="describedby" type="text/plain" href={new URL(describedbyPath, site).href} />
     )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/inter-latin-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
+    <Font cssVariable="--font-inter" preload />
   </head>
   <body class="flex min-h-dvh flex-col bg-base-100 text-base-content antialiased">
     <a

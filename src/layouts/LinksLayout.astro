@@ -1,6 +1,6 @@
 ---
+import { Font, Image } from "astro:assets"
 import "../styles/global.css"
-import { Image } from "astro:assets"
 import bullet from "../assets/bullet.webp"
 import LanguageSwitcher from "../components/LanguageSwitcher.astro"
 import type { Locale } from "../i18n/locales"
@@ -26,13 +26,7 @@ const year = new Date().getFullYear()
     <meta name="robots" content="noindex" />
     <title>{name}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/inter-latin-var.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin="anonymous"
-    />
+    <Font cssVariable="--font-inter" preload />
   </head>
   <body class="flex min-h-dvh flex-col bg-base-100 text-base-content antialiased">
     <div class="mx-auto flex w-full max-w-sm items-center px-4 pt-4">
