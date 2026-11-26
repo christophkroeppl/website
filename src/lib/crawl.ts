@@ -68,3 +68,10 @@ ${entries.join("\n")}
 </urlset>
 `
 }
+
+let cachedSitemap: string | undefined
+
+export function sitemapBody(): string {
+  cachedSitemap ??= sitemapXml()
+  return cachedSitemap
+}

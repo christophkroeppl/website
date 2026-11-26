@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { robotsTxt, sitemapEntries, sitemapXml, xmlEscape } from "../src/lib/crawl"
+import { robotsTxt, sitemapBody, sitemapEntries, sitemapXml, xmlEscape } from "../src/lib/crawl"
 import { LINKS_HOST } from "../src/links/host"
 import { defaultLocale, locales } from "../src/i18n/locales"
 import { pagePaths, type PageId } from "../src/i18n/routes"
@@ -104,6 +104,13 @@ describe("sitemapXml", () => {
 
     expect(body).not.toContain(LINKS_HOST)
     expect(body).not.toContain("/404")
+  })
+})
+
+describe("sitemapBody", () => {
+  it("returns the same instance for repeated requests", () => {
+    expect(sitemapBody()).toBe(sitemapBody())
+    expect(sitemapBody()).toBe(sitemapXml())
   })
 })
 
