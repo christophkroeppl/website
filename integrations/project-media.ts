@@ -1,3 +1,4 @@
+import crypto from "node:crypto"
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -50,6 +51,16 @@ const assets: ProjectMedia[] = [
     kind: "src",
   },
 ]
+
+const CACHE_DIR = ".cache/project-media"
+const LOCAL_REPO = "christophkroeppl/website"
+
+export function mediaKey(media: ProjectMedia): string {
+  return crypto
+    .createHash("sha256")
+    .update(`${media.repo}:${media.rev}:${media.path}`)
+    .digest("hex")
+}
 
 export type ArtifactRef = { slug: string; kind: "src" | "before" | "after"; url: string }
 
@@ -250,35 +261,61 @@ export function projectMedia(): AstroIntegration {
         const theme = resolveTheme(root)
         const refs = collectArtifactRefs(root)
         const produced = new Set<string>()
+        const cacheRoot = path.join(root, CACHE_DIR)
 
-        for (const media of assets) {
-          const ref = refs.find((ref) => ref.slug === media.slug && ref.kind === media.kind)
-          if (!ref) {
-            throw new Error(`No content reference for project media ${media.slug}/${media.kind}`)
-          }
-          const url = `https://raw.githubusercontent.com/${media.repo}/${media.rev}/${media.path}`
-          const target = path.join(root, publicToDest(ref.url))
+        const results = await Promise.all(
+          assets.map(async (media) => {
+            const ref = refs.find((ref) => ref.slug === media.slug && ref.kind === media.kind)
+            if (!ref) {
+              throw new Error(`No content reference for project media ${media.slug}/${media.kind}`)
+            }
 
-          let buffer: Buffer
-          try {
-            const response = await fetch(url, {
-              signal: AbortSignal.timeout(15000),
-              headers: { "user-agent": "website-build" },
-            })
+            let buffer: Buffer
+            let source: "local" | "cache" | "network"
 
-            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            if (media.repo === LOCAL_REPO) {
+              buffer = await fs.promises.readFile(path.join(root, media.path))
+              source = "local"
+            } else {
+              const key = mediaKey(media)
+              const cacheFile = path.join(cacheRoot, `${key}${path.extname(media.path)}`)
 
-            buffer = Buffer.from(await response.arrayBuffer())
-            if (buffer.length === 0) throw new Error("empty response")
-          } catch (error) {
-            throw new Error(
-              `Failed project media ${media.repo}/${media.path}@${media.rev}: ${error instanceof Error ? error.message : String(error)}`,
-            )
-          }
+              if (fs.existsSync(cacheFile)) {
+                buffer = await fs.promises.readFile(cacheFile)
+                source = "cache"
+              } else {
+                const url = `https://raw.githubusercontent.com/${media.repo}/${media.rev}/${media.path}`
+                try {
+                  const response = await fetch(url, {
+                    signal: AbortSignal.timeout(15000),
+                    headers: { "user-agent": "website-build" },
+                  })
 
+                  if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+                  buffer = Buffer.from(await response.arrayBuffer())
+                  if (buffer.length === 0) throw new Error("empty response")
+                } catch (error) {
+                  throw new Error(
+                    `Failed project media ${media.repo}/${media.path}@${media.rev}: ${error instanceof Error ? error.message : String(error)}`,
+                  )
+                }
+
+                await fs.promises.mkdir(cacheRoot, { recursive: true })
+                await fs.promises.writeFile(cacheFile, buffer)
+                source = "network"
+              }
+            }
+
+            return { media, ref, source, buffer }
+          }),
+        )
+
+        for (const { media, ref, buffer } of results) {
           const body = ref.url.endsWith(".html")
             ? Buffer.from(embedDiagram(buffer.toString("utf8"), theme))
             : buffer
+          const target = path.join(root, publicToDest(ref.url))
 
           fs.mkdirSync(path.dirname(target), { recursive: true })
           fs.writeFileSync(target, body)

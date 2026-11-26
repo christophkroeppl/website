@@ -14,3 +14,4 @@ src/generated/
 public/generated/
 .archify/
 .unlighthouse/
+.cache/

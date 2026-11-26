@@ -2,7 +2,12 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
-import { collectArtifactRefs, embedDiagram, publicToDest } from "../integrations/project-media"
+import {
+  collectArtifactRefs,
+  embedDiagram,
+  mediaKey,
+  publicToDest,
+} from "../integrations/project-media"
 
 function artifactRoot(): string {
   const root = mkdtempSync(join(tmpdir(), "project-media-"))
@@ -89,5 +94,20 @@ describe("publicToDest", () => {
     expect(publicToDest("/generated/projects/bases-mcp.html")).toBe(
       "public/generated/projects/bases-mcp.html",
     )
+  })
+})
+
+describe("mediaKey", () => {
+  it("keys remote media by repo, rev and path", () => {
+    const media = {
+      repo: "christophkroeppl/oc-go-usage-display",
+      rev: "8bab88e3183c9941f3f9b34e9ce07ed78d21c046",
+      path: "docs/compare/opencode.webp",
+      slug: "oc-go-usage-display",
+      kind: "before" as const,
+    }
+
+    expect(mediaKey(media)).toBe(mediaKey(media))
+    expect(mediaKey({ ...media, rev: "other" })).not.toBe(mediaKey(media))
   })
 })
