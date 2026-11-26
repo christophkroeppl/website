@@ -5,7 +5,7 @@ import ProjectCarousel from "../ProjectCarousel.astro"
 import Timeline from "../Timeline.astro"
 import SkillsList from "../SkillsList.astro"
 import ContactCta from "../ContactCta.astro"
-import ContactModal from "../ContactModal.astro"
+import ContactTrigger from "../ContactTrigger.astro"
 import { about, homeSections } from "../../content/site"
 import { pick } from "../../content/types"
 import {
@@ -48,9 +48,7 @@ const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
         <p class="text-base leading-relaxed text-base-content/65" set:html={home.secondary} />
       </div>
       <div class="flex flex-wrap items-center gap-3 lg:justify-end">
-        <button type="button" data-contact-open class="btn btn-primary">
-          {contact.cta}
-        </button>
+        <ContactTrigger label={contact.cta} />
         <a class="btn btn-outline btn-accent" href={pathFor("projects", lang)}>
           {home.projectsCta}
         </a>
@@ -123,5 +121,3 @@ const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
 </Section>
 
 <ContactCta />
-
-<ContactModal lang={lang} trigger={false} />

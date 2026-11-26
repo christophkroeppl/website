@@ -1,4 +1,5 @@
 ---
+import ContactTrigger from "./ContactTrigger.astro"
 import { useTranslations } from "../i18n/ui"
 import { pathFor, type Locale } from "../i18n/routes"
 
@@ -14,11 +15,8 @@ const privacyPath = privacyHref ?? pathFor("privacy", lang)
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY
 ---
 
-{trigger && (
-  <button type="button" data-contact-open class="btn btn-primary">
-    {t("contact.open")}
-  </button>
-)}
+{trigger && !Astro.slots.has("default") && <ContactTrigger label={t("contact.open")} />}
+<slot />
 
 <dialog
   id="contact-modal"

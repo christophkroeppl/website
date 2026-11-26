@@ -1,0 +1,13 @@
+---
+interface Props {
+  label: string
+  class?: string
+}
+
+const { label, class: className = "btn btn-primary" } = Astro.props
+---
+
+<button type="button" data-contact-open class={className}>
+  <slot />
+  <span class="truncate">{label}</span>
+</button>

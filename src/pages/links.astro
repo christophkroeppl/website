@@ -1,6 +1,7 @@
 ---
 import LinksLayout from "../layouts/LinksLayout.astro"
 import ContactModal from "../components/ContactModal.astro"
+import ContactTrigger from "../components/ContactTrigger.astro"
 import LinkButton from "../components/LinkButton.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { person } from "../content/site"
@@ -40,24 +41,24 @@ const mailPath =
     )
   })}
 
-  <button
-    type="button"
-    data-contact-open
-    class="btn btn-primary btn-lg btn-block justify-start gap-3 font-normal"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="currentColor"
-      class="shrink-0"
-      aria-hidden="true"
+  <ContactModal lang={lang} {...(privacyHref ? { privacyHref } : {})}>
+    <ContactTrigger
+      label={t("links.inquiries")}
+      class="btn btn-primary btn-lg btn-block justify-start gap-3 font-normal"
     >
-      <path d={mailPath} />
-    </svg>
-    <span class="truncate">{t("links.inquiries")}</span>
-  </button>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="currentColor"
+        class="shrink-0"
+        aria-hidden="true"
+      >
+        <path d={mailPath} />
+      </svg>
+    </ContactTrigger>
+  </ContactModal>
 
   <button
     type="button"
@@ -101,8 +102,6 @@ const mailPath =
       )
     })}
   </template>
-
-  <ContactModal lang={lang} trigger={false} {...(privacyHref ? { privacyHref } : {})} />
 </LinksLayout>
 
 <script>

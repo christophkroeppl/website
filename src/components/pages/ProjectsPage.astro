@@ -2,7 +2,6 @@
 import PageHeader from "../PageHeader.astro"
 import CaseStudy from "../CaseStudy.astro"
 import ContactCta from "../ContactCta.astro"
-import ContactModal from "../ContactModal.astro"
 import { projectsFor, renderEntry } from "../../lib/content"
 import { type Locale } from "../../i18n/routes"
 import { useTranslations } from "../../i18n/ui"
@@ -34,5 +33,3 @@ const projects = await Promise.all(
 </div>
 
 <ContactCta />
-
-<ContactModal lang={lang} trigger={false} />

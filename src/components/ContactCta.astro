@@ -1,5 +1,7 @@
 ---
 import { getLocale } from "virtual:astro-localized-routes"
+import ContactModal from "./ContactModal.astro"
+import ContactTrigger from "./ContactTrigger.astro"
 import { useTranslations } from "../i18n/ui"
 import { contactFor } from "../lib/content"
 
@@ -20,10 +22,10 @@ const contact = (await contactFor(lang)).data
           </h2>
           <p class="mt-3 max-w-xl text-sm leading-relaxed text-base-content/65">{contact.body}</p>
         </div>
-        <button type="button" data-contact-open class="btn btn-primary">
-          {contact.cta}
-        </button>
+        <ContactTrigger label={contact.cta} />
       </div>
     </div>
   </div>
 </section>
+
+<ContactModal lang={lang} trigger={false} />
