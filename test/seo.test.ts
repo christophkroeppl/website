@@ -4,13 +4,11 @@ import {
   activePage,
   localizedRoutes,
   pagePaths,
-  routePage,
+  pageRoutes,
+  pathFor,
   type PageId,
-  type RouteKey,
 } from "../src/i18n/routes"
 import { defaultLocale, locales, type Locale } from "../src/i18n/locales"
-
-const ids = Object.keys(pagePaths) as PageId[]
 
 describe("inLanguage", () => {
   it("uses de-AT for German and en for English", () => {
@@ -20,43 +18,33 @@ describe("inLanguage", () => {
 })
 
 describe("route registration", () => {
-  function fullPath(route: keyof typeof localizedRoutes, lang: Locale): string {
-    const prefix = lang === defaultLocale ? "" : `/${lang}`
-    const raw = `${prefix}${localizedRoutes[route][lang]}`
-    return raw.endsWith("/") ? raw : `${raw}/`
-  }
-
-  it("maps every content route to exactly one page", () => {
-    const pages = Object.values(routePage)
-
-    expect(new Set(pages).size).toBe(pages.length)
-    expect([...pages].sort()).toEqual([...ids].sort())
+  it("maps every content page to a distinct route", () => {
+    const routes = Object.values(pageRoutes)
+    expect(new Set(routes).size).toBe(routes.length)
   })
 
-  it("agrees with pagePaths for every content route and locale", () => {
-    const pages: Partial<Record<RouteKey, PageId>> = routePage
-
-    for (const route of Object.keys(localizedRoutes) as RouteKey[]) {
-      const page = pages[route]
-      if (page === undefined) continue
-
+  it("derives pagePaths from localizedRoutes for every page and locale", () => {
+    for (const page of Object.keys(pageRoutes) as PageId[]) {
       for (const lang of locales as readonly Locale[]) {
-        const path = fullPath(route, lang)
-        expect(pagePaths[page][lang], `${route}/${lang}`).toBe(path)
+        const prefix = lang === defaultLocale ? "" : "/" + lang
+        const raw = prefix + localizedRoutes[pageRoutes[page]][lang]
+        const expected = raw.endsWith("/") ? raw : raw + "/"
+        expect(pathFor(page, lang), page + "/" + lang).toBe(expected)
+        expect(pagePaths[page][lang], page + "/" + lang).toBe(expected)
       }
     }
   })
 
   it("registers the links page in both locales without listing it as a content page", () => {
-    expect(fullPath("/links", "de")).toBe("/links/")
-    expect(fullPath("/links", "en")).toBe("/en/links/")
+    expect(localizedRoutes["/links"].de + "/").toBe("/links/")
+    expect("/en" + localizedRoutes["/links"].en + "/").toBe("/en/links/")
     expect(pagePaths).not.toHaveProperty("links")
   })
 
   it("resolves every page path back to its own id", () => {
-    for (const page of ids) {
+    for (const page of Object.keys(pageRoutes) as PageId[]) {
       for (const lang of locales as readonly Locale[]) {
-        expect(activePage(pagePaths[page][lang]), `${page}/${lang}`).toBe(page)
+        expect(activePage(pagePaths[page][lang]), page + "/" + lang).toBe(page)
       }
     }
   })
