@@ -7,16 +7,18 @@ interface Props {
   project: ProjectData
   lang: Locale
   index: number
+  total: number
   href: string
 }
 
-const { project, lang, index, href } = Astro.props
+const { project, lang, index, total, href } = Astro.props
 ---
 
 <div
   class="min-w-0 flex-[0_0_84%] snap-center snap-always px-2"
   role="group"
   aria-roledescription="slide"
+  aria-label={`${index} / ${total}`}
 >
   <ProjectCard project={project} lang={lang} index={index} href={href} />
 </div>

@@ -41,6 +41,8 @@ const de = {
     "Open Source, Kundenarbeit und die Werkzeuge, die dabei entstanden sind. Die Auswahl ist klein, weil ich lieber wenige Dinge zu Ende bringe.",
   "projects.compare.alt": "Screenshot der Go-Nutzung: {label}",
   "projects.compare.aria": "{before} und {after} vergleichen",
+  "projects.previous": "Vorheriges Projekt",
+  "projects.next": "Nächstes Projekt",
   "md.stats": "Kennzahlen",
   "md.stack": "Stack",
   "md.status": "Status",
@@ -112,6 +114,8 @@ export const ui = {
       "Open source, client work and the tools that came out of it. The selection is small because I prefer finishing fewer things.",
     "projects.compare.alt": "Go usage screenshot: {label}",
     "projects.compare.aria": "Compare {before} and {after}",
+    "projects.previous": "Previous project",
+    "projects.next": "Next project",
     "md.stats": "Key facts",
     "md.stack": "Stack",
     "md.status": "Status",
@@ -139,7 +143,9 @@ export const ui = {
 } as const satisfies Record<Locale, Record<TranslationKey, string>>
 
 export function useTranslations(lang: Locale) {
-  return function t(key: TranslationKey) {
-    return ui[lang][key]
+  return function t(key: TranslationKey, values?: Record<string, string | number>) {
+    const template = ui[lang][key]
+    if (!values) return template
+    return template.replace(/\{(\w+)\}/g, (_, name: string) => String(values[name] ?? ""))
   }
 }
