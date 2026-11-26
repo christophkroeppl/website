@@ -4,15 +4,9 @@ import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
-import {
-  contactFor,
-  descriptionFor,
-  homeFor,
-  pickById,
-  projectsFor,
-  rolesFor,
-  skillsFor,
-} from "./content"
+import { contactFor, descriptionFor, projectsFor } from "./content"
+import { cvPageData, homePageData } from "./page-data"
+import { cvSections } from "./page-sections"
 import { RIS_MEDIA_LAW_LABEL, RIS_MEDIA_LAW_URL } from "./page-facts"
 import { formatPageTitle, inLanguage } from "./seo"
 import { inline, renderFrontmatter, stripFrontmatter } from "./text"
@@ -52,14 +46,8 @@ async function document({
 
 async function homeBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
-  const projects = await projectsFor(lang)
-  const roles = await rolesFor(lang)
-  const skills = await skillsFor(lang)
-  const entry = await homeFor(lang)
-  const home = entry.data
+  const { entry, home, projects, roles, skills, contact, latest } = await homePageData(lang)
   const paragraphs = stripFrontmatter(entry.body ?? "").split(/\n\s*\n/)
-  const latest = roles[0]
-  if (!latest) throw new Error("No roles to render")
 
   return document({
     lang,
@@ -156,12 +144,88 @@ async function projectsBody(lang: Locale): Promise<string> {
   })
 }
 
+function cvSectionMarkdown(
+  section: (typeof cvSections)[number],
+  data: Awaited<ReturnType<typeof cvPageData>>,
+  t: ReturnType<typeof useTranslations>,
+): string[] {
+  const { entry, orderedRoles, orderedSkills } = data
+
+  switch (section.key) {
+    case "profile":
+      return [`## ${t(section.titleKey)}`, "", stripFrontmatter(entry.body ?? ""), ""]
+    case "experience":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...orderedRoles.flatMap((role) => [
+          `### ${inline(role.data.title)} — ${inline(role.data.org)}`,
+          "",
+          ...(role.data.orgNote ? [inline(role.data.orgNote), ""] : []),
+          `${role.data.period} · ${inline(role.data.location)}`,
+          "",
+          inline(role.data.summary),
+          "",
+          bullets(role.data.bullets),
+          "",
+        ]),
+      ]
+    case "skills":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...orderedSkills.map(
+          (group) =>
+            `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
+        ),
+        "",
+      ]
+    case "education":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...entry.data.education.map(
+          (item) => `- **${inline(item.org)}** (${item.period}): ${inline(item.detail)}`,
+        ),
+        "",
+      ]
+    case "certifications":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...entry.data.certifications.map(
+          (item) => `- ${item.period ? `${item.period} — ` : ""}${inline(item.detail)}`,
+        ),
+        "",
+      ]
+    case "languages":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...entry.data.languages.map((item) => `- ${inline(item.name)}: ${inline(item.level)}`),
+        "",
+        `## ${t("cv.interests")}`,
+        "",
+        ...entry.data.interests.map((item) => `- ${inline(item)}`),
+        "",
+      ]
+    case "bitcoin":
+      return [
+        `## ${t(section.titleKey)}`,
+        "",
+        ...entry.data.bitcoin.own.map((paragraph) => `- ${inline(paragraph)}`),
+        "",
+        ...entry.data.bitcoin.events.map((event) => `- ${inline(event)}`),
+        "",
+        inline(t("cv.note")),
+        "",
+      ]
+  }
+}
+
 async function cvBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
-  const entry = await getEntry("cv", lang)
-  if (!entry) throw new Error(`Missing CV content for ${lang}`)
-  const roles = await rolesFor(lang)
-  const skills = await skillsFor(lang)
+  const { entry, roles, skills, orderedRoles, orderedSkills } = await cvPageData(lang)
   const github = linkHref("github")
   const linkedin = linkHref("linkedin")
 
@@ -179,58 +243,9 @@ async function cvBody(lang: Locale): Promise<string> {
         .filter(Boolean)
         .join(" · "),
       "",
-      `## ${t("cv.profile")}`,
-      "",
-      stripFrontmatter(entry.body ?? ""),
-      "",
-      `## ${t("cv.experience")}`,
-      "",
-      ...pickById(roles, entry.data.roles, "cv.roles").flatMap((role) => [
-        `### ${inline(role.data.title)} — ${inline(role.data.org)}`,
-        "",
-        ...(role.data.orgNote ? [inline(role.data.orgNote), ""] : []),
-        `${role.data.period} · ${inline(role.data.location)}`,
-        "",
-        inline(role.data.summary),
-        "",
-        bullets(role.data.bullets),
-        "",
-      ]),
-      `## ${t("cv.skills")}`,
-      "",
-      ...pickById(skills, entry.data.skills, "cv.skills").map(
-        (group) =>
-          `- **${inline(group.data.label)}**: ${group.data.items.map((item) => inline(item)).join("; ")}`,
+      ...cvSections.flatMap((section) =>
+        cvSectionMarkdown(section, { entry, roles, skills, orderedRoles, orderedSkills }, t),
       ),
-      "",
-      `## ${t("cv.education")}`,
-      "",
-      ...entry.data.education.map(
-        (item) => `- **${inline(item.org)}** (${item.period}): ${inline(item.detail)}`,
-      ),
-      "",
-      `## ${t("cv.certifications")}`,
-      "",
-      ...entry.data.certifications.map(
-        (item) => `- ${item.period ? `${item.period} — ` : ""}${inline(item.detail)}`,
-      ),
-      "",
-      `## ${t("cv.languages")}`,
-      "",
-      ...entry.data.languages.map((item) => `- ${inline(item.name)}: ${inline(item.level)}`),
-      "",
-      `## ${t("cv.interests")}`,
-      "",
-      ...entry.data.interests.map((item) => `- ${inline(item)}`),
-      "",
-      `## ${t("cv.bitcoin")}`,
-      "",
-      ...entry.data.bitcoin.own.map((paragraph) => `- ${inline(paragraph)}`),
-      "",
-      ...entry.data.bitcoin.events.map((event) => `- ${inline(event)}`),
-      "",
-      inline(t("cv.note")),
-      "",
       ...(await contactSection(lang)),
     ],
   })

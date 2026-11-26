@@ -8,14 +8,8 @@ import ContactCta from "../ContactCta.astro"
 import ContactTrigger from "../ContactTrigger.astro"
 import { about, homeSections } from "../../content/site"
 import { pick } from "../../content/types"
-import {
-  contactFor,
-  homeFor,
-  projectsFor,
-  renderEntry,
-  rolesFor,
-  skillsFor,
-} from "../../lib/content"
+import { renderEntry } from "../../lib/content"
+import { homePageData } from "../../lib/page-data"
 import { pathFor, type Locale } from "../../i18n/routes"
 
 interface Props {
@@ -23,15 +17,15 @@ interface Props {
 }
 
 const { lang } = Astro.props
-const projects = await projectsFor(lang)
-const roles = await rolesFor(lang)
-const skills = await skillsFor(lang)
-const homeEntry = await homeFor(lang)
-const home = homeEntry.data
-const contact = (await contactFor(lang)).data
+const {
+  entry: homeEntry,
+  home,
+  projects,
+  skills,
+  contact,
+  latest: latestRole,
+} = await homePageData(lang)
 const { Content: AboutParagraphs } = await renderEntry(homeEntry)
-const latestRole = roles[0]
-if (!latestRole) throw new Error("No roles to render")
 const latestRoleTitle = `${latestRole.data.title} · ${latestRole.data.org}`
 ---
 

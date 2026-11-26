@@ -7,7 +7,9 @@ import ContactCta from "../ContactCta.astro"
 import { linkHref } from "../../links/urls"
 import { type Locale } from "../../i18n/routes"
 import { useTranslations } from "../../i18n/ui"
-import { cvFor, pickById, renderEntry, rolesFor, skillsFor } from "../../lib/content"
+import { renderEntry } from "../../lib/content"
+import { cvPageData } from "../../lib/page-data"
+import { cvSections } from "../../lib/page-sections"
 
 interface Props {
   lang: Locale
@@ -18,12 +20,8 @@ const t = useTranslations(lang)
 const github = linkHref("github")
 const linkedin = linkHref("linkedin")
 
-const entry = await cvFor(lang)
+const { entry, orderedRoles, orderedSkills } = await cvPageData(lang)
 const { Content } = await renderEntry(entry)
-const roles = await rolesFor(lang)
-const skills = await skillsFor(lang)
-const orderedRoles = pickById(roles, entry.data.roles, "cv.roles")
-const orderedSkills = pickById(skills, entry.data.skills, "cv.skills")
 
 const numbered = (index: number) => String(index).padStart(2, "0")
 ---
@@ -48,91 +46,90 @@ const numbered = (index: number) => String(index).padStart(2, "0")
   </div>
 </PageHeader>
 
-<Section eyebrow={numbered(1)} title={t("cv.profile")}>
-  <div class="max-w-3xl space-y-4 text-base leading-relaxed text-base-content/70">
-    <Content />
-  </div>
-</Section>
-
-<Section eyebrow={numbered(2)} title={t("cv.experience")}>
-  <Timeline roles={orderedRoles} />
-</Section>
-
-<Section eyebrow={numbered(3)} title={t("cv.skills")} tone="primary">
-  <SkillsList groups={orderedSkills.map((group) => group.data)} />
-</Section>
-
-<Section eyebrow={numbered(4)} title={t("cv.education")}>
-  <ul class="space-y-6">
-    {entry.data.education.map((item) => (
-      <li class="grid gap-1 border-t border-primary/15 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
-        <span class="font-mono text-xs leading-relaxed text-accent/90">{item.period}</span>
-        <div>
-          <p class="font-medium tracking-[-0.01em]">{item.org}</p>
-          <p class="mt-1 text-sm leading-relaxed text-base-content/65">{item.detail}</p>
-        </div>
-      </li>
-    ))}
-  </ul>
-</Section>
-
-<Section eyebrow={numbered(5)} title={t("cv.certifications")}>
-  <ul class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
-    {entry.data.certifications.map((item) => (
-      <li class="flex gap-4 border-l-2 border-secondary/40 pt-1 pl-3">
-        {item.period && (
-          <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/65">
-            {item.period}
-          </span>
-        )}
-        <span class="text-sm leading-relaxed text-base-content/70">{item.detail}</span>
-      </li>
-    ))}
-  </ul>
-</Section>
-
-<Section eyebrow={numbered(6)} title={t("cv.languages")} tone="accent">
-  <div class="grid gap-10 md:grid-cols-2">
-    <ul class="space-y-5">
-      {entry.data.languages.map((item) => (
-        <li>
-          <p class="font-medium">{item.name}</p>
-          <p class="text-sm text-base-content/65">{item.level}</p>
-        </li>
-      ))}
-    </ul>
-    <div>
-      <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/65">
-        {t("cv.interests")}
-      </h3>
-      <ul class="mt-3 flex flex-wrap gap-2">
-        {entry.data.interests.map((interest) => (
-          <li class="chip chip-accent">{interest}</li>
+{cvSections.map((section, index) => (
+  <Section eyebrow={numbered(index + 1)} title={t(section.titleKey)} tone={section.tone}>
+    {section.key === "profile" && (
+      <div class="max-w-3xl space-y-4 text-base leading-relaxed text-base-content/70">
+        <Content />
+      </div>
+    )}
+    {section.key === "experience" && <Timeline roles={orderedRoles} />}
+    {section.key === "skills" && <SkillsList groups={orderedSkills.map((group) => group.data)} />}
+    {section.key === "education" && (
+      <ul class="space-y-6">
+        {entry.data.education.map((item) => (
+          <li class="grid gap-1 border-t border-primary/15 pt-4 first:border-t-0 first:pt-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+            <span class="font-mono text-xs leading-relaxed text-accent/90">{item.period}</span>
+            <div>
+              <p class="font-medium tracking-[-0.01em]">{item.org}</p>
+              <p class="mt-1 text-sm leading-relaxed text-base-content/65">{item.detail}</p>
+            </div>
+          </li>
         ))}
       </ul>
-    </div>
-  </div>
-</Section>
-
-<Section eyebrow={numbered(7)} title={t("cv.bitcoin")}>
-  <div class="grid gap-8 md:grid-cols-2">
-    <ul class="space-y-3 text-sm leading-relaxed text-base-content/70">
-      {entry.data.bitcoin.own.map((item) => (
-        <li class="flex gap-3">
-          <span aria-hidden="true" class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-secondary" />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-    <ul class="space-y-2 text-sm leading-relaxed text-base-content/65">
-      {entry.data.bitcoin.events.map((item) => (
-        <li>{item}</li>
-      ))}
-    </ul>
-  </div>
-  <p class="mt-8 max-w-3xl border-t border-primary/15 pt-5 text-xs leading-relaxed text-base-content/65">
-    {t("cv.note")}
-  </p>
-</Section>
+    )}
+    {section.key === "certifications" && (
+      <ul class="grid gap-x-10 gap-y-4 sm:grid-cols-2">
+        {entry.data.certifications.map((item) => (
+          <li class="flex gap-4 border-l-2 border-secondary/40 pt-1 pl-3">
+            {item.period && (
+              <span class="w-16 shrink-0 font-mono text-xs leading-relaxed text-base-content/65">
+                {item.period}
+              </span>
+            )}
+            <span class="text-sm leading-relaxed text-base-content/70">{item.detail}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+    {section.key === "languages" && (
+      <div class="grid gap-10 md:grid-cols-2">
+        <ul class="space-y-5">
+          {entry.data.languages.map((item) => (
+            <li>
+              <p class="font-medium">{item.name}</p>
+              <p class="text-sm text-base-content/65">{item.level}</p>
+            </li>
+          ))}
+        </ul>
+        <div>
+          <h3 class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-base-content/65">
+            {t("cv.interests")}
+          </h3>
+          <ul class="mt-3 flex flex-wrap gap-2">
+            {entry.data.interests.map((interest) => (
+              <li class="chip chip-accent">{interest}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )}
+    {section.key === "bitcoin" && (
+      <>
+        <div class="grid gap-8 md:grid-cols-2">
+          <ul class="space-y-3 text-sm leading-relaxed text-base-content/70">
+            {entry.data.bitcoin.own.map((item) => (
+              <li class="flex gap-3">
+                <span
+                  aria-hidden="true"
+                  class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-secondary"
+                />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <ul class="space-y-2 text-sm leading-relaxed text-base-content/65">
+            {entry.data.bitcoin.events.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+        <p class="mt-8 max-w-3xl border-t border-primary/15 pt-5 text-xs leading-relaxed text-base-content/65">
+          {t("cv.note")}
+        </p>
+      </>
+    )}
+  </Section>
+))}
 
 <ContactCta />
