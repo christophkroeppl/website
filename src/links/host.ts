@@ -1,3 +1,5 @@
+import { hasAssetExtension } from "./extensions"
+
 export const LINKS_HOST = "links.kroeppl.ch"
 
 const SHARED_PREFIXES = ["/_astro/", "/_image/", "/fonts/", "/favicon"]
@@ -24,7 +26,7 @@ export function linksHostPolicy(hostname: string, pathname: string): LinksHostPo
     return { kind: "pass", noindex: true }
   }
   if (SHARED_PATHS.has(pathname)) return { kind: "pass", noindex: true }
-  if (pathname === "/robots.txt" || isAssetPath(pathname)) {
+  if (pathname === "/robots.txt" || hasAssetExtension(pathname)) {
     return { kind: "pass", noindex: true }
   }
 
@@ -48,31 +50,4 @@ function isLinksPath(pathname: string): boolean {
     pathname === "/en/links" ||
     pathname.startsWith("/en/links/")
   )
-}
-
-const ASSET_EXTENSIONS = new Set([
-  "avif",
-  "css",
-  "gif",
-  "ico",
-  "jpeg",
-  "jpg",
-  "js",
-  "json",
-  "map",
-  "mjs",
-  "otf",
-  "png",
-  "svg",
-  "ttf",
-  "webp",
-  "woff",
-  "woff2",
-])
-
-function isAssetPath(pathname: string): boolean {
-  const name = pathname.slice(pathname.lastIndexOf("/") + 1)
-  const dot = name.lastIndexOf(".")
-  if (dot === -1) return false
-  return ASSET_EXTENSIONS.has(name.slice(dot + 1).toLowerCase())
 }

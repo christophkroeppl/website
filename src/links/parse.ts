@@ -12,10 +12,6 @@ export type LinkSource = {
   icon?: string
 }
 
-export function isLinkKey(key: string): boolean {
-  return LINK_KEY.test(key)
-}
-
 export function parseLinkSources(env: LinkEnv): LinkSource[] {
   const labels = labelOverrides(env)
   const icons = iconOverrides(env)
@@ -95,7 +91,7 @@ export function parseHref(key: string, value: string): string {
   return url.href
 }
 
-export function isNumericVariant(variant: string): boolean {
+function isNumericVariant(variant: string): boolean {
   return /^\d+$/.test(variant)
 }
 

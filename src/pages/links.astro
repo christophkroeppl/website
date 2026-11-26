@@ -7,7 +7,7 @@ import { getLocale } from "virtual:astro-localized-routes"
 import { person } from "../content/site"
 import { pathFor } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
-import { linkHref } from "../links/urls"
+import { firstLinkHref } from "../links/urls"
 import { drawerLinks } from "../links/drawer"
 import { linksFor } from "../lib/content"
 import { links } from "../generated/links"
@@ -17,7 +17,7 @@ const t = useTranslations(lang)
 const entry = await linksFor(lang)
 const description = entry.data.description
 const tagline = entry.data.lines
-const website = linkHref("website")
+const website = firstLinkHref("website")
 const privacyHref = website ? new URL(pathFor("privacy", lang), website).href : undefined
 const { visible, more } = drawerLinks(links)
 

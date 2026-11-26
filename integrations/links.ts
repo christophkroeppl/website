@@ -24,26 +24,6 @@ async function probeUrl(url: string): Promise<number | undefined> {
   }
 }
 
-const ENV_FILES = (mode: string) => [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`]
-
-function envKeyOrder(root: string, mode: string): Map<string, number> {
-  const order = new Map<string, number>()
-
-  for (const file of ENV_FILES(mode)) {
-    const pathname = path.join(root, file)
-    if (!fs.existsSync(pathname)) continue
-
-    for (const line of fs.readFileSync(pathname, "utf8").split("\n")) {
-      const match = /^\s*(?:export\s+)?([A-Za-z0-9_]+)\s*=/.exec(line)
-      const key = match?.[1]
-      if (!key || order.has(key)) continue
-      order.set(key, order.size)
-    }
-  }
-
-  return order
-}
-
 function renderModule(links: Link[]): string {
   return [
     `import type { Link } from "../links/types"`,
@@ -61,7 +41,7 @@ export function links(): AstroIntegration {
         const root = fileURLToPath(config.root)
         const mode = command === "build" ? "production" : "development"
         const env = loadEnv(mode, root, "")
-        const order = envKeyOrder(root, mode)
+        const order = new Map(Object.keys(env).map((key, index) => [key, index]))
         const probing = command === "build" || command === "dev"
         const parsed = await buildLinks({
           sources: parseLinkSources(env),

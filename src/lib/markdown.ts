@@ -3,7 +3,7 @@ import { person } from "../content/site"
 import { pathFor, type PageId } from "../i18n/routes"
 import type { Locale } from "../i18n/locales"
 import { useTranslations } from "../i18n/ui"
-import { linkHref } from "../links/urls"
+import { firstLinkHref } from "../links/urls"
 import { contactFor, descriptionFor, projectsFor } from "./content"
 import { canonicalFor } from "./canonical"
 import { cvPageData, homePageData } from "./page-data"
@@ -227,8 +227,8 @@ function cvSectionMarkdown(
 async function cvBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
   const { entry, roles, skills, orderedRoles, orderedSkills } = await cvPageData(lang)
-  const github = linkHref("github")
-  const linkedin = linkHref("linkedin")
+  const github = firstLinkHref("github")
+  const linkedin = firstLinkHref("linkedin")
 
   return document({
     lang,

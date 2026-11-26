@@ -1,7 +1,6 @@
-export type Probe = (url: string) => Promise<number | undefined>
+import { FILE_EXTENSION } from "./extensions"
 
-const FILE_EXTENSION =
-  /\.(?:html?|xhtml|pdf|png|jpe?g|gif|svg|webp|avif|ico|css|js|mjs|json|xml|txt|csv|zip|gz|tar|mp3|mp4|webm|mov|woff2?|ttf|otf)$/i
+export type Probe = (url: string) => Promise<number | undefined>
 
 export type SlashVariants = {
   withSlash: string
