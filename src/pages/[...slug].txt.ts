@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro"
 import type { Locale } from "../i18n/locales"
+import { MACHINE_CACHE, NO_STORE } from "../lib/cache"
 import { descriptionsFor } from "../lib/content"
 import { llmsIndex } from "../lib/llms"
 import { llmsFull } from "../lib/llms-full"
@@ -22,7 +23,7 @@ export const GET: APIRoute = async ({ params }) => {
       status: 404,
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-store",
+        "Cache-Control": NO_STORE,
         "X-Robots-Tag": "noindex",
       },
     })
@@ -37,7 +38,7 @@ export const GET: APIRoute = async ({ params }) => {
   return new Response(body, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": MACHINE_CACHE,
     },
   })
 }

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro"
 import { locales, type Locale } from "../i18n/locales"
 import { pagePaths, type PageId } from "../i18n/routes"
+import { MACHINE_CACHE } from "../lib/cache"
 import { pageMarkdown } from "../lib/markdown"
 import { tokenCount } from "../lib/text"
 import { absoluteUrl, markdownPath } from "../lib/urls"
@@ -37,7 +38,7 @@ export const GET: APIRoute = async ({ params }) => {
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
       "X-Robots-Tag": "noindex, follow",
-      "Cache-Control": "public, max-age=3600",
+      "Cache-Control": MACHINE_CACHE,
       Link: `<${entry.canonical}>; rel="canonical"`,
       "X-Markdown-Tokens": String(tokenCount(markdown)),
     },

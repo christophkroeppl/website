@@ -64,9 +64,9 @@ describe("onRequest", () => {
     expect(response.headers.get("cache-control")).toBeNull()
   })
 
-  it("does not cache HEAD responses", async () => {
+  it("caches HEAD responses", async () => {
     const next = vi.fn(html)
     const response = await onRequest(context("https://kroeppl.ch/", "HEAD"), next)
-    expect(response.headers.get("cache-control")).toBeNull()
+    expect(response.headers.get("cache-control")).toContain("s-maxage=3600")
   })
 })
