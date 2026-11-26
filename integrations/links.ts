@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url"
 import { loadEnv } from "vite"
 import type { AstroIntegration } from "astro"
 import { resolveIcon } from "./icons"
-import { linkLabel, parseLinkSources } from "../src/links/parse"
-import { resolveSlash, slashVariants } from "../src/links/slash"
+import { buildLinks } from "../src/links/build"
+import { parseLinkSources } from "../src/links/parse"
 import type { Link } from "../src/links/types"
 
 const OUTPUT_FILE = "src/generated/links.ts"
@@ -63,30 +63,18 @@ export function links(): AstroIntegration {
         const env = loadEnv(mode, root, "")
         const order = envKeyOrder(root, mode)
         const probing = command === "build" || command === "dev"
-        const parsed = await Promise.all(
-          parseLinkSources(env)
-            .sort((a, b) => (order.get(a.key) ?? Infinity) - (order.get(b.key) ?? Infinity))
-            .map(async (source) => {
-              const href = probing
-                ? await resolveSlash(source.href, probeUrl)
-                : (slashVariants(source.href)?.withSlash ?? source.href)
-
-              if (href !== source.href) logger.info(`${source.key}: ${href}`)
-
-              const resolved = resolveIcon(root, source.slug, source.icon ?? source.slug)
-              if (resolved.shadowed) {
-                logger.info(`${source.key}: custom icon overrides ${source.icon ?? source.slug}`)
-              }
-              const { icon, title } = resolved
-              return {
-                key: source.key,
-                href,
-                label: source.label ?? linkLabel(title, source.variant),
-                slug: source.slug,
-                icon,
-              } satisfies Link
-            }),
-        )
+        const parsed = await buildLinks({
+          sources: parseLinkSources(env),
+          order,
+          ...(probing ? { probe: probeUrl } : {}),
+          resolveIcon: (slug, iconSlug) => {
+            const resolved = resolveIcon(root, slug, iconSlug)
+            if (resolved.shadowed) {
+              logger.info(`${slug}: custom icon overrides ${iconSlug}`)
+            }
+            return resolved
+          },
+        })
 
         const module = renderModule(parsed)
 
