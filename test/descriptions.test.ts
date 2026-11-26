@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { parse } from "yaml"
+import { pageDescriptions } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/locales"
 
 const pages = ["home", "contact", "cv", "projects", "privacy"] as const
@@ -11,10 +12,8 @@ const sources = import.meta.glob("../src/content/pages/**/*.md", {
 }) as Record<string, string>
 
 function description(lang: Locale, page: (typeof pages)[number]): string {
-  const path =
-    page === "projects"
-      ? `../src/content/pages/meta/projects.${lang}.md`
-      : `../src/content/pages/${page}/${lang}.md`
+  if (page === "projects") return pageDescriptions.projects?.[lang] ?? ""
+  const path = `../src/content/pages/${page}/${lang}.md`
   const source = sources[path]
   expect(source, path).toBeDefined()
   const block = source?.match(/^---\n([\s\S]*?)\n---/)

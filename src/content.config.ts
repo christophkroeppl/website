@@ -145,18 +145,6 @@ const projects = defineCollection({
 
 export type ProjectData = z.infer<typeof projectSchema>
 
-const pageMeta = defineCollection({
-  loader: glob({
-    pattern: "meta/*.md",
-    base: "./src/content/pages",
-    generateId: pageId,
-  }),
-  schema: z.object({
-    page: z.literal("projects"),
-    description: z.string().min(1),
-  }),
-})
-
 const home = defineCollection({
   loader: glob({
     pattern: "home/*.md",
@@ -218,7 +206,6 @@ export const collections = {
   cv,
   experience,
   projects,
-  pageMeta,
   skills,
   home,
   contact,

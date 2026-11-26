@@ -1,4 +1,5 @@
 import { getCollection, getEntry, render, type CollectionEntry } from "astro:content"
+import { pageDescriptions } from "../content/site"
 import { isLocale, type Locale } from "../i18n/locales"
 import type { PageId } from "../i18n/routes"
 
@@ -33,16 +34,10 @@ export async function linksFor(lang: Locale): Promise<CollectionEntry<"links">> 
 }
 
 export async function descriptionFor(lang: Locale, page: PageId): Promise<string> {
-  if (page === "projects") {
-    const entries = await getCollection("pageMeta")
-    const entry = entries.find(
-      (entry) => entry.data.page === "projects" && localeFromId(entry.id) === lang,
-    )
-    if (!entry) throw new Error(`No projects meta for locale "${lang}"`)
-    return entry.data.description
-  }
+  const fixed = pageDescriptions[page as keyof typeof pageDescriptions]
+  if (fixed) return fixed[lang]
 
-  const entry = await getEntry(page, lang)
+  const entry = await getEntry(page as Exclude<PageId, keyof typeof pageDescriptions>, lang)
   if (!entry) throw new Error(`No ${page} content for locale "${lang}"`)
   return entry.data.description
 }
