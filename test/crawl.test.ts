@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { robotsTxt, sitemapXml } from "../src/lib/crawl"
+import { robotsTxt, sitemapEntries, sitemapXml } from "../src/lib/crawl"
 import { LINKS_HOST } from "../src/links/host"
 import { defaultLocale, locales } from "../src/i18n/locales"
 import { pagePaths, type PageId } from "../src/i18n/routes"
@@ -44,21 +44,12 @@ describe("robots endpoint", () => {
   })
 })
 
-describe("sitemapXml", () => {
-  const body = sitemapXml()
-
-  const entries = body
-    .split("<url>")
-    .slice(1)
-    .map((block) => ({
-      loc: /<loc>([^<]+)<\/loc>/.exec(block)?.[1],
-      alternates: Object.fromEntries(
-        [...block.matchAll(/hreflang="([^"]+)" href="([^"]+)"/g)].map((match) => [
-          match[1],
-          match[2],
-        ]),
-      ),
-    }))
+describe("sitemap entries", () => {
+  const entries = sitemapEntries().map((entry) => ({
+    loc: entry.loc,
+    alternates: Object.fromEntries(entry.alternates.map(({ hreflang, href }) => [hreflang, href])),
+    lastmod: entry.lastmod,
+  }))
 
   it("lists every localized page exactly once", () => {
     const locations = entries.map((entry) => entry.loc)
@@ -67,15 +58,14 @@ describe("sitemapXml", () => {
     expect(new Set(locations).size).toBe(locations.length)
 
     for (const page of ids) {
-      expect(locations).toContain(`${siteUrl}${pagePaths[page].de}`)
-      expect(locations).toContain(`${siteUrl}${pagePaths[page].en}`)
+      for (const lang of locales) {
+        expect(locations).toContain(`${siteUrl}${pagePaths[page][lang]}`)
+      }
     }
   })
 
   it("points every alternate at the right url", () => {
     for (const page of ids) {
-      const de = `${siteUrl}${pagePaths[page].de}`
-      const en = `${siteUrl}${pagePaths[page].en}`
       const expected = {
         ...Object.fromEntries(
           locales.map((lang) => [inLanguage(lang), `${siteUrl}${pagePaths[page][lang]}`]),
@@ -83,21 +73,34 @@ describe("sitemapXml", () => {
         "x-default": `${siteUrl}${pagePaths[page][defaultLocale]}`,
       }
 
-      expect(entries.find((entry) => entry.loc === de)?.alternates, page).toEqual(expected)
-      expect(entries.find((entry) => entry.loc === en)?.alternates, page).toEqual(expected)
+      for (const lang of locales) {
+        const loc = `${siteUrl}${pagePaths[page][lang]}`
+        expect(entries.find((entry) => entry.loc === loc)?.alternates, page).toEqual(expected)
+      }
     }
   })
 
   it("emits an ISO lastmod on every url", () => {
-    const lastmods = [...body.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map((match) => match[1])
+    const lastmods = entries.map((entry) => entry.lastmod)
 
-    expect(lastmods).toHaveLength(ids.length * 2)
+    expect(lastmods).toHaveLength(ids.length * locales.length)
     for (const lastmod of lastmods) {
       expect(lastmod).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
     }
   })
+})
+
+describe("sitemapXml", () => {
+  it("serializes the entries as xml", () => {
+    const body = sitemapXml()
+
+    expect(body).toContain("<urlset")
+    expect(body).toContain("<loc>")
+  })
 
   it("never lists the links subdomain or error pages", () => {
+    const body = sitemapXml()
+
     expect(body).not.toContain(LINKS_HOST)
     expect(body).not.toContain("/404")
   })

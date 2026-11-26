@@ -23,32 +23,43 @@ Sitemap: ${absoluteUrl("/sitemap.xml", origin)}
 `
 }
 
-export function sitemapXml(origin: URL | string = siteUrl): string {
+export type SitemapAlternate = { hreflang: string; href: string }
+export type SitemapEntry = { loc: string; alternates: SitemapAlternate[]; lastmod: string }
+
+export function sitemapEntries(origin: URL | string = siteUrl): SitemapEntry[] {
   const ids = Object.keys(pagePaths) as PageId[]
 
-  const entries = ids.flatMap((id) => {
+  return ids.flatMap((id) => {
     const pair = pagePaths[id]
-    const pairs: [string, string][] = [
-      ...locales.map((lang): [string, string] => [inLanguage(lang), pair[lang]]),
-      ["x-default", pair[defaultLocale]],
+    const alternates = [
+      ...locales.map((lang) => ({
+        hreflang: inLanguage(lang),
+        href: absoluteUrl(pair[lang], origin),
+      })),
+      { hreflang: "x-default", href: absoluteUrl(pair[defaultLocale], origin) },
     ]
-    const alternates = pairs
-      .map(
-        ([hreflang, path]) =>
-          `    <xhtml:link rel="alternate" hreflang="${hreflang}" href="${xmlEscape(absoluteUrl(path, origin))}" />`,
-      )
-      .join("\n")
 
-    return locales
-      .map((lang) => pair[lang])
-      .map(
-        (path) => `  <url>
-    <loc>${xmlEscape(absoluteUrl(path, origin))}</loc>
-    <lastmod>${buildTime}</lastmod>
-${alternates}
-  </url>`,
-      )
+    return locales.map((lang) => ({
+      loc: absoluteUrl(pair[lang], origin),
+      alternates,
+      lastmod: buildTime,
+    }))
   })
+}
+
+export function sitemapXml(origin: URL | string = siteUrl): string {
+  const entries = sitemapEntries(origin).map(
+    ({ loc, alternates, lastmod }) => `  <url>
+    <loc>${xmlEscape(loc)}</loc>
+    <lastmod>${lastmod}</lastmod>
+${alternates
+  .map(
+    ({ hreflang, href }) =>
+      `    <xhtml:link rel="alternate" hreflang="${hreflang}" href="${xmlEscape(href)}" />`,
+  )
+  .join("\n")}
+  </url>`,
+  )
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
