@@ -27,7 +27,8 @@ describe("linksHostRoute", () => {
       "/_image/?href=%2F_astro%2Fbullet.webp&w=224&h=224&f=webp",
       "/fonts/inter-latin-var.woff2",
       "/favicon.svg",
-      "/robots.txt",
+      "/og.png",
+      "/icons/bitcr.svg",
       "/api/contact",
       "/api/contact/",
     ]) {
@@ -36,7 +37,20 @@ describe("linksHostRoute", () => {
   })
 
   it("blocks the rest of the site on the subdomain", () => {
-    for (const pathname of ["/impressum/", "/datenschutz/", "/en/privacy/"]) {
+    for (const pathname of [
+      "/impressum/",
+      "/datenschutz/",
+      "/en/privacy/",
+      "/robots.txt",
+      "/projekte.md",
+      "/en/projects.md",
+      "/datenschutz.md",
+      "/en/cv.md",
+      "/llms.txt",
+      "/en/llms.txt",
+      "/llms-full.txt",
+      "/sitemap.xml",
+    ]) {
       expect(linksHostRoute("links.kroeppl.ch", pathname)).toBe("block")
     }
   })

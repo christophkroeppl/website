@@ -28,6 +28,29 @@ function isLinksPath(pathname: string): boolean {
   )
 }
 
+const ASSET_EXTENSIONS = new Set([
+  "avif",
+  "css",
+  "gif",
+  "ico",
+  "jpeg",
+  "jpg",
+  "js",
+  "json",
+  "map",
+  "mjs",
+  "otf",
+  "png",
+  "svg",
+  "ttf",
+  "webp",
+  "woff",
+  "woff2",
+])
+
 function isAssetPath(pathname: string): boolean {
-  return pathname.slice(pathname.lastIndexOf("/") + 1).includes(".")
+  const name = pathname.slice(pathname.lastIndexOf("/") + 1)
+  const dot = name.lastIndexOf(".")
+  if (dot === -1) return false
+  return ASSET_EXTENSIONS.has(name.slice(dot + 1).toLowerCase())
 }
