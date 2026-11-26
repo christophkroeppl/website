@@ -2,8 +2,7 @@ import type { APIRoute } from "astro"
 import { localeMeta, locales, type Locale } from "../i18n/locales"
 import { MACHINE_CACHE, NO_STORE } from "../lib/cache"
 import { descriptionsFor } from "../lib/content"
-import { llmsIndex } from "../lib/llms"
-import { llmsFull } from "../lib/llms-full"
+import { llmsFull, llmsIndex } from "../lib/llms"
 import { otherLocale } from "../lib/seo"
 
 export const prerender = false
@@ -33,11 +32,18 @@ export const GET: APIRoute = async ({ params }) => {
     })
   }
 
+  if (route.full) {
+    return new Response(await llmsFull(route.lang), {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": MACHINE_CACHE,
+      },
+    })
+  }
+
   const descriptions = await descriptionsFor(route.lang)
   const otherDescriptions = await descriptionsFor(otherLocale(route.lang))
-  const body = route.full
-    ? await llmsFull(route.lang)
-    : llmsIndex(route.lang, descriptions, otherDescriptions)
+  const body = llmsIndex(route.lang, descriptions, otherDescriptions)
 
   return new Response(body, {
     headers: {

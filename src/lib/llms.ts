@@ -21,6 +21,19 @@ function entries(lang: Locale, descriptions: Record<PageId, string>): string[] {
   )
 }
 
+function headerLines(lang: Locale, home: string, note: boolean): string[] {
+  const t = useTranslations(lang)
+  return [
+    `# ${person.name}`,
+    "",
+    `> ${home}`,
+    "",
+    ...(note ? [t("llms.languageNote"), ""] : []),
+    `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
+    "",
+  ]
+}
+
 export function llmsIndex(
   lang: Locale,
   descriptions: Record<PageId, string>,
@@ -30,14 +43,7 @@ export function llmsIndex(
   const t = useTranslations(lang)
 
   return [
-    `# ${person.name}`,
-    "",
-    `> ${descriptions.home}`,
-    "",
-    t("llms.languageNote"),
-    "",
-    `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
-    "",
+    ...headerLines(lang, descriptions.home, true),
     `## ${languages[lang]}`,
     "",
     ...entries(lang, descriptions),
@@ -68,4 +74,19 @@ export function assembleFull(
     .join("\n\n---\n\n")
 
   return `${header.trimEnd()}\n\n${joined}\n`
+}
+
+export async function llmsFull(lang: Locale): Promise<string> {
+  const { descriptionsFor } = await import("./content")
+  const { pageMarkdown } = await import("./markdown")
+  const descriptions = await descriptionsFor(lang)
+  const header = headerLines(lang, descriptions.home, false).join("\n")
+  const documents = await Promise.all(
+    pages.map(async (page) => ({
+      url: absoluteUrl(pagePaths[page][lang]),
+      markdown: await pageMarkdown(lang, page),
+    })),
+  )
+
+  return assembleFull(header, documents)
 }
