@@ -1,6 +1,7 @@
 ---
 import { links } from "../generated/links"
 import { drawerLinks } from "../links/drawer"
+import { externalAttrs } from "../links/external"
 import LinkIcon from "./LinkIcon.astro"
 
 interface Props {
@@ -10,9 +11,6 @@ interface Props {
 
 const { label, moreLabel } = Astro.props
 const { visible, more } = drawerLinks(links)
-
-const external = (href: string) =>
-  href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {}
 
 const linkGlyph = [
   "M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z",
@@ -28,7 +26,7 @@ const moreDots = [5, 12, 19]
       aria-label={link.label}
       title={link.label}
       class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent"
-      {...external(link.href)}
+      {...externalAttrs(link.href)}
     >
       <LinkIcon link={link} size={17} />
     </a>
@@ -60,7 +58,7 @@ const moreDots = [5, 12, 19]
             aria-label={link.label}
             title={link.label}
             class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent"
-            {...external(link.href)}
+            {...externalAttrs(link.href)}
           >
             <LinkIcon link={link} size={17} />
           </a>
@@ -98,7 +96,7 @@ const moreDots = [5, 12, 19]
       aria-label={link.label}
       title={link.label}
       class="btn btn-lg btn-circle bg-base-100 shadow-md"
-      {...external(link.href)}
+      {...externalAttrs(link.href)}
     >
       <LinkIcon link={link} size={20} />
     </a>
@@ -132,7 +130,7 @@ const moreDots = [5, 12, 19]
           aria-label={link.label}
           title={link.label}
           class="btn btn-lg btn-circle bg-base-100 shadow-md"
-          {...external(link.href)}
+          {...externalAttrs(link.href)}
         >
           <LinkIcon link={link} size={20} />
         </a>

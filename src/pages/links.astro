@@ -2,14 +2,13 @@
 import LinksLayout from "../layouts/LinksLayout.astro"
 import ContactModal from "../components/ContactModal.astro"
 import ContactTrigger from "../components/ContactTrigger.astro"
-import LinkButton from "../components/LinkButton.astro"
+import LinkGroups from "../components/LinkGroups.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { person } from "../content/site"
 import { pathFor } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { linkHref } from "../links/urls"
 import { drawerLinks } from "../links/drawer"
-import { groupLinks } from "../links/group"
 import { linksFor } from "../lib/content"
 import { links } from "../generated/links"
 
@@ -27,19 +26,7 @@ const mailPath =
 ---
 
 <LinksLayout name={person.name} description={description} tagline={tagline} lang={lang}>
-  {groupLinks(visible).map((group) => {
-    const first = group[0]
-    if (!first) return null
-    return group.length > 1 ? (
-      <div class="grid grid-cols-2 gap-3">
-        {group.map((link) => (
-          <LinkButton link={link} />
-        ))}
-      </div>
-    ) : (
-      <LinkButton link={first} />
-    )
-  })}
+  <LinkGroups links={visible} />
 
   <ContactModal lang={lang} {...(privacyHref ? { privacyHref } : {})}>
     <ContactTrigger
@@ -80,19 +67,7 @@ const mailPath =
       </svg>
     </summary>
     <div class="mt-3 w-full space-y-3">
-      {groupLinks(more).map((group) => {
-        const first = group[0]
-        if (!first) return null
-        return group.length > 1 ? (
-          <div class="grid grid-cols-2 gap-3">
-            {group.map((link) => (
-              <LinkButton link={link} />
-            ))}
-          </div>
-        ) : (
-          <LinkButton link={first} />
-        )
-      })}
+      <LinkGroups links={more} />
     </div>
   </details>
 </LinksLayout>

@@ -1,4 +1,5 @@
 ---
+import { externalAttrs } from "../links/external"
 import type { Link } from "../links/types"
 import LinkIcon from "./LinkIcon.astro"
 
@@ -7,9 +8,7 @@ interface Props {
 }
 
 const { link } = Astro.props
-const external = link.href.startsWith("http")
-  ? { target: "_blank", rel: "noopener noreferrer" }
-  : {}
+const external = externalAttrs(link.href)
 ---
 
 <a
