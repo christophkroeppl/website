@@ -6,9 +6,6 @@ import { inLanguage } from "../lib/seo"
 const locale = getLocale(Astro)
 const alternates = getAlternates(Astro).filter((alternate) => alternate.locale !== locale)
 const alternate = alternates[0]
-
-const linkClass =
-  "grid h-9 min-w-9 place-items-center rounded-full px-2 text-sm font-semibold text-base-content/65 transition-colors hover:bg-accent/10 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 ---
 
 {alternate && alternates.length === 1 ? (
@@ -18,7 +15,10 @@ const linkClass =
     lang={alternate.locale}
     title={languages[alternate.locale]}
     aria-label={`${alternate.locale.toUpperCase()} — ${languages[alternate.locale]}`}
-    class:list={["ml-1", linkClass]}
+    class:list={[
+      "icon-link min-w-9 px-2 text-sm font-semibold text-base-content/65 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+      "ml-1",
+    ]}
   >
     <span>{alternate.locale.toUpperCase()}</span>
   </a>

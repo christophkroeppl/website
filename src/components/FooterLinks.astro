@@ -25,7 +25,7 @@ const moreDots = [5, 12, 19]
       href={link.href}
       aria-label={link.label}
       title={link.label}
-      class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent"
+      class="icon-link text-base-content/55"
       {...externalAttrs(link.href)}
     >
       <LinkIcon link={link} size={17} />
@@ -36,7 +36,7 @@ const moreDots = [5, 12, 19]
       <summary
         aria-label={moreLabel}
         title={moreLabel}
-        class="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent [&::-webkit-details-marker]:hidden"
+        class="icon-link cursor-pointer text-base-content/55 list-none [&::-webkit-details-marker]:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,7 @@ const moreDots = [5, 12, 19]
             href={link.href}
             aria-label={link.label}
             title={link.label}
-            class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent"
+            class="icon-link text-base-content/55"
             {...externalAttrs(link.href)}
           >
             <LinkIcon link={link} size={17} />

@@ -126,6 +126,10 @@
     @apply mt-4 block h-0.5 w-12 rounded-full bg-primary;
   }
 
+  .icon-link {
+    @apply grid h-9 w-9 place-items-center rounded-full transition-colors hover:bg-accent/10 hover:text-accent;
+  }
+
   .link-quiet {
     @apply text-base-content/65 underline decoration-base-300 decoration-1 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent/40;
   }
