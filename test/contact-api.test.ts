@@ -59,14 +59,18 @@ describe("POST /api/contact", () => {
   })
 
   it("rejects invalid input", async () => {
-    const response = await POST({ request: request({ name: "" }) } as never)
+    const response = await POST({
+      request: request({ name: "Ada", message: valid.message, token: "token" }),
+    } as never)
     expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({ error: "Email or phone required", field: "email" })
   })
 
   it("fails when the Turnstile secret is missing", async () => {
     delete env.TURNSTILE_SECRET_KEY
     const response = await POST({ request: request(valid) } as never)
     expect(response.status).toBe(500)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it("rejects a failed Turnstile check", async () => {
@@ -82,10 +86,17 @@ describe("POST /api/contact", () => {
   })
 
   it("fails when Telegram config is missing", async () => {
-    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ success: true })))
     delete env.TELEGRAM_BOT_TOKEN
     const response = await POST({ request: request(valid) } as never)
     expect(response.status).toBe(500)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it("fails when the Telegram chat id is missing", async () => {
+    delete env.TELEGRAM_CHAT_ID
+    const response = await POST({ request: request(valid) } as never)
+    expect(response.status).toBe(500)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it("reports a rejected Telegram send", async () => {

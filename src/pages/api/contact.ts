@@ -2,12 +2,6 @@ import { z } from "zod"
 import type { APIRoute } from "astro"
 import { env as cfEnv } from "cloudflare:workers"
 
-interface ContactEnv {
-  TURNSTILE_SECRET_KEY: string
-  TELEGRAM_BOT_TOKEN: string
-  TELEGRAM_CHAT_ID: string
-}
-
 function json(data: unknown, status: number): Response {
   return new Response(JSON.stringify(data), {
     status,
@@ -29,7 +23,14 @@ const schema = z
   })
 
 export const POST: APIRoute = async ({ request }) => {
-  const env: ContactEnv = cfEnv
+  const secret = cfEnv.TURNSTILE_SECRET_KEY
+  const botToken = cfEnv.TELEGRAM_BOT_TOKEN
+  const chatId = cfEnv.TELEGRAM_CHAT_ID
+
+  if (!secret || !botToken || !chatId) {
+    return json({ error: "Server misconfigured" }, 500)
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -39,14 +40,10 @@ export const POST: APIRoute = async ({ request }) => {
 
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return json({ error: "Invalid input" }, 400)
+    const issue = parsed.error.issues[0]
+    return json({ error: issue?.message ?? "Invalid input", field: issue?.path[0] }, 400)
   }
   const { name, email, phone, message, token } = parsed.data
-
-  const secret = env.TURNSTILE_SECRET_KEY
-  if (!secret) {
-    return json({ error: "Server misconfigured" }, 500)
-  }
 
   let verify: { success: boolean }
   try {
@@ -62,12 +59,6 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!verify.success) {
     return json({ error: "Turnstile failed" }, 400)
-  }
-
-  const botToken = env.TELEGRAM_BOT_TOKEN
-  const chatId = env.TELEGRAM_CHAT_ID
-  if (!botToken || !chatId) {
-    return json({ error: "Server misconfigured" }, 500)
   }
 
   const text = `New contact form message\nName: ${name}\nEmail: ${email || "-"}\nPhone: ${phone || "-"}\n\n${message}`
