@@ -60,63 +60,39 @@ const mailPath =
     </ContactTrigger>
   </ContactModal>
 
-  <button
-    type="button"
-    id="links-drawer-toggle"
-    aria-expanded="false"
-    aria-controls="links-drawer"
-    class="btn btn-accent btn-soft btn-lg btn-block justify-center gap-2 font-normal"
-  >
-    <span>{t("links.more")}</span>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="h-4 w-4 shrink-0 transition-transform"
-      aria-hidden="true"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  </button>
-
-  <div id="links-drawer" hidden class="w-full space-y-3"></div>
-
-  <template id="links-drawer-content">
-    {groupLinks(more).map((group) => {
-      const first = group[0]
-      if (!first) return null
-      return group.length > 1 ? (
-        <div class="grid grid-cols-2 gap-3">
-          {group.map((link) => (
-            <LinkButton link={link} />
-          ))}
-        </div>
-      ) : (
-        <LinkButton link={first} />
-      )
-    })}
-  </template>
+  <details class="group w-full">
+    <summary class="btn btn-accent btn-soft btn-lg btn-block list-none justify-center gap-2 font-normal [&::-webkit-details-marker]:hidden">
+      <span>{t("links.more")}</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="16"
+        height="16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-4 w-4 shrink-0 transition-transform group-open:rotate-180"
+        aria-hidden="true"
+      >
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </summary>
+    <div class="mt-3 w-full space-y-3">
+      {groupLinks(more).map((group) => {
+        const first = group[0]
+        if (!first) return null
+        return group.length > 1 ? (
+          <div class="grid grid-cols-2 gap-3">
+            {group.map((link) => (
+              <LinkButton link={link} />
+            ))}
+          </div>
+        ) : (
+          <LinkButton link={first} />
+        )
+      })}
+    </div>
+  </details>
 </LinksLayout>
-
-<script>
-  const toggle = document.querySelector<HTMLButtonElement>("#links-drawer-toggle")
-  const drawer = document.querySelector<HTMLElement>("#links-drawer")
-  const template = document.querySelector<HTMLTemplateElement>("#links-drawer-content")
-
-  toggle?.addEventListener("click", () => {
-    if (!drawer || !template) return
-    const expanded = toggle.getAttribute("aria-expanded") === "true"
-    if (!expanded && drawer.childElementCount === 0) {
-      drawer.append(template.content.cloneNode(true))
-    }
-    toggle.setAttribute("aria-expanded", String(!expanded))
-    toggle.querySelector("svg")?.classList.toggle("rotate-180", !expanded)
-    drawer.hidden = expanded
-  })
-</script>
