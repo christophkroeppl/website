@@ -1,15 +1,15 @@
 ---
 import { links } from "../generated/links"
+import { drawerLinks } from "../links/drawer"
 import LinkIcon from "./LinkIcon.astro"
 
 interface Props {
   label: string
+  moreLabel: string
 }
 
-const { label } = Astro.props
-
-const excluded = new Set(["website"])
-const footerLinks = links.filter((link) => !excluded.has(link.slug))
+const { label, moreLabel } = Astro.props
+const { visible, more } = drawerLinks(links)
 
 const external = (href: string) =>
   href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {}
@@ -18,10 +18,11 @@ const linkGlyph = [
   "M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1 1 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4 4 0 0 1-.128-1.287z",
   "M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z",
 ]
+const moreDots = [5, 12, 19]
 ---
 
 <nav class="hidden items-center gap-1 lg:flex" aria-label={label}>
-  {footerLinks.map((link) => (
+  {visible.map((link) => (
     <a
       href={link.href}
       aria-label={link.label}
@@ -32,14 +33,51 @@ const linkGlyph = [
       <LinkIcon link={link} size={17} />
     </a>
   ))}
+  {more.length > 0 && (
+    <details class="relative">
+      <summary
+        aria-label={moreLabel}
+        title={moreLabel}
+        class="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent [&::-webkit-details-marker]:hidden"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          {moreDots.map((cx) => (
+            <circle cx={cx} cy="12" r="1.7" />
+          ))}
+        </svg>
+      </summary>
+      <nav class="absolute right-0 bottom-full z-10 mb-2 flex gap-1 rounded-full border border-base-300 bg-base-100 p-1 shadow-lg">
+        {more.map((link) => (
+          <a
+            href={link.href}
+            aria-label={link.label}
+            title={link.label}
+            class="grid h-9 w-9 place-items-center rounded-full text-base-content/55 transition-colors hover:bg-accent/10 hover:text-accent"
+            {...external(link.href)}
+          >
+            <LinkIcon link={link} size={17} />
+          </a>
+        ))}
+      </nav>
+    </details>
+  )}
 </nav>
 
-<div class="fab lg:hidden">
-  <div
-    tabindex="0"
-    role="button"
+<div class="fab lg:hidden" data-links-fab data-open="false">
+  <button
+    type="button"
     class="btn btn-lg btn-circle btn-primary shadow-lg"
     aria-label={label}
+    aria-expanded="false"
+    title={label}
+    data-links-fab-toggle
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -53,8 +91,8 @@ const linkGlyph = [
         <path d={path} />
       ))}
     </svg>
-  </div>
-  {footerLinks.map((link) => (
+  </button>
+  {visible.map((link) => (
     <a
       href={link.href}
       aria-label={link.label}
@@ -65,4 +103,101 @@ const linkGlyph = [
       <LinkIcon link={link} size={20} />
     </a>
   ))}
+  {more.length > 0 && (
+    <nav class="fab static!" data-links-fab-more data-open="false">
+      <button
+        type="button"
+        class="btn btn-lg btn-circle bg-base-100 shadow-md"
+        aria-label={moreLabel}
+        aria-expanded="false"
+        title={moreLabel}
+        data-links-fab-toggle
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          {moreDots.map((cx) => (
+            <circle cx={cx} cy="12" r="1.7" />
+          ))}
+        </svg>
+      </button>
+      {more.map((link) => (
+        <a
+          href={link.href}
+          aria-label={link.label}
+          title={link.label}
+          class="btn btn-lg btn-circle bg-base-100 shadow-md"
+          {...external(link.href)}
+        >
+          <LinkIcon link={link} size={20} />
+        </a>
+      ))}
+    </nav>
+  )}
 </div>
+
+<script>
+  const outer = document.querySelector<HTMLElement>("[data-links-fab]")
+  const inner = outer?.querySelector<HTMLElement>("[data-links-fab-more]")
+
+  function setOpen(fab: HTMLElement | null | undefined, open: boolean) {
+    if (!fab) return
+    fab.dataset.open = String(open)
+    fab
+      .querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
+      ?.setAttribute("aria-expanded", String(open))
+  }
+
+  outer
+    ?.querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
+    ?.addEventListener("click", () => {
+      const open = outer.dataset.open !== "true"
+      if (!open) setOpen(inner, false)
+      setOpen(outer, open)
+    })
+
+  inner
+    ?.querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
+    ?.addEventListener("click", () => {
+      setOpen(inner, inner.dataset.open !== "true")
+    })
+
+  document.addEventListener("click", (event) => {
+    if (!outer?.contains(event.target as Node)) {
+      setOpen(inner, false)
+      setOpen(outer, false)
+    }
+  })
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return
+    if (inner?.dataset.open === "true") setOpen(inner, false)
+    else {
+      setOpen(inner, false)
+      setOpen(outer, false)
+    }
+  })
+</script>
+
+<style>
+  [data-open="false"] > :nth-child(n + 2) {
+    visibility: hidden;
+    opacity: 0;
+    scale: 80%;
+  }
+
+  [data-open="true"] > :nth-child(n + 2) {
+    visibility: visible;
+    opacity: 1;
+    scale: 100%;
+  }
+
+  [data-links-fab-more][data-open="false"] > :nth-child(n + 2) {
+    display: none;
+  }
+</style>
