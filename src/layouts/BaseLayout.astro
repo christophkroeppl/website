@@ -8,7 +8,7 @@ import { llmsPath } from "../i18n/locales"
 import { activePage } from "../i18n/routes"
 import { useTranslations } from "../i18n/ui"
 import { og, person } from "../content/site"
-import { cvFor, descriptionFor, rolesFor, skillsFor } from "../lib/content"
+import { personData } from "../lib/person-data"
 import { canonicalFor } from "../lib/canonical"
 import { formatPageTitle, inLanguage, ogLocale, otherLocale, siteUrl } from "../lib/seo"
 import { markdownPath } from "../lib/urls"
@@ -51,15 +51,12 @@ const alternates =
         href: new URL(alternate.path, site).href,
       }))
 const xDefault = alternates.find((alternate) => alternate.hreflang === "x-default")?.href
-const [skills, cv, roles, homeDescription] = await Promise.all([
-  skillsFor(lang),
-  cvFor(lang),
-  rolesFor(lang),
-  descriptionFor(lang, "home"),
-])
-const knowsAbout = skills.map((group) => group.data.label)
-const knowsLanguage = cv.data.languages.map((language) => language.code)
-const employers = [...new Set(roles.map((role) => role.data.org))]
+const {
+  knowsAbout,
+  knowsLanguage,
+  description: homeDescription,
+  employers,
+} = await personData(lang)
 const structuredData = noindex
   ? undefined
   : graph([
