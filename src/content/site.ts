@@ -2,6 +2,9 @@ import type { Locale } from "../i18n/locales"
 import type { PageId } from "../i18n/routes"
 import type { Bilingual } from "./types"
 
+export const siteUrl = "https://kroeppl.ch"
+export const siteHost = new URL(siteUrl).hostname
+
 export const person = {
   name: "Christoph Kröppl",
   jobTitle: {

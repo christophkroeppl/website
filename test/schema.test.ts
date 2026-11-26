@@ -14,7 +14,7 @@ import { person } from "../src/content/site"
 import { links } from "../src/generated/links"
 import { pagePaths } from "../src/i18n/routes"
 import { buildTime } from "../src/lib/build-time"
-import { siteUrl } from "../src/lib/seo"
+import { siteUrl } from "../src/content/site"
 
 const url = `${siteUrl}${pagePaths.projects.de}`
 
@@ -344,8 +344,8 @@ describe("projectNode links", () => {
 
 describe("graph dedupe", () => {
   it("keeps one node per @id, last wins", () => {
-    const first = { "@type": "Person", "@id": "https://kroeppl.ch/#person", name: "old" }
-    const second = { "@type": "Person", "@id": "https://kroeppl.ch/#person", name: "new" }
+    const first = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "old" }
+    const second = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "new" }
     const result = graph([first, second]) as { "@graph": { name: string }[] }
 
     expect(result["@graph"]).toHaveLength(1)

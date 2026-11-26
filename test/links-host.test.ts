@@ -1,30 +1,34 @@
 import { describe, expect, it } from "vitest"
+import { siteHost } from "../src/content/site"
 import { isLinksHost, linksHostPolicy } from "../src/links/host"
 
 function kind(host: string, pathname: string) {
   return linksHostPolicy(host, pathname).kind
 }
 
+const linksHost = `links.${siteHost}`
+const wwwHost = `www.${siteHost}`
+
 describe("linksHostPolicy", () => {
   it("passes every path without noindex on other hostnames", () => {
     for (const pathname of ["/", "/links/", "/impressum/", "/en/"]) {
-      for (const host of ["kroeppl.ch", "www.kroeppl.ch", "website.example.workers.dev"]) {
+      for (const host of [siteHost, wwwHost, "website.example.workers.dev"]) {
         expect(linksHostPolicy(host, pathname)).toEqual({ kind: "pass", noindex: false })
       }
     }
   })
 
   it("rewrites the subdomain roots to the localized links pages", () => {
-    expect(isLinksHost("links.kroeppl.ch")).toBe(true)
-    expect(linksHostPolicy("links.kroeppl.ch", "/")).toEqual({
+    expect(isLinksHost(linksHost)).toBe(true)
+    expect(linksHostPolicy(linksHost, "/")).toEqual({
       kind: "rewrite",
       target: "/links/",
     })
-    expect(linksHostPolicy("links.kroeppl.ch", "/en")).toEqual({
+    expect(linksHostPolicy(linksHost, "/en")).toEqual({
       kind: "rewrite",
       target: "/en/links/",
     })
-    expect(linksHostPolicy("links.kroeppl.ch", "/en/")).toEqual({
+    expect(linksHostPolicy(linksHost, "/en/")).toEqual({
       kind: "rewrite",
       target: "/en/links/",
     })
@@ -46,7 +50,7 @@ describe("linksHostPolicy", () => {
       "/api/contact/",
       "/robots.txt",
     ]) {
-      expect(linksHostPolicy("links.kroeppl.ch", pathname)).toEqual({
+      expect(linksHostPolicy(linksHost, pathname)).toEqual({
         kind: "pass",
         noindex: true,
       })
@@ -67,7 +71,7 @@ describe("linksHostPolicy", () => {
       "/llms-full.txt",
       "/sitemap.xml",
     ]) {
-      expect(kind("links.kroeppl.ch", pathname)).toBe("block")
+      expect(kind(linksHost, pathname)).toBe("block")
     }
   })
 })

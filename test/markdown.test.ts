@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { siteUrl } from "../src/content/site"
 import { parseFrontmatter } from "../src/lib/frontmatter"
 import { inline, renderFrontmatter, stripFrontmatter, tokenCount } from "../src/lib/text"
 
@@ -50,7 +51,7 @@ describe("renderFrontmatter", () => {
   it("produces yaml that parses back to the same values", () => {
     const fields = {
       title: "Projekte — Christoph Kröppl",
-      canonical: "https://kroeppl.ch/projekte/",
+      canonical: `${siteUrl}/projekte/`,
       lang: "de-AT",
       summary:
         "Open-Source-Projekte und ausgewählte Arbeiten: bases-mcp, guarden und oc-go-usage-display.",

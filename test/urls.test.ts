@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { absoluteUrl, markdownPath } from "../src/lib/urls"
 import { pagePaths, type PageId } from "../src/i18n/routes"
 import { locales, type Locale } from "../src/i18n/locales"
-import { siteUrl } from "../src/lib/seo"
+import { siteUrl } from "../src/content/site"
 
 const ids = Object.keys(pagePaths) as PageId[]
 

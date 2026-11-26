@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { assembleFull, llmsIndex } from "../src/lib/llms"
 import { pagePaths, type PageId } from "../src/i18n/routes"
-import { siteUrl } from "../src/lib/seo"
+import { siteUrl } from "../src/content/site"
 import { markdownPath } from "../src/lib/urls"
 
 const ids = Object.keys(pagePaths) as PageId[]
@@ -70,17 +70,17 @@ describe("llmsIndex", () => {
 describe("assembleFull", () => {
   it("labels each document with its source and strips frontmatter", () => {
     const output = assembleFull("# Title\n", [
-      { url: "https://kroeppl.ch/", markdown: '---\ntitle: "A"\n---\n\n# A\n' },
-      { url: "https://kroeppl.ch/projekte/", markdown: '---\ntitle: "B"\n---\n\n# B\n' },
+      { url: `${siteUrl}/`, markdown: '---\ntitle: "A"\n---\n\n# A\n' },
+      { url: `${siteUrl}/projekte/`, markdown: '---\ntitle: "B"\n---\n\n# B\n' },
     ])
 
     expect(output).toBe(
-      "# Title\n\nSource: https://kroeppl.ch/\n\n# A\n\n---\n\nSource: https://kroeppl.ch/projekte/\n\n# B\n",
+      `# Title\n\nSource: ${siteUrl}/\n\n# A\n\n---\n\nSource: ${siteUrl}/projekte/\n\n# B\n`,
     )
   })
 
   it("keeps the header and ends with a single newline", () => {
-    const output = assembleFull("# Title\n", [{ url: "https://kroeppl.ch/", markdown: "# A" }])
+    const output = assembleFull("# Title\n", [{ url: `${siteUrl}/`, markdown: "# A" }])
 
     expect(output.startsWith("# Title\n\n")).toBe(true)
     expect(output.endsWith("# A\n")).toBe(true)

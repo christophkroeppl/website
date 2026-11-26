@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { inLanguage, siteUrl } from "../src/lib/seo"
+import { siteUrl } from "../src/content/site"
+import { inLanguage } from "../src/lib/seo"
 import {
   activePage,
   localizedRoutes,
@@ -59,6 +60,6 @@ describe("route registration", () => {
 describe("site url", () => {
   it("is the production origin without a trailing slash", () => {
     expect(siteUrl).toBe("https://kroeppl.ch")
-    expect(new URL(pagePaths.home.de, siteUrl).href).toBe("https://kroeppl.ch/")
+    expect(new URL(pagePaths.home.de, siteUrl).href).toBe(`${siteUrl}/`)
   })
 })
