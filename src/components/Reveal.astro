@@ -1,5 +1,4 @@
 ---
-import { revealOutlines } from "../generated/reveals"
 import { type Locale } from "../i18n/locales"
 import { type RevealId } from "../reveals/registry"
 
@@ -9,30 +8,30 @@ interface Props {
 }
 
 const { id, lang } = Astro.props
-const { viewBox, labels } = revealOutlines[id]
-const label = labels[lang]
-const labelWidth = (label.width / viewBox.units).toFixed(2)
 ---
 
 <div data-reveal data-reveal-id={id} data-reveal-lang={lang}>
-  <button type="button" data-reveal-button class="btn btn-outline mt-3">
-    <svg
-      viewBox={`0 ${viewBox.top} ${label.width} ${viewBox.height}`}
-      style={`width:${labelWidth}em`}
-      fill="currentColor"
-      class="h-auto max-w-full"
-    >
-      <path d={label.d}></path>
-    </svg>
-  </button>
+  <button type="button" data-reveal-button class="btn btn-outline mt-3"></button>
   <div data-reveal-lines class="grid gap-[0.4em]" hidden></div>
 </div>
 
 <script>
   type Outline = { d: string; width: number }
-  type Payload = { viewBox: { top: number; height: number; units: number }; lines: Outline[] }
+  type ViewBox = { top: number; height: number; units: number }
+  type Payload = { viewBox: ViewBox; lines: Outline[] }
+  type LabelPayload = { viewBox: ViewBox; label: Outline }
 
   const namespace = "http://www.w3.org/2000/svg"
+
+  async function get<T>(id: string, lang: string, part?: string): Promise<T> {
+    const search = new URLSearchParams({ lang })
+    if (part) search.set("part", part)
+    const response = await fetch(`/api/reveals/${encodeURIComponent(id)}/?${search}`, {
+      headers: { Accept: "application/json" },
+    })
+    if (!response.ok) throw new Error(String(response.status))
+    return response.json() as Promise<T>
+  }
 
   function fit(target: HTMLElement, payload: Payload) {
     const widest = Math.max(...payload.lines.map((line) => line.width)) / payload.viewBox.units
@@ -49,19 +48,43 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
     const { top, height, units } = payload.viewBox
     target.replaceChildren(
       ...payload.lines.map((line) => {
-        const svg = document.createElementNS(namespace, "svg")
-        svg.setAttribute("viewBox", `0 ${top} ${line.width} ${height}`)
-        svg.setAttribute("fill", "currentColor")
-        svg.setAttribute("style", `width:${(line.width / units).toFixed(2)}em`)
+        const element = document.createElementNS(namespace, "svg")
+        element.setAttribute("viewBox", `0 ${top} ${line.width} ${height}`)
+        element.setAttribute("fill", "currentColor")
+        element.setAttribute("style", `width:${(line.width / units).toFixed(2)}em`)
         const path = document.createElementNS(namespace, "path")
         path.setAttribute("d", line.d)
-        svg.appendChild(path)
-        return svg
+        element.appendChild(path)
+        return element
       }),
     )
     target.hidden = false
     fit(target, payload)
   }
+
+  function svg(label: Outline, viewBox: ViewBox) {
+    const element = document.createElementNS(namespace, "svg")
+    element.setAttribute("viewBox", `0 ${viewBox.top} ${label.width} ${viewBox.height}`)
+    element.setAttribute("fill", "currentColor")
+    element.setAttribute("style", `width:${(label.width / viewBox.units).toFixed(2)}em`)
+    element.setAttribute("class", "h-auto max-w-full")
+    const path = document.createElementNS(namespace, "path")
+    path.setAttribute("d", label.d)
+    element.appendChild(path)
+    return element
+  }
+
+  window.addEventListener("load", () => {
+    for (const root of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
+      const id = root.dataset.revealId
+      const lang = root.dataset.revealLang
+      const button = root.querySelector<HTMLButtonElement>("[data-reveal-button]")
+      if (!id || !lang || !button) continue
+      get<LabelPayload>(id, lang, "label")
+        .then(({ viewBox, label }) => button.appendChild(svg(label, viewBox)))
+        .catch(() => {})
+    }
+  })
 
   for (const root of document.querySelectorAll<HTMLElement>("[data-reveal]")) {
     const id = root.dataset.revealId
@@ -70,30 +93,9 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
     const target = root.querySelector<HTMLElement>("[data-reveal-lines]")
     if (!id || !lang || !button || !target) continue
 
-    let loaded: Promise<Payload> | undefined
-
-    const request = () => {
-      loaded ??= fetch(`/api/reveals/${encodeURIComponent(id)}/?lang=${encodeURIComponent(lang)}`, {
-        headers: { Accept: "application/json" },
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error(String(response.status))
-          return response.json() as Promise<Payload>
-        })
-        .catch((reason: unknown) => {
-          loaded = undefined
-          throw reason
-        })
-      return loaded
-    }
-
-    const prefetch = () => {
-      request().catch(() => {})
-    }
-
-    const reveal = () => {
+    button.addEventListener("click", () => {
       button.disabled = true
-      request()
+      get<Payload>(id, lang)
         .then((payload) => {
           render(target, payload)
           button.hidden = true
@@ -110,10 +112,6 @@ const labelWidth = (label.width / viewBox.units).toFixed(2)
         .catch(() => {
           button.disabled = false
         })
-    }
-
-    button.addEventListener("pointerenter", prefetch, { once: true })
-    button.addEventListener("focus", prefetch, { once: true })
-    button.addEventListener("click", reveal)
+    })
   }
 </script>

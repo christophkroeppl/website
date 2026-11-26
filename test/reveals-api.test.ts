@@ -4,11 +4,19 @@ import { MACHINE_CACHE, NO_STORE } from "../src/lib/cache"
 vi.mock("../src/generated/reveals", () => ({
   revealOutlines: {
     contact: {
-      viewBox: "0 0 100 100",
+      viewBox: { top: 0, height: 100, units: 100 },
+      labels: {
+        de: { d: "M0 0", width: 10 },
+        en: { d: "M0 0", width: 20 },
+      },
       lines: { de: ["M0 0L10 10"], en: ["M0 0L20 20"] },
     },
     empty: {
-      viewBox: "0 0 100 100",
+      viewBox: { top: 0, height: 100, units: 100 },
+      labels: {
+        de: { d: "M0 0", width: 10 },
+        en: { d: "M0 0", width: 20 },
+      },
       lines: { de: [], en: [] },
     },
   },
@@ -16,9 +24,11 @@ vi.mock("../src/generated/reveals", () => ({
 
 import { GET } from "../src/pages/api/reveals/[id]"
 
-function call(id: string | undefined, lang?: string) {
-  const suffix = lang ? "?lang=" + lang : ""
-  const url = new URL("https://example.com/api/reveals/" + (id ?? "") + suffix)
+function call(id: string | undefined, lang?: string, part?: string) {
+  const search = new URLSearchParams()
+  if (lang) search.set("lang", lang)
+  if (part) search.set("part", part)
+  const url = new URL("https://example.com/api/reveals/" + (id ?? "") + "?" + search)
   return GET({ request: new Request(url), params: { id } } as never)
 }
 
@@ -27,7 +37,33 @@ describe("GET /api/reveals/[id]", () => {
     const response = await call("contact", "de")
     expect(response.status).toBe(200)
     expect(response.headers.get("cache-control")).toBe(MACHINE_CACHE)
-    expect(await response.json()).toEqual({ viewBox: "0 0 100 100", lines: ["M0 0L10 10"] })
+    expect(await response.json()).toEqual({
+      viewBox: { top: 0, height: 100, units: 100 },
+      lines: ["M0 0L10 10"],
+    })
+
+    const explicit = await call("contact", "de", "lines")
+    expect(explicit.status).toBe(200)
+    expect(await explicit.json()).toEqual({
+      viewBox: { top: 0, height: 100, units: 100 },
+      lines: ["M0 0L10 10"],
+    })
+  })
+
+  it("returns a cacheable label", async () => {
+    const response = await call("contact", "de", "label")
+    expect(response.status).toBe(200)
+    expect(response.headers.get("cache-control")).toBe(MACHINE_CACHE)
+    expect(await response.json()).toEqual({
+      viewBox: { top: 0, height: 100, units: 100 },
+      label: { d: "M0 0", width: 10 },
+    })
+  })
+
+  it("returns 400 for an unknown part", async () => {
+    const response = await call("contact", "de", "nope")
+    expect(response.status).toBe(400)
+    expect(response.headers.get("cache-control")).toBe(NO_STORE)
   })
 
   it("returns 404 for an unknown id", async () => {
@@ -37,11 +73,18 @@ describe("GET /api/reveals/[id]", () => {
   })
 
   it("returns 400 for a missing or invalid locale", async () => {
-    expect((await call("contact")).status).toBe(400)
-    expect((await call("contact", "fr")).status).toBe(400)
+    const missing = await call("contact")
+    expect(missing.status).toBe(400)
+    expect(missing.headers.get("cache-control")).toBe(NO_STORE)
+
+    const invalid = await call("contact", "fr")
+    expect(invalid.status).toBe(400)
+    expect(invalid.headers.get("cache-control")).toBe(NO_STORE)
   })
 
   it("returns 503 for an empty outline", async () => {
-    expect((await call("empty", "de")).status).toBe(503)
+    const response = await call("empty", "de")
+    expect(response.status).toBe(503)
+    expect(response.headers.get("cache-control")).toBe(NO_STORE)
   })
 })

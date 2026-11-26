@@ -15,17 +15,24 @@ function respond(status: number, body?: unknown, cache = NO_STORE) {
 
 export const GET: APIRoute = ({ request, params }) => {
   const id = params.id
-  if (!id || !Object.hasOwn(revealOutlines, id)) {
-    return respond(404)
-  }
+  const url = new URL(request.url)
+  const lang = url.searchParams.get("lang")
+  const part = url.searchParams.get("part")
 
-  const lang = new URL(request.url).searchParams.get("lang")
   if (!lang || !isLocale(lang)) {
     return respond(400)
   }
+  if (part && part !== "label" && part !== "lines") {
+    return respond(400)
+  }
 
-  const entry = (revealOutlines as Record<string, GeneratedReveal | undefined>)[id]
+  const entry = (revealOutlines as Record<string, GeneratedReveal | undefined>)[id ?? ""]
   if (!entry) return respond(404)
+
+  if (part === "label") {
+    return respond(200, { viewBox: entry.viewBox, label: entry.labels[lang] }, MACHINE_CACHE)
+  }
+
   const lines = entry.lines[lang]
   if (lines.length === 0) {
     return respond(503)
