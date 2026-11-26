@@ -8,6 +8,7 @@ import type { AstroIntegration } from "astro"
 import { og, person } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/config"
 import { parseFrontmatter } from "../src/lib/frontmatter"
+import { ogImagePaths } from "../src/lib/og-image"
 import { siteUrl } from "../src/content/site"
 import { readThemeTokens, type ThemeTokens } from "./theme"
 
@@ -18,10 +19,9 @@ const TITLE_WIDTH = 700
 const FONT_DIR = "src/assets/fonts"
 const PORTRAIT_FILE = "src/assets/bullet.webp"
 
-const OUTPUTS = {
-  de: "public/og.png",
-  en: "public/og-en.png",
-} satisfies Record<Locale, string>
+const OUTPUTS = Object.fromEntries(
+  Object.entries(ogImagePaths).map(([lang, path]) => [lang, `public${path}`]),
+) as Record<Locale, string>
 
 type Style = Record<string, string | number>
 type Node = { type: string; props: Record<string, unknown> }

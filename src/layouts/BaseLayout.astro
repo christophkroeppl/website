@@ -13,6 +13,7 @@ import { canonicalFor } from "../lib/canonical"
 import { formatPageTitle, inLanguage, ogLocale, otherLocale, siteUrl } from "../lib/seo"
 import { markdownPath } from "../lib/urls"
 import { pageMeta } from "../lib/page-meta"
+import { ogImagePath } from "../lib/og-image"
 import { pageAlternates } from "../lib/alternates"
 import {
   breadcrumbNode,
@@ -40,7 +41,7 @@ const site = Astro.site ?? new URL(siteUrl)
 const canonical = page ? canonicalFor(page, lang) : new URL(Astro.url.pathname, site).href
 const metaDescription = description
 const pageTitle = formatPageTitle(title)
-const brandImage = lang === "en" ? "/og-en.png" : "/og.png"
+const brandImage = ogImagePath(lang)
 const ogImage = new URL(image ?? brandImage, site).href
 const ogImageAlt = image ? pageTitle : `${person.name} — ${og.subtitle[lang]}`
 const alternates =
