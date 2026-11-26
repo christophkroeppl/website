@@ -9,7 +9,7 @@ import { og, person } from "../src/content/site"
 import { locales, type Locale } from "../src/i18n/config"
 import { parseFrontmatter } from "../src/lib/frontmatter"
 import { siteUrl } from "../src/content/site"
-import { readThemeTokens, type ThemeTokens } from "./theme"
+import { resolveTheme, type ResolvedTheme } from "./theme"
 
 const WIDTH = 1200
 const HEIGHT = 630
@@ -43,59 +43,20 @@ function readHomeTitle(root: string, lang: Locale): string {
   return title
 }
 
-function oklch(value: string): [number, number, number] {
-  const match = /oklch\(\s*([\d.]+)(%)?\s+([\d.]+)\s+([\d.]+)\s*\)/.exec(value)
-  if (!match) throw new Error(`Unsupported color in the active daisyUI theme: ${value}`)
-
-  const lightnessValue = match[1]
-  const chromaValue = match[3]
-  const hueValue = match[4]
-  if (!lightnessValue || !chromaValue || !hueValue)
-    throw new Error(`Unsupported color in the active daisyUI theme: ${value}`)
-  const lightness = Number(lightnessValue) / (match[2] ? 100 : 1)
-  const chroma = Number(chromaValue)
-  const hue = (Number(hueValue) * Math.PI) / 180
-  const a = chroma * Math.cos(hue)
-  const b = chroma * Math.sin(hue)
-
-  const l = (lightness + 0.3963377774 * a + 0.2158037573 * b) ** 3
-  const m = (lightness - 0.1055613458 * a - 0.0638541728 * b) ** 3
-  const s = (lightness - 0.0894841775 * a - 1.291485548 * b) ** 3
-
-  const linear = [
-    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
-    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
-    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
-  ]
-
-  return linear.map((channel) => {
-    const clamped = Math.max(0, Math.min(1, channel))
-    const gamma = clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * clamped ** (1 / 2.4) - 0.055
-    return Math.round(gamma * 255)
-  }) as [number, number, number]
-}
-
-function rgb(value: string, alpha = 1): string {
-  const [red, green, blue] = oklch(value)
-  return alpha === 1
-    ? `rgb(${red}, ${green}, ${blue})`
-    : `rgba(${red}, ${green}, ${blue}, ${alpha})`
-}
-
-function palette(tokens: ThemeTokens) {
+function palette(tokens: ResolvedTheme) {
   return {
-    base: rgb(tokens.base100),
-    ink: rgb(tokens.baseContent),
-    inkMuted: rgb(tokens.baseContent, 0.45),
-    primary: rgb(tokens.primary),
-    primaryRule: rgb(tokens.primary, 0.85),
-    primaryRing: rgb(tokens.primary, 0.22),
-    primaryGlow: rgb(tokens.primary, 0.13),
-    primaryClear: rgb(tokens.primary, 0),
-    secondary: rgb(tokens.secondary),
-    accent: rgb(tokens.accent),
-    accentGlow: rgb(tokens.accent, 0.11),
-    accentClear: rgb(tokens.accent, 0),
+    base: tokens.rgb(tokens.base100),
+    ink: tokens.rgb(tokens.baseContent),
+    inkMuted: tokens.rgb(tokens.baseContent, 0.45),
+    primary: tokens.rgb(tokens.primary),
+    primaryRule: tokens.rgb(tokens.primary, 0.85),
+    primaryRing: tokens.rgb(tokens.primary, 0.22),
+    primaryGlow: tokens.rgb(tokens.primary, 0.13),
+    primaryClear: tokens.rgb(tokens.primary, 0),
+    secondary: tokens.rgb(tokens.secondary),
+    accent: tokens.rgb(tokens.accent),
+    accentGlow: tokens.rgb(tokens.accent, 0.11),
+    accentClear: tokens.rgb(tokens.accent, 0),
   }
 }
 
@@ -242,7 +203,7 @@ export function ogImages(): AstroIntegration {
     hooks: {
       "astro:config:setup": async ({ config }) => {
         const root = fileURLToPath(config.root)
-        const colors = palette(readThemeTokens(root))
+        const colors = palette(resolveTheme(root))
         const fonts = [
           font(root, "inter-latin-500.woff2", "Inter", 500),
           font(root, "inter-latin-600.woff2", "Inter", 600),

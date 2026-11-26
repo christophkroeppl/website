@@ -45,6 +45,8 @@ const tokens = {
   accent: "#f0f",
   warning: "#fa0",
   error: "#f00",
+  rgb: (value: string, alpha = 1) => `rgba(${value}, ${alpha})`,
+  mix: (value: string, percent: number) => `color-mix(in oklab, ${value} ${percent}%, transparent)`,
 }
 
 describe("embedDiagram", () => {

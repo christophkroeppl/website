@@ -3,7 +3,7 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import type { AstroIntegration } from "astro"
 import { parseFrontmatter } from "../src/lib/frontmatter"
-import { readThemeTokens, type ThemeTokens } from "./theme"
+import { resolveTheme, type ResolvedTheme } from "./theme"
 
 type ProjectMedia = {
   repo: string
@@ -84,41 +84,39 @@ export function publicToDest(url: string): string {
 const STYLE_ID = "project-media-embed"
 const SCRIPT_ID = "project-media-embed-viewer"
 
-function buildThemeCss(tokens: ThemeTokens): string {
-  const mix = (value: string, percent: number) =>
-    `color-mix(in oklab, ${value} ${percent}%, transparent)`
+function buildThemeCss(theme: ResolvedTheme): string {
   const category = (name: string, value: string, percent = 16) => `
-      --${name}-fill: ${mix(value, percent)} !important;
+      --${name}-fill: ${theme.mix(value, percent)} !important;
       --${name}-stroke: ${value} !important;`
 
   return `
     html[data-theme] {
       color-scheme: light;
-      --bg: ${tokens.base100} !important;
-      --grid: ${tokens.base200} !important;
-      --canvas-dot: ${mix(tokens.baseContent, 14)} !important;
-      --text: ${tokens.baseContent} !important;
-      --text-muted: ${mix(tokens.baseContent, 70)} !important;
-      --text-dim: ${mix(tokens.baseContent, 45)} !important;
-      --text-faint: ${mix(tokens.baseContent, 35)} !important;
-      --panel: ${mix(tokens.base100, 76)} !important;
-      --panel-border: ${tokens.base300} !important;
-      --lane-fill: ${mix(tokens.base200, 72)} !important;
-      --lane-stroke: ${tokens.base300} !important;
-      --arrow: ${mix(tokens.baseContent, 50)} !important;
-      --arrow-emphasis: ${tokens.primary} !important;
-      --mask: ${tokens.base100} !important;
-${category("frontend", tokens.accent)}
-${category("backend", tokens.primary)}
-${category("database", tokens.secondary)}
-${category("cloud", tokens.warning)}
-${category("security", tokens.error, 14)}
-${category("messagebus", tokens.secondary, 14)}
-${category("external", tokens.baseContent)}
+      --bg: ${theme.base100} !important;
+      --grid: ${theme.base200} !important;
+      --canvas-dot: ${theme.mix(theme.baseContent, 14)} !important;
+      --text: ${theme.baseContent} !important;
+      --text-muted: ${theme.mix(theme.baseContent, 70)} !important;
+      --text-dim: ${theme.mix(theme.baseContent, 45)} !important;
+      --text-faint: ${theme.mix(theme.baseContent, 35)} !important;
+      --panel: ${theme.mix(theme.base100, 76)} !important;
+      --panel-border: ${theme.base300} !important;
+      --lane-fill: ${theme.mix(theme.base200, 72)} !important;
+      --lane-stroke: ${theme.base300} !important;
+      --arrow: ${theme.mix(theme.baseContent, 50)} !important;
+      --arrow-emphasis: ${theme.primary} !important;
+      --mask: ${theme.base100} !important;
+${category("frontend", theme.accent)}
+${category("backend", theme.primary)}
+${category("database", theme.secondary)}
+${category("cloud", theme.warning)}
+${category("security", theme.error, 14)}
+${category("messagebus", theme.secondary, 14)}
+${category("external", theme.baseContent)}
     }`
 }
 
-export function embedDiagram(html: string, tokens: ThemeTokens): string {
+export function embedDiagram(html: string, theme: ResolvedTheme): string {
   if (!html.includes('class="diagram-container"')) {
     throw new Error("Archify output is missing .diagram-container")
   }
@@ -129,7 +127,7 @@ export function embedDiagram(html: string, tokens: ThemeTokens): string {
 
   const style = `<style id="${STYLE_ID}">
     html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; }
-${buildThemeCss(tokens)}
+${buildThemeCss(theme)}
     body > *:not(.container) { display: none !important; }
     .container { width: 100% !important; height: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
     .container > *:not(.diagram-container) { display: none !important; }
@@ -249,7 +247,7 @@ export function projectMedia(): AstroIntegration {
         if (command === "sync") return
 
         const root = fileURLToPath(config.root)
-        const theme = readThemeTokens(root)
+        const theme = resolveTheme(root)
         const refs = collectArtifactRefs(root)
         const produced = new Set<string>()
 
