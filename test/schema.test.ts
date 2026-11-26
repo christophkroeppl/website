@@ -4,6 +4,7 @@ import {
   graph,
   isProfile,
   itemListNode,
+  makeNode,
   personNode,
   projectNode,
   webPageNode,
@@ -343,13 +344,23 @@ describe("projectNode links", () => {
 })
 
 describe("graph dedupe", () => {
-  it("keeps one node per @id, last wins", () => {
-    const first = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "old" }
-    const second = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "new" }
-    const result = graph([first, second]) as { "@graph": { name: string }[] }
+  it("deduplicates identical nodes with the same @id", () => {
+    const node = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "same" }
+    const result = graph([node, { ...node }]) as { "@graph": unknown[] }
 
     expect(result["@graph"]).toHaveLength(1)
-    expect(result["@graph"][0]?.name).toBe("new")
+    expect(result["@graph"][0]).toEqual(node)
+  })
+
+  it("throws on conflicting @ids", () => {
+    const first = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "old" }
+    const second = { "@type": "Person", "@id": `${siteUrl}/#person`, name: "new" }
+
+    expect(() => graph([first, second])).toThrow(/Conflicting schema.org @id/)
+  })
+
+  it("requires a node type", () => {
+    expect(() => makeNode("", {})).toThrow(/requires @type/)
   })
 
   it("keeps anonymous nodes", () => {

@@ -10,7 +10,20 @@ import { pageMeta, type PageMeta } from "./page-meta"
 import { inLanguage } from "./seo"
 import { absoluteUrl } from "./urls"
 
-export type Node = Record<string, unknown>
+export type Node = {
+  "@type": string
+  "@id"?: string
+  [key: string]: unknown
+}
+
+export function makeNode(type: string, fields: Record<string, unknown>, id?: string): Node {
+  if (!type) throw new Error("Schema.org node requires @type")
+  return {
+    "@type": type,
+    ...(id ? { "@id": id } : {}),
+    ...fields,
+  }
+}
 
 const personId = absoluteUrl("/#person")
 const websiteId = absoluteUrl("/#website")
@@ -58,34 +71,38 @@ export function personNode(
     mainEntityOfPage?: string
   },
 ): Node {
-  return {
-    "@type": "Person",
-    "@id": personId,
-    name: person.name,
-    url: absoluteUrl(pathFor("home", defaultLocale)),
-    description,
-    jobTitle: pick(lang, person.jobTitle),
-    knowsAbout,
-    knowsLanguage,
-    alumniOf: employers.map((name) => ({ "@type": "Organization", name })),
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: pick(lang, person.addressLocality),
-      addressCountry: "AT",
+  return makeNode(
+    "Person",
+    {
+      name: person.name,
+      url: absoluteUrl(pathFor("home", defaultLocale)),
+      description,
+      jobTitle: pick(lang, person.jobTitle),
+      knowsAbout,
+      knowsLanguage,
+      alumniOf: employers.map((name) => ({ "@type": "Organization", name })),
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: pick(lang, person.addressLocality),
+        addressCountry: "AT",
+      },
+      sameAs: links.map((link) => link.href).filter(isProfile),
+      ...(mainEntityOfPage ? { mainEntityOfPage: { "@id": mainEntityOfPage } } : {}),
     },
-    sameAs: links.map((link) => link.href).filter(isProfile),
-    ...(mainEntityOfPage ? { mainEntityOfPage: { "@id": mainEntityOfPage } } : {}),
-  }
+    personId,
+  )
 }
 
 export function websiteNode(): Node {
-  return {
-    "@type": "WebSite",
-    "@id": websiteId,
-    url: absoluteUrl("/"),
-    name: person.name,
-    publisher: { "@id": personId },
-  }
+  return makeNode(
+    "WebSite",
+    {
+      url: absoluteUrl("/"),
+      name: person.name,
+      publisher: { "@id": personId },
+    },
+    websiteId,
+  )
 }
 
 export function webPageNode({
@@ -109,18 +126,20 @@ export function webPageNode({
         ? `${url}#projects`
         : undefined
 
-  return {
-    "@type": meta.type,
-    "@id": `${url}#webpage`,
-    url,
-    name: title,
-    dateModified: buildTime,
-    ...(description ? { description } : {}),
-    inLanguage: inLanguage(lang),
-    isPartOf: { "@id": websiteId },
-    about: { "@id": meta.about === "person" ? personId : websiteId },
-    ...(mainEntity ? { mainEntity: { "@id": mainEntity } } : {}),
-  }
+  return makeNode(
+    meta.type,
+    {
+      url,
+      name: title,
+      dateModified: buildTime,
+      ...(description ? { description } : {}),
+      inLanguage: inLanguage(lang),
+      isPartOf: { "@id": websiteId },
+      about: { "@id": meta.about === "person" ? personId : websiteId },
+      ...(mainEntity ? { mainEntity: { "@id": mainEntity } } : {}),
+    },
+    `${url}#webpage`,
+  )
 }
 
 export function breadcrumbNode({
@@ -136,19 +155,21 @@ export function breadcrumbNode({
 }): Node | undefined {
   if (!pageMeta[page].breadcrumb) return undefined
 
-  return {
-    "@type": "BreadcrumbList",
-    "@id": `${url}#breadcrumb`,
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: person.name,
-        item: absoluteUrl(pathFor("home", lang)),
-      },
-      { "@type": "ListItem", position: 2, name: title, item: url },
-    ],
-  }
+  return makeNode(
+    "BreadcrumbList",
+    {
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: person.name,
+          item: absoluteUrl(pathFor("home", lang)),
+        },
+        { "@type": "ListItem", position: 2, name: title, item: url },
+      ],
+    },
+    `${url}#breadcrumb`,
+  )
 }
 
 export function projectNode(project: ProjectData, url: string): Node {
@@ -156,43 +177,55 @@ export function projectNode(project: ProjectData, url: string): Node {
   const repository = (github.find((link) => link.label === "GitHub") ?? github[0])?.href
   const languages = project.stack.filter((item) => programmingLanguages.has(item))
 
-  return {
-    "@type": "SoftwareSourceCode",
-    "@id": `${url}#${project.id}`,
-    name: project.name,
-    description: project.summary,
-    abstract: project.tagline,
-    url: `${url}#${project.id}`,
-    ...(repository ? { codeRepository: repository } : {}),
-    ...(languages.length > 0 ? { programmingLanguage: languages } : {}),
-    author: { "@id": personId },
-    license: `https://spdx.org/licenses/${project.license}.html`,
-  }
+  return makeNode(
+    "SoftwareSourceCode",
+    {
+      name: project.name,
+      description: project.summary,
+      abstract: project.tagline,
+      url: `${url}#${project.id}`,
+      ...(repository ? { codeRepository: repository } : {}),
+      ...(languages.length > 0 ? { programmingLanguage: languages } : {}),
+      author: { "@id": personId },
+      license: `https://spdx.org/licenses/${project.license}.html`,
+    },
+    `${url}#${project.id}`,
+  )
 }
 
 export function itemListNode(nodes: Node[], url: string): Node {
-  return {
-    "@type": "ItemList",
-    "@id": `${url}#projects`,
-    numberOfItems: nodes.length,
-    itemListElement: nodes.map((node, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: node.name,
-      item: { "@id": node["@id"] },
-    })),
-  }
+  return makeNode(
+    "ItemList",
+    {
+      numberOfItems: nodes.length,
+      itemListElement: nodes.map((node, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: node.name,
+        item: { "@id": node["@id"] },
+      })),
+    },
+    `${url}#projects`,
+  )
 }
 
-export function graph(nodes: (Node | undefined)[]): Node {
+export function graph(nodes: (Node | undefined)[]): { "@context": string; "@graph": Node[] } {
   const entities = new Map<string, Node>()
   const anonymous: Node[] = []
 
   for (const node of nodes) {
     if (!node) continue
     const id = node["@id"]
-    if (typeof id === "string") entities.set(id, node)
-    else anonymous.push(node)
+    if (typeof id !== "string") {
+      anonymous.push(node)
+      continue
+    }
+
+    const existing = entities.get(id)
+    if (existing && JSON.stringify(existing) !== JSON.stringify(node)) {
+      throw new Error(`Conflicting schema.org @id: ${id}`)
+    }
+    if (!existing) entities.set(id, node)
   }
 
   return {
