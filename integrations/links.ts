@@ -1,5 +1,6 @@
 import type { AstroIntegration } from "astro"
 import { buildContext, emitGenerated } from "./build"
+import { loadBuildEnv } from "./build-env"
 import { resolveIcon } from "./icons"
 import { buildLinks } from "../src/links/build"
 import { parseLinkSources } from "../src/links/parse"
@@ -35,7 +36,8 @@ export function links(): AstroIntegration {
     name: "links",
     hooks: {
       "astro:config:setup": async ({ command, config, logger }) => {
-        const { root, env } = buildContext(config.root, command)
+        const { root, mode } = buildContext(config.root, command)
+        const env = loadBuildEnv(mode, root)
         const order = new Map(Object.keys(env).map((key, index) => [key, index]))
         const probing = command === "build" || command === "dev"
         const parsed = await buildLinks({

@@ -3,6 +3,7 @@ import fs from "node:fs"
 import path from "node:path"
 import type { AstroIntegration } from "astro"
 import { parseFrontmatter } from "../src/lib/frontmatter"
+import { buildContext, emitGenerated } from "./build"
 import { resolveTheme, type ResolvedTheme } from "./theme"
 
 type ProjectMedia = {
@@ -256,8 +257,7 @@ export function projectMedia(): AstroIntegration {
       "astro:config:setup": async ({ command, config, logger }) => {
         if (command === "sync") return
 
-        const { buildContext, emitGenerated } = await import("./build")
-        const root = buildContext(config.root, command).root
+        const { root } = buildContext(config.root, command)
         const theme = resolveTheme(root)
         const refs = collectArtifactRefs(root)
         const produced = new Set<string>()

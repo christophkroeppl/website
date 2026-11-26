@@ -6,6 +6,7 @@ import { locales, type Locale } from "../src/i18n/config"
 import { useTranslations } from "../src/i18n/ui"
 import { reveals } from "../src/reveals/registry"
 import { buildContext, emitGenerated, type BuildContext } from "./build"
+import { loadBuildEnv } from "./build-env"
 import { fontViewBox, outline, type Font, type Outline } from "./outline"
 
 const FONT_FILE = "src/assets/fonts/inter-latin-400.woff"
@@ -28,7 +29,7 @@ function byLocale<T>(build: (lang: Locale) => T): Record<Locale, T> {
   return Object.fromEntries(locales.map((lang) => [lang, build(lang)])) as Record<Locale, T>
 }
 
-export function generateReveals(ctx: BuildContext) {
+export function generateReveals(ctx: BuildContext, env: Record<string, string>) {
   const font = loadFont(ctx.root)
   const viewBox = fontViewBox(font)
 
@@ -36,7 +37,7 @@ export function generateReveals(ctx: BuildContext) {
     Object.entries(reveals).map(([id, revealable]) => {
       const labels = byLocale((lang) => outline(font, useTranslations(lang)(revealable.label)))
       const lines = byLocale((lang) =>
-        revealable.lines(ctx.env, lang).map((text) => outline(font, text)),
+        revealable.lines(env, lang).map((text) => outline(font, text)),
       )
       return [id, { viewBox, labels, lines } satisfies GeneratedReveal]
     }),
@@ -68,7 +69,8 @@ export function revealOutlines(): AstroIntegration {
     name: "reveal-outlines",
     hooks: {
       "astro:config:setup": ({ command, config }) => {
-        generateReveals(buildContext(config.root, command))
+        const ctx = buildContext(config.root, command)
+        generateReveals(ctx, loadBuildEnv(ctx.mode, ctx.root))
       },
     },
   }
