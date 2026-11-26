@@ -2,8 +2,8 @@
 import ProjectCard from "./ProjectCard.astro"
 import ProjectSlide from "./ProjectSlide.astro"
 import type { ProjectData } from "../content.config"
-import { localeMeta, type Locale } from "../i18n/locales"
-import { splitProjects, projectPosition } from "../lib/projects"
+import type { Locale } from "../i18n/locales"
+import { projectPosition, splitProjects } from "../lib/projects"
 
 interface Props {
   projects: { data: ProjectData }[]
@@ -16,11 +16,7 @@ const { projects, lang, basePath, label } = Astro.props
 const { featured } = splitProjects(projects)
 ---
 
-<div
-  class="relative -mx-4 min-w-0 sm:hidden"
-  data-carousel-lazy
-  data-carousel-lazy-url={`${localeMeta[lang].prefix}/api/project-slides/`}
->
+<div class="relative -mx-4 min-w-0 sm:hidden">
   <div
     class="overflow-hidden"
     role="region"
@@ -29,7 +25,7 @@ const { featured } = splitProjects(projects)
     data-carousel-viewport
   >
     <div class="flex touch-pan-y" data-carousel-container>
-      {featured.map((project, index) => (
+      {projects.map((project, index) => (
         <ProjectSlide
           project={project.data}
           lang={lang}
@@ -62,41 +58,8 @@ const { featured } = splitProjects(projects)
 
 <script>
   const mobile = window.matchMedia("(max-width: 639px)")
-  const lazy = document.querySelector<HTMLElement>("[data-carousel-lazy]")
   const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
-  const container = viewport?.querySelector<HTMLElement>("[data-carousel-container]")
   let carousel: import("embla-carousel").EmblaCarouselType | undefined
-  let observer: IntersectionObserver | undefined
-  let loading = false
-  let loaded = false
-
-  const loadMore = async () => {
-    const url = lazy?.dataset.carouselLazyUrl
-    if (loading || loaded || !url || !container) return
-    loading = true
-    try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(10000) })
-      if (!response.ok) return
-      const template = document.createElement("template")
-      template.innerHTML = await response.text()
-      container.append(...template.content.querySelectorAll("[data-carousel-slide]"))
-      loaded = true
-      carousel?.reInit()
-    } finally {
-      loading = false
-    }
-  }
-
-  const observe = () => {
-    if (!mobile.matches || loaded || observer || !lazy) return
-    observer = new IntersectionObserver((entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return
-      observer?.disconnect()
-      observer = undefined
-      void loadMore()
-    })
-    observer.observe(lazy)
-  }
 
   const sync = async () => {
     if (mobile.matches && viewport && !carousel) {
@@ -108,14 +71,9 @@ const { featured } = splitProjects(projects)
           loop: true,
         })
       }
-      observe()
     } else if (!mobile.matches) {
-      observer?.disconnect()
-      observer = undefined
-      if (carousel) {
-        carousel.destroy()
-        carousel = undefined
-      }
+      carousel?.destroy()
+      carousel = undefined
     }
   }
 
