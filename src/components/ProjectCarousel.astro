@@ -60,22 +60,41 @@ const { featured } = splitProjects(projects)
   const mobile = window.matchMedia("(max-width: 639px)")
   const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
   let carousel: import("embla-carousel").EmblaCarouselType | undefined
+  let observer: IntersectionObserver | undefined
 
-  const sync = async () => {
-    if (mobile.matches && viewport && !carousel) {
-      const { default: EmblaCarousel } = await import("embla-carousel")
-      if (mobile.matches && viewport && !carousel) {
-        carousel = EmblaCarousel(viewport, {
-          align: "center",
-          containScroll: false,
-          loop: true,
-        })
-      }
-    } else if (!mobile.matches) {
-      carousel?.destroy()
-      carousel = undefined
-    }
+  const start = async () => {
+    if (!mobile.matches || !viewport || carousel) return
+    const { default: EmblaCarousel } = await import("embla-carousel")
+    if (!mobile.matches || !viewport || carousel) return
+    carousel = EmblaCarousel(viewport, {
+      align: "center",
+      containScroll: false,
+      loop: true,
+    })
   }
+
+  const watch = () => {
+    if (!mobile.matches || !viewport || carousel || observer) return
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return
+        observer?.disconnect()
+        observer = undefined
+        void start()
+      },
+      { rootMargin: "400px" },
+    )
+    observer.observe(viewport)
+  }
+
+  const stop = () => {
+    observer?.disconnect()
+    observer = undefined
+    carousel?.destroy()
+    carousel = undefined
+  }
+
+  const sync = () => (mobile.matches ? watch() : stop())
 
   sync()
   mobile.addEventListener("change", sync)
