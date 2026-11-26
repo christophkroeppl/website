@@ -18,13 +18,13 @@ const { featured } = splitProjects(projects)
 
 <div class="relative -mx-4 min-w-0 sm:hidden">
   <div
-    class="overflow-hidden"
+    class="snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline-2 focus-visible:outline-accent"
     role="region"
     aria-roledescription="carousel"
     aria-label={label}
-    data-carousel-viewport
+    tabindex="0"
   >
-    <div class="flex touch-pan-y" data-carousel-container>
+    <div class="flex before:flex-[0_0_8%] before:content-[''] after:flex-[0_0_8%] after:content-['']">
       {projects.map((project, index) => (
         <ProjectSlide
           project={project.data}
@@ -55,57 +55,3 @@ const { featured } = splitProjects(projects)
     />
   ))}
 </div>
-
-<script>
-  const mobile = window.matchMedia("(max-width: 639px)")
-  const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
-  let carousel: import("embla-carousel").EmblaCarouselType | undefined
-  let observer: IntersectionObserver | undefined
-
-  const start = async () => {
-    if (!mobile.matches || !viewport || carousel) return
-    const { default: EmblaCarousel } = await import("embla-carousel")
-    if (!mobile.matches || !viewport || carousel) return
-    carousel = EmblaCarousel(viewport, {
-      align: "center",
-      containScroll: false,
-      loop: true,
-    })
-  }
-
-  const watch = () => {
-    if (!mobile.matches || !viewport || carousel || observer) return
-    observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return
-        observer?.disconnect()
-        observer = undefined
-        void start()
-      },
-      { threshold: 0.01 },
-    )
-    observer.observe(viewport)
-  }
-
-  const stop = () => {
-    observer?.disconnect()
-    observer = undefined
-    carousel?.destroy()
-    carousel = undefined
-  }
-
-  const sync = () => (mobile.matches ? watch() : stop())
-
-  const schedule = () => {
-    const idle =
-      window.requestIdleCallback ??
-      ((callback: IdleRequestCallback) =>
-        window.setTimeout(() => callback({ didTimeout: false, timeRemaining: () => 0 }), 0))
-    idle(() => sync())
-  }
-
-  if (document.readyState === "complete") schedule()
-  else window.addEventListener("load", schedule, { once: true })
-
-  mobile.addEventListener("change", sync)
-</script>
