@@ -4,7 +4,7 @@
 @plugin "daisyui" {
   themes: false;
   include:
-    properties, rootcolor, rootscrolllock, rootscrollgutter, svg, alert, avatar, button, fab,
+    properties, rootcolor, rootscrolllock, rootscrollgutter, svg, alert, avatar, badge, button, fab,
     fieldset, input, label, link, modal, textarea;
 }
 
@@ -124,30 +124,6 @@
 
   .title-rule {
     @apply mt-4 block h-0.5 w-12 rounded-full bg-primary;
-  }
-
-  .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs leading-none font-medium;
-  }
-
-  .chip-primary {
-    @apply border-primary/20 bg-primary/10 text-primary;
-  }
-
-  .chip-accent {
-    @apply border-accent/20 bg-accent/10 text-accent;
-  }
-
-  .chip-secondary {
-    @apply border-secondary/20 bg-secondary/10 text-secondary;
-  }
-
-  .chip-info {
-    @apply border-info/20 bg-info/10 text-info;
-  }
-
-  .chip-neutral {
-    @apply border-base-300 bg-base-200/70 text-base-content/70;
   }
 
   .link-quiet {

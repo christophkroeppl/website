@@ -81,4 +81,15 @@ describe("daisyUI include list", () => {
       expect(included.has(name)).toBe(true)
     }
   })
+
+  it("no longer uses the removed chip classes", () => {
+    const found: string[] = []
+    for (const file of files(join(root, "src"))) {
+      if (!file.endsWith(".astro")) continue
+      if (classTokens(readFileSync(file, "utf8")).some((token) => /\bchip(?:-|$)/.test(token))) {
+        found.push(file)
+      }
+    }
+    expect(found).toEqual([])
+  })
 })
