@@ -26,7 +26,7 @@ export function resolveIcon(projectRoot: string, slug: string, iconSlug = slug):
   const title = pack?.title ?? titleOverrides[slug] ?? humanize(slug)
   const custom = resolveCustomIcon(projectRoot, iconSlug)
 
-  if (custom) return { icon: custom, title, shadowed: true }
+  if (custom) return { icon: custom, title, shadowed: Boolean(pack) }
   if (pack) {
     return {
       icon: { kind: "svg", viewBox: pack.viewBox, paths: [pack.path] },

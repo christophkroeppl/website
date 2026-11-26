@@ -15,11 +15,21 @@ describe("resolveIcon", () => {
     if (icon.kind === "svg") expect(icon.paths.length).toBeGreaterThan(0)
   })
 
-  it("prefers a custom icon and reports the shadow", () => {
+  it("prefers a custom icon without a pack shadow for linkedin", () => {
     const { icon, title, shadowed } = resolveIcon(root, "linkedin")
     expect(title).toBe("LinkedIn")
-    expect(shadowed).toBe(true)
+    expect(shadowed).toBe(false)
     expect(icon.kind).toBe("svg")
+  })
+
+  it("reports shadowing only when a custom icon overrides a pack icon", () => {
+    const tmp = mkdtempSync(join(tmpdir(), "icons-"))
+    mkdirSync(join(tmp, "public/icons"), { recursive: true })
+    writeFileSync(
+      join(tmp, "public/icons/github.svg"),
+      '<svg viewBox="0 0 24 24"><path d="M0 0h1v1H0z"/></svg>',
+    )
+    expect(resolveIcon(tmp, "github").shadowed).toBe(true)
   })
 
   it("uses the custom title override for bitcr", () => {
