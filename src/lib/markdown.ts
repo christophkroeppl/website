@@ -46,7 +46,7 @@ async function document({
 
 async function homeBody(lang: Locale): Promise<string> {
   const t = useTranslations(lang)
-  const { entry, home, projects, roles, skills, contact, latest } = await homePageData(lang)
+  const { entry, home, projects, skills, latest } = await homePageData(lang)
   const paragraphs = stripFrontmatter(entry.body ?? "").split(/\n\s*\n/)
 
   return document({
