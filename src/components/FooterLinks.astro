@@ -68,14 +68,11 @@ const moreDots = [5, 12, 19]
   )}
 </nav>
 
-<div class="fab lg:hidden" data-links-fab data-open="false">
-  <button
-    type="button"
-    class="btn btn-lg btn-circle btn-primary shadow-lg"
+<details class="fab lg:hidden">
+  <summary
+    class="btn btn-lg btn-circle btn-primary shadow-lg list-none [&::-webkit-details-marker]:hidden"
     aria-label={label}
-    aria-expanded="false"
     title={label}
-    data-links-fab-toggle
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +86,7 @@ const moreDots = [5, 12, 19]
         <path d={path} />
       ))}
     </svg>
-  </button>
+  </summary>
   {visible.map((link) => (
     <a
       href={link.href}
@@ -102,14 +99,11 @@ const moreDots = [5, 12, 19]
     </a>
   ))}
   {more.length > 0 && (
-    <nav class="fab static!" data-links-fab-more data-open="false">
-      <button
-        type="button"
-        class="btn btn-lg btn-circle bg-base-100 shadow-md"
+    <details class="fab static!">
+      <summary
+        class="btn btn-lg btn-circle bg-base-100 shadow-md list-none [&::-webkit-details-marker]:hidden"
         aria-label={moreLabel}
-        aria-expanded="false"
         title={moreLabel}
-        data-links-fab-toggle
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +117,7 @@ const moreDots = [5, 12, 19]
             <circle cx={cx} cy="12" r="1.7" />
           ))}
         </svg>
-      </button>
+      </summary>
       {more.map((link) => (
         <a
           href={link.href}
@@ -135,67 +129,6 @@ const moreDots = [5, 12, 19]
           <LinkIcon link={link} size={20} />
         </a>
       ))}
-    </nav>
+    </details>
   )}
-</div>
-
-<script>
-  const outer = document.querySelector<HTMLElement>("[data-links-fab]")
-  const inner = outer?.querySelector<HTMLElement>("[data-links-fab-more]")
-
-  function setOpen(fab: HTMLElement | null | undefined, open: boolean) {
-    if (!fab) return
-    fab.dataset.open = String(open)
-    fab
-      .querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
-      ?.setAttribute("aria-expanded", String(open))
-  }
-
-  outer
-    ?.querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
-    ?.addEventListener("click", () => {
-      const open = outer.dataset.open !== "true"
-      if (!open) setOpen(inner, false)
-      setOpen(outer, open)
-    })
-
-  inner
-    ?.querySelector<HTMLButtonElement>("[data-links-fab-toggle]")
-    ?.addEventListener("click", () => {
-      setOpen(inner, inner.dataset.open !== "true")
-    })
-
-  document.addEventListener("click", (event) => {
-    if (!outer?.contains(event.target as Node)) {
-      setOpen(inner, false)
-      setOpen(outer, false)
-    }
-  })
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return
-    if (inner?.dataset.open === "true") setOpen(inner, false)
-    else {
-      setOpen(inner, false)
-      setOpen(outer, false)
-    }
-  })
-</script>
-
-<style>
-  [data-open="false"] > :nth-child(n + 2) {
-    visibility: hidden;
-    opacity: 0;
-    scale: 80%;
-  }
-
-  [data-open="true"] > :nth-child(n + 2) {
-    visibility: visible;
-    opacity: 1;
-    scale: 100%;
-  }
-
-  [data-links-fab-more][data-open="false"] > :nth-child(n + 2) {
-    display: none;
-  }
-</style>
+</details>
