@@ -1,0 +1,23 @@
+---
+import ProjectCard from "./ProjectCard.astro"
+import type { ProjectData } from "../content.config"
+import type { Locale } from "../i18n/locales"
+
+interface Props {
+  project: ProjectData
+  lang: Locale
+  index: number
+  href: string
+}
+
+const { project, lang, index, href } = Astro.props
+---
+
+<div
+  class="min-w-0 flex-[0_0_84%] px-2"
+  role="group"
+  aria-roledescription="slide"
+  data-carousel-slide
+>
+  <ProjectCard project={project} lang={lang} index={index} href={href} />
+</div>

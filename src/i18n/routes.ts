@@ -33,6 +33,7 @@ export type RouteKey = keyof typeof localizedRoutes
 
 export const localizedRoutes = {
   "/": { de: "/", en: "/" },
+  "/api/project-slides": { de: "/api/project-slides", en: "/api/project-slides" },
   "/contact": { de: "/impressum", en: "/contact" },
   "/cv": { de: "/lebenslauf", en: "/cv" },
   "/links": { de: "/links", en: "/links" },

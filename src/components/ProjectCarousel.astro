@@ -1,7 +1,8 @@
 ---
 import ProjectCard from "./ProjectCard.astro"
+import ProjectSlide from "./ProjectSlide.astro"
 import type { ProjectData } from "../content.config"
-import type { Locale } from "../i18n/locales"
+import { localeMeta, type Locale } from "../i18n/locales"
 
 interface Props {
   projects: { data: ProjectData }[]
@@ -11,9 +12,14 @@ interface Props {
 }
 
 const { projects, lang, basePath, label } = Astro.props
+const featured = projects.slice(0, 3)
 ---
 
-<div class="relative -mx-4 sm:hidden">
+<div
+  class="relative -mx-4 min-w-0 sm:hidden"
+  data-carousel-lazy
+  data-carousel-lazy-url={`${localeMeta[lang].prefix}/api/project-slides/`}
+>
   <div
     class="overflow-hidden"
     role="region"
@@ -22,20 +28,13 @@ const { projects, lang, basePath, label } = Astro.props
     data-carousel-viewport
   >
     <div class="flex touch-pan-y" data-carousel-container>
-      {projects.map((project, index) => (
-        <div
-          class="min-w-0 flex-[0_0_84%] px-2"
-          role="group"
-          aria-roledescription="slide"
-          data-carousel-slide
-        >
-          <ProjectCard
-            project={project.data}
-            lang={lang}
-            index={index + 1}
-            href={`${basePath}#${project.data.id}`}
-          />
-        </div>
+      {featured.map((project, index) => (
+        <ProjectSlide
+          project={project.data}
+          lang={lang}
+          index={index + 1}
+          href={`${basePath}#${project.data.id}`}
+        />
       ))}
     </div>
   </div>
@@ -50,7 +49,7 @@ const { projects, lang, basePath, label } = Astro.props
 </div>
 
 <div class="hidden gap-x-10 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-  {projects.slice(0, 3).map((project, index) => (
+  {featured.map((project, index) => (
     <ProjectCard
       project={project.data}
       lang={lang}
@@ -62,8 +61,41 @@ const { projects, lang, basePath, label } = Astro.props
 
 <script>
   const mobile = window.matchMedia("(max-width: 639px)")
+  const lazy = document.querySelector<HTMLElement>("[data-carousel-lazy]")
   const viewport = document.querySelector<HTMLElement>("[data-carousel-viewport]")
+  const container = viewport?.querySelector<HTMLElement>("[data-carousel-container]")
   let carousel: import("embla-carousel").EmblaCarouselType | undefined
+  let observer: IntersectionObserver | undefined
+  let loading = false
+  let loaded = false
+
+  const loadMore = async () => {
+    const url = lazy?.dataset.carouselLazyUrl
+    if (loading || loaded || !url || !container) return
+    loading = true
+    try {
+      const response = await fetch(url, { signal: AbortSignal.timeout(10000) })
+      if (!response.ok) return
+      const template = document.createElement("template")
+      template.innerHTML = await response.text()
+      container.append(...template.content.querySelectorAll("[data-carousel-slide]"))
+      loaded = true
+      carousel?.reInit()
+    } finally {
+      loading = false
+    }
+  }
+
+  const observe = () => {
+    if (!mobile.matches || loaded || observer || !lazy) return
+    observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return
+      observer?.disconnect()
+      observer = undefined
+      void loadMore()
+    })
+    observer.observe(lazy)
+  }
 
   const sync = async () => {
     if (mobile.matches && viewport && !carousel) {
@@ -75,9 +107,14 @@ const { projects, lang, basePath, label } = Astro.props
           loop: true,
         })
       }
-    } else if (!mobile.matches && carousel) {
-      carousel.destroy()
-      carousel = undefined
+      observe()
+    } else if (!mobile.matches) {
+      observer?.disconnect()
+      observer = undefined
+      if (carousel) {
+        carousel.destroy()
+        carousel = undefined
+      }
     }
   }
 
