@@ -10,17 +10,17 @@
     },
     "cloudflare": {
       "source": "cloudflare/skills",
-      "commit": "5108325ecceabc899c761e07aa617b09c02445ee",
+      "commit": "ff191de7d903788eceaf516a514ae7d3b56b924a",
       "sourceType": "github",
       "skillPath": "skills/cloudflare/SKILL.md",
-      "computedHash": "a40c5c77e4b96b0f6603a54e67bf2ff401a872366af48ff8f6ae0e872d4ad324"
+      "computedHash": "c87fdf5939f1c0b86dc895af18dbff1be369707fc3f1cd9cc038c3c3be5c694f"
     },
     "daisyui": {
       "source": "saadeghi/daisyui",
-      "commit": "43bc54e9ea25a0f26d85392c169dae6b9839d6e5",
+      "commit": "42c76795161d81b723988e5b7848c07697abbce0",
       "sourceType": "github",
       "skillPath": "skills/daisyui/SKILL.md",
-      "computedHash": "4dfba5cd295d5ee38d352fc40649eb89b550975d8951a323e3de7922eac467d2"
+      "computedHash": "1585d0a690f9507ed11b0e744b56b6fdbccd8e11ae192e0b1f71814cc312c687"
     },
     "turnstile-spin": {
       "source": "cloudflare/skills",
