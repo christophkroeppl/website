@@ -51,7 +51,7 @@ const moreDots = [5, 12, 19]
           ))}
         </svg>
       </summary>
-      <nav class="absolute right-0 bottom-full z-10 mb-2 flex gap-1 rounded-full border border-base-300 bg-base-100 p-1 shadow-lg">
+      <nav class="absolute right-0 bottom-full z-10 mb-2 flex flex-col gap-1 rounded-box border border-base-300 bg-base-100 p-1 shadow-lg">
         {more.map((link) => (
           <a
             href={link.href}
@@ -68,9 +68,11 @@ const moreDots = [5, 12, 19]
   )}
 </nav>
 
-<details class="fab lg:hidden">
-  <summary
-    class="btn btn-lg btn-circle btn-primary shadow-lg list-none [&::-webkit-details-marker]:hidden"
+<div class="fab group/fab absolute! lg:hidden">
+  <div
+    tabindex="0"
+    role="button"
+    class="btn btn-lg btn-circle btn-primary shadow-lg group-focus-within/fab:rotate-0! group-focus-within/fab:opacity-100!"
     aria-label={label}
     title={label}
   >
@@ -86,7 +88,7 @@ const moreDots = [5, 12, 19]
         <path d={path} />
       ))}
     </svg>
-  </summary>
+  </div>
   {visible.map((link) => (
     <a
       href={link.href}
@@ -99,36 +101,40 @@ const moreDots = [5, 12, 19]
     </a>
   ))}
   {more.length > 0 && (
-    <details class="fab static!">
-      <summary
-        class="btn btn-lg btn-circle bg-base-100 shadow-md list-none [&::-webkit-details-marker]:hidden"
-        aria-label={moreLabel}
-        title={moreLabel}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="20"
-          height="20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          {moreDots.map((cx) => (
-            <circle cx={cx} cy="12" r="1.7" />
-          ))}
-        </svg>
-      </summary>
-      {more.map((link) => (
-        <a
-          href={link.href}
-          aria-label={link.label}
-          title={link.label}
+    <div class="relative">
+      <div class="fab static!">
+        <div
+          tabindex="0"
+          role="button"
           class="btn btn-lg btn-circle bg-base-100 shadow-md"
-          {...externalAttrs(link.href)}
+          aria-label={moreLabel}
+          title={moreLabel}
         >
-          <LinkIcon link={link} size={20} />
-        </a>
-      ))}
-    </details>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            {moreDots.map((cx) => (
+              <circle cx={cx} cy="12" r="1.7" />
+            ))}
+          </svg>
+        </div>
+        {more.map((link, index) => (
+          <a
+            href={link.href}
+            aria-label={link.label}
+            title={link.label}
+            class={`btn btn-lg btn-circle bg-base-100 shadow-md${index === 0 ? " fab-main-action" : ""}`}
+            {...externalAttrs(link.href)}
+          >
+            <LinkIcon link={link} size={20} />
+          </a>
+        ))}
+      </div>
+    </div>
   )}
-</details>
+</div>
