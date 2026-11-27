@@ -17,11 +17,12 @@ const links = [
   link("instagram"),
   link("facebook"),
   link("x"),
+  link("ambassador"),
   link("github"),
   link("url1"),
   link("url2"),
-  link("url3", "LINK_09_URL3"),
-  link("url4", "LINK_10_URL4"),
+  link("url3", "LINK_10_URL3"),
+  link("url4", "LINK_11_URL4"),
   link("website"),
 ]
 
@@ -33,6 +34,7 @@ describe("drawerLinks", () => {
       "facebook",
       "x",
       "github",
+      "ambassador",
       "website",
     ])
   })
@@ -41,8 +43,8 @@ describe("drawerLinks", () => {
     expect(drawerLinks(links).more.map((entry) => entry.key)).toEqual([
       "url1",
       "url2",
-      "LINK_09_URL3",
-      "LINK_10_URL4",
+      "LINK_10_URL3",
+      "LINK_11_URL4",
     ])
   })
 

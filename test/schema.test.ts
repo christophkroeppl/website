@@ -83,10 +83,10 @@ describe("personNode", () => {
     expect(personNode("de", facts("de"))["@id"]).toBe(personNode("en", facts("en"))["@id"])
     expect(personNode("en", facts("en")).url).toBe(`${siteUrl}/`)
     expect(sameAs).toContain(linkHref("LINK_01_LINKEDIN"))
-    expect(sameAs).toContain(linkHref("LINK_05_GITHUB"))
+    expect(sameAs).toContain(linkHref("LINK_06_GITHUB"))
     expect(sameAs).not.toContain(`${siteUrl}/`)
-    expect(sameAs).not.toContain(linkHref("LINK_08_URL2"))
-    expect(sameAs).not.toContain(linkHref("LINK_07_URL1"))
+    expect(sameAs).not.toContain(linkHref("LINK_09_URL2"))
+    expect(sameAs).not.toContain(linkHref("LINK_08_URL1"))
     expect(sameAs.length).toBeLessThan(links.length)
   })
 

@@ -60,8 +60,8 @@ describe("llmsIndex", () => {
 
     const href = (key: string) => links.find((link) => link.key === key)?.href
     expect(body).toContain(href("LINK_01_LINKEDIN"))
-    expect(body).not.toContain(href("LINK_08_URL2"))
-    expect(body).not.toContain(href("LINK_07_URL1"))
+    expect(body).not.toContain(href("LINK_09_URL2"))
+    expect(body).not.toContain(href("LINK_08_URL1"))
   })
 
   it("points at the sitemap", () => {
