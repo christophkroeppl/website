@@ -18,6 +18,7 @@ import { buildTime } from "../src/lib/build-time"
 import { siteUrl } from "../src/content/site"
 
 const url = `${siteUrl}${pagePaths.projects.de}`
+const linkHref = (key: string) => links.find((link) => link.key === key)?.href
 
 const knowsAbout = {
   de: [
@@ -81,11 +82,11 @@ describe("personNode", () => {
 
     expect(personNode("de", facts("de"))["@id"]).toBe(personNode("en", facts("en"))["@id"])
     expect(personNode("en", facts("en")).url).toBe(`${siteUrl}/`)
-    expect(sameAs).toContain("https://www.linkedin.com/in/christoph-kroeppl/")
-    expect(sameAs).toContain("https://github.com/christophkroeppl/")
+    expect(sameAs).toContain(linkHref("LINK_01_LINKEDIN"))
+    expect(sameAs).toContain(linkHref("LINK_05_GITHUB"))
     expect(sameAs).not.toContain(`${siteUrl}/`)
-    expect(sameAs).not.toContain("https://bitcoin.org/en/bitcoin-paper")
-    expect(sameAs).not.toContain("https://free-cities.org/")
+    expect(sameAs).not.toContain(linkHref("LINK_08_URL2"))
+    expect(sameAs).not.toContain(linkHref("LINK_07_URL1"))
     expect(sameAs.length).toBeLessThan(links.length)
   })
 
@@ -282,9 +283,9 @@ describe("graph", () => {
 
 describe("isProfile", () => {
   it("accepts exact profile hosts", () => {
-    expect(isProfile("https://github.com/christophkroeppl/")).toBe(true)
-    expect(isProfile("https://www.linkedin.com/in/christoph-kroeppl/")).toBe(true)
-    expect(isProfile("https://x.com/christophkrppl/")).toBe(true)
+    expect(isProfile("https://github.com/example/")).toBe(true)
+    expect(isProfile("https://www.linkedin.com/in/example/")).toBe(true)
+    expect(isProfile("https://x.com/example/")).toBe(true)
   })
 
   it("rejects lookalike hosts", () => {
@@ -294,7 +295,7 @@ describe("isProfile", () => {
   })
 
   it("rejects non-profile links and invalid urls", () => {
-    expect(isProfile("https://bitcoin.org/en/bitcoin-paper")).toBe(false)
+    expect(isProfile("https://example.org/doc")).toBe(false)
     expect(isProfile("not a url")).toBe(false)
   })
 })

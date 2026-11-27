@@ -45,7 +45,7 @@ describe("linksHostPolicy", () => {
       "/fonts/inter-latin-var.woff2",
       "/favicon.svg",
       "/og.png",
-      "/icons/bitcr.svg",
+      "/icons/website.svg",
       "/api/contact",
       "/api/contact/",
       "/robots.txt",

@@ -2,7 +2,7 @@
 import LinksLayout from "../layouts/LinksLayout.astro"
 import ContactModal from "../components/ContactModal.astro"
 import ContactTrigger from "../components/ContactTrigger.astro"
-import LinkGroups from "../components/LinkGroups.astro"
+import LinkList from "../components/LinkList.astro"
 import { getLocale } from "virtual:astro-localized-routes"
 import { person } from "../content/site"
 import { pathFor } from "../i18n/routes"
@@ -26,7 +26,7 @@ const mailPath =
 ---
 
 <LinksLayout name={person.name} description={description} tagline={tagline} lang={lang}>
-  <LinkGroups links={visible} />
+  <LinkList links={visible} />
 
   <ContactModal lang={lang} {...(privacyHref ? { privacyHref } : {})}>
     <ContactTrigger
@@ -67,7 +67,7 @@ const mailPath =
       </svg>
     </summary>
     <div class="mt-3 w-full space-y-3">
-      <LinkGroups links={more} />
+      <LinkList links={more} />
     </div>
   </details>
 </LinksLayout>

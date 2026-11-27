@@ -1,0 +1,14 @@
+---
+import LinkButton from "./LinkButton.astro"
+import type { Link } from "../links/types"
+
+interface Props {
+  links: Link[]
+}
+
+const { links } = Astro.props
+---
+
+{links.map((link) => (
+  <LinkButton link={link} />
+))}

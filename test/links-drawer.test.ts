@@ -18,10 +18,10 @@ const links = [
   link("facebook"),
   link("x"),
   link("github"),
-  link("free-cities-foundation"),
-  link("bitcoin"),
-  link("bitcr", "BITCR_LINK_HOME"),
-  link("bitcr", "BITCR_LINK_USE_CASES"),
+  link("url1"),
+  link("url2"),
+  link("url3", "LINK_09_URL3"),
+  link("url4", "LINK_10_URL4"),
   link("website"),
 ]
 
@@ -39,10 +39,10 @@ describe("drawerLinks", () => {
 
   it("marks everything below github except the website as more links", () => {
     expect(drawerLinks(links).more.map((entry) => entry.key)).toEqual([
-      "free-cities-foundation",
-      "bitcoin",
-      "BITCR_LINK_HOME",
-      "BITCR_LINK_USE_CASES",
+      "url1",
+      "url2",
+      "LINK_09_URL3",
+      "LINK_10_URL4",
     ])
   })
 

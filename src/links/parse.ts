@@ -1,13 +1,13 @@
-const LINK_KEY = /^(?:PUBLIC_)?(.+?)_LINK(?:_(.+))?$/
+const LINK_KEY = /^LINK_(\d{2})_(.+)$/
 const DIRECT_PROTOCOL = /^(?:mailto|tel):/i
 
 export type LinkEnv = Readonly<Record<string, string | undefined>>
 
 export type LinkSource = {
   key: string
+  order: number
   href: string
   slug: string
-  variant?: string
   label?: string
   icon?: string
 }
@@ -15,35 +15,30 @@ export type LinkSource = {
 export function parseLinkSources(env: LinkEnv): LinkSource[] {
   const labels = labelOverrides(env)
   const icons = iconOverrides(env)
-  const sources: LinkSource[] = []
-
-  for (const [key, raw] of Object.entries(env)) {
-    if (key.endsWith("_LABEL") || key.endsWith("_ICON")) continue
+  return Object.entries(env).flatMap(([key, raw]) => {
+    if (key.endsWith("_LABEL") || key.endsWith("_ICON")) return []
 
     const match = LINK_KEY.exec(key)
-    if (!match || !raw) continue
+    const value = raw?.trim()
+    if (!match || !value) return []
 
-    const value = raw.trim()
-    if (!value) continue
+    const [, rawOrder, platform] = match
+    if (!platform) return []
 
-    const [, platform, variant] = match
-    if (!platform) continue
-
-    const trimmedVariant = variant?.trim()
     const label = labels.get(key)
     const icon = icons.get(key)
 
-    sources.push({
-      key,
-      href: parseHref(key, value),
-      slug: platform.toLowerCase().replace(/_/g, "-"),
-      ...(trimmedVariant ? { variant: trimmedVariant } : {}),
-      ...(label === undefined ? {} : { label }),
-      ...(icon === undefined ? {} : { icon }),
-    })
-  }
-
-  return sources
+    return [
+      {
+        key,
+        order: Number(rawOrder),
+        href: parseHref(key, value),
+        slug: platform.toLowerCase().replace(/_/g, "-"),
+        ...(label === undefined ? {} : { label }),
+        ...(icon === undefined ? {} : { icon }),
+      },
+    ]
+  })
 }
 
 function labelOverrides(env: LinkEnv): Map<string, string> {
@@ -91,10 +86,6 @@ export function parseHref(key: string, value: string): string {
   return url.href
 }
 
-function isNumericVariant(variant: string): boolean {
-  return /^\d+$/.test(variant)
-}
-
 export function humanize(value: string): string {
   return value
     .toLowerCase()
@@ -102,9 +93,4 @@ export function humanize(value: string): string {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ")
-}
-
-export function linkLabel(title: string, variant?: string): string {
-  if (!variant || isNumericVariant(variant)) return title
-  return `${title} — ${humanize(variant)}`
 }

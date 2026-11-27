@@ -32,10 +32,6 @@ describe("resolveIcon", () => {
     expect(resolveIcon(tmp, "github").shadowed).toBe(true)
   })
 
-  it("uses the custom title override for bitcr", () => {
-    expect(resolveIcon(root, "bitcr").title).toBe("BitCredit")
-  })
-
   it("supports a group fill-rule", () => {
     const tmp = mkdtempSync(join(tmpdir(), "icons-"))
     mkdirSync(join(tmp, "public/icons"), { recursive: true })

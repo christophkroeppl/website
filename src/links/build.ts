@@ -1,4 +1,4 @@
-import { linkLabel, type LinkSource } from "./parse"
+import type { LinkSource } from "./parse"
 import { resolveSlash, slashVariants, type Probe } from "./slash"
 import type { Link, LinkIcon } from "./types"
 
@@ -12,25 +12,21 @@ export type IconResolver = (slug: string, iconSlug: string) => ResolvedIcon
 
 export type BuildLinksInput = {
   sources: LinkSource[]
-  order: Map<string, number>
   probe?: Probe
   resolveIcon: IconResolver
 }
 
 export async function buildLinks({
   sources,
-  order,
   probe,
   resolveIcon,
 }: BuildLinksInput): Promise<Link[]> {
-  const sorted = sources
-    .map((source, index) => ({ source, index }))
-    .sort(
-      (a, b) =>
-        (order.get(a.source.key) ?? Infinity) - (order.get(b.source.key) ?? Infinity) ||
-        a.index - b.index,
-    )
-    .map(({ source }) => source)
+  const duplicate = sources.find(
+    ({ order }, index) => sources.findIndex((source) => source.order === order) !== index,
+  )
+  if (duplicate) throw new Error(`Duplicate link order ${duplicate.order}: ${duplicate.key}`)
+
+  const sorted = [...sources].sort((a, b) => a.order - b.order)
 
   return Promise.all(
     sorted.map(async (source) => {
@@ -41,7 +37,7 @@ export async function buildLinks({
       return {
         key: source.key,
         href,
-        label: source.label ?? linkLabel(title, source.variant),
+        label: source.label ?? title,
         slug: source.slug,
         icon,
       } satisfies Link

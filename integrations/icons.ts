@@ -11,7 +11,7 @@ const CUSTOM_EXTENSIONS = ["svg", "webp", "png", "jpg", "jpeg", "ico"] as const
 const DEFAULT_VIEW_BOX = "0 0 24 24"
 
 const titleOverrides: Record<string, string> = {
-  bitcr: "BitCredit",
+  x: "X / Twitter",
   linkedin: "LinkedIn",
 }
 

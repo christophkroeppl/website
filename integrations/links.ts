@@ -38,11 +38,9 @@ export function links(): AstroIntegration {
       "astro:config:setup": async ({ command, config, logger }) => {
         const { root, mode } = buildContext(config.root, command)
         const env = loadBuildEnv(mode, root)
-        const order = new Map(Object.keys(env).map((key, index) => [key, index]))
         const probing = command === "build" || command === "dev"
         const parsed = await buildLinks({
           sources: parseLinkSources(env),
-          order,
           ...(probing ? { probe: probeUrl } : {}),
           resolveIcon: (slug, iconSlug) => {
             const resolved = resolveIcon(root, slug, iconSlug)

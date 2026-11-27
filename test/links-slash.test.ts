@@ -8,13 +8,13 @@ const statuses =
 
 describe("slashVariants", () => {
   it("returns both variants", () => {
-    expect(slashVariants("https://x.com/christophkrppl")).toEqual({
-      withSlash: "https://x.com/christophkrppl/",
-      withoutSlash: "https://x.com/christophkrppl",
+    expect(slashVariants("https://example.com/path")).toEqual({
+      withSlash: "https://example.com/path/",
+      withoutSlash: "https://example.com/path",
     })
-    expect(slashVariants("https://bitcoin.org/en/bitcoin-paper/")).toEqual({
-      withSlash: "https://bitcoin.org/en/bitcoin-paper/",
-      withoutSlash: "https://bitcoin.org/en/bitcoin-paper",
+    expect(slashVariants("https://example.org/doc/")).toEqual({
+      withSlash: "https://example.org/doc/",
+      withoutSlash: "https://example.org/doc",
     })
   })
 
@@ -34,18 +34,16 @@ describe("slashVariants", () => {
 
 describe("resolveSlash", () => {
   it("prefers the slashed variant when both work", async () => {
-    const probe = statuses({ "https://x.com/foo/": 200, "https://x.com/foo": 200 })
-    expect(await resolveSlash("https://x.com/foo", probe)).toBe("https://x.com/foo/")
+    const probe = statuses({ "https://example.com/foo/": 200, "https://example.com/foo": 200 })
+    expect(await resolveSlash("https://example.com/foo", probe)).toBe("https://example.com/foo/")
   })
 
   it("drops the slash when only the bare path works", async () => {
     const probe = statuses({
-      "https://bitcoin.org/en/bitcoin-paper/": 404,
-      "https://bitcoin.org/en/bitcoin-paper": 200,
+      "https://example.org/doc/": 404,
+      "https://example.org/doc": 200,
     })
-    expect(await resolveSlash("https://bitcoin.org/en/bitcoin-paper/", probe)).toBe(
-      "https://bitcoin.org/en/bitcoin-paper",
-    )
+    expect(await resolveSlash("https://example.org/doc/", probe)).toBe("https://example.org/doc")
   })
 
   it("keeps the given value when neither variant works", async () => {
@@ -60,9 +58,7 @@ describe("resolveSlash", () => {
   })
 
   it("treats forbidden responses as reachable", async () => {
-    const probe = statuses({ "https://linkedin.com/in/x/": 403, "https://linkedin.com/in/x": 403 })
-    expect(await resolveSlash("https://linkedin.com/in/x", probe)).toBe(
-      "https://linkedin.com/in/x/",
-    )
+    const probe = statuses({ "https://example.net/user/": 403, "https://example.net/user": 403 })
+    expect(await resolveSlash("https://example.net/user", probe)).toBe("https://example.net/user/")
   })
 })
