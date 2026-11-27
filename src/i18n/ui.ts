@@ -106,7 +106,7 @@ export const ui = {
     "contact.privacyLink": "Privacy Policy",
     "links.email": "Email",
     "links.inquiries": "Inquiries",
-    "links.more": "See also",
+    "links.more": "More",
     "projects.title": "Projects",
     "projects.eyebrow": "Open source & client work",
     "projects.single": "Project",
