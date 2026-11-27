@@ -75,10 +75,10 @@ const { featured } = splitProjects(projects)
 
     const step = () => slides[0].getBoundingClientRect().width
     previous.addEventListener("click", () => {
-      viewport.scrollBy({ left: -step(), behavior: "smooth" })
+      viewport.scrollBy({ left: -step(), behavior: "auto" })
     })
     next.addEventListener("click", () => {
-      viewport.scrollBy({ left: step(), behavior: "smooth" })
+      viewport.scrollBy({ left: step(), behavior: "auto" })
     })
   }
 </script>
