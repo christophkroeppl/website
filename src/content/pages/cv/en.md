@@ -48,13 +48,13 @@ languages:
     level: "Basic"
 interests:
   - "3D printing (FFF/FDM)"
+  - "Austrian School of Economics"
   - "Guitar"
   - "Latin dance"
-  - "Austrian School of Economics"
 bitcoin:
   own:
-    - "I run my own Bitcoin Knots node and self-custody my own coins — no third party holds the keys."
-    - "Working knowledge of the EU crypto framework: MiCA, the CASP boundary, the Travel Rule, AML and DORA — including recital 83, which keeps non-custodial wallet software outside MiCA."
+    - "I run my own Bitcoin Knots node and self-custody my own coins — NYKNYC DYOR."
+    - "Working knowledge of the EU crypto framework: MiCA, the CASP boundary, the Travel Rule, AML and DORA."
   events:
     - "BTC Prague 2023, 2024 and 2025 — Europe's largest Bitcoin-only conference."
     - "BTC22 Bitcoin Conference, Innsbruck — September 2022."

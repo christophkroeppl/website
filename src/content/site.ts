@@ -43,7 +43,7 @@ export const about = {
 
 export const pageDescriptions = {
   projects: {
-    de: "Christoph Kröppl — Software für den Betrieb, von der ersten Idee bis zum laufenden Dienst: Open-Source-Projekte und ausgewählte Arbeiten im Überblick.",
-    en: "Christoph Kröppl — software built for operations, from the first idea all the way to the running service: open-source projects and selected work at a glance.",
+    de: "Christoph Kröppl — Meine Open-Source-Projekte und ausgewählte Arbeiten im Überblick.",
+    en: "Christoph Kröppl — My open-source projects and selected work at a glance.",
   },
 } satisfies Partial<Record<PageId, Record<Locale, string>>>

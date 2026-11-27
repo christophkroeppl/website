@@ -1,9 +1,8 @@
 ---
 label: "ERP & business software"
 items:
-  - "Odoo (expert) — architecture, 13→15 migrations, OCA modules, process design"
-  - "Microsoft Dynamics NAV / Navision — SLA, acquisition and inventory administration"
-  - "ConSol CM (BPM platform) — requirements and customisation"
-  - "ERP change estimation from historical data and heuristics"
+  - "Odoo (expert) — migrations, OCA modules, process design"
+  - "change & requirements engineering · specialized hosting"
+  - "ConSol CM (BPM platform) · Microsoft Dynamics NAV / Navision"
 order: 1
 ---

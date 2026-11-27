@@ -3,10 +3,9 @@ export const programmingLanguages: Set<string> = new Set([
   "C",
   "Go",
   "Groovy",
-  "JavaScript",
   "Kotlin",
+  "TypeScript",
   "Python",
   "Rust",
   "SQL",
-  "TypeScript",
 ])

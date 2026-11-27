@@ -1,9 +1,8 @@
 ---
 label: "ERP & Unternehmenssoftware"
 items:
-  - "Odoo (Experte) — Architektur, Migrationen 13→15, OCA-Module, Prozessdesign"
-  - "Microsoft Dynamics NAV / Navision — SLA-, Akquisitions- und Inventarverwaltung"
-  - "ConSol CM (BPM-Plattform) — Anforderungen und Anpassung"
-  - "ERP-Änderungskalkulation aus historischen Daten und Heuristiken"
+  - "Odoo (Experte) — Migrationen, OCA, Prozessdesign"
+  - "Aufwands-Abschätzungen · Spezialisiertes Hosting"
+  - "ConSol CM (BPM-Plattform) · Microsoft Dynamics NAV / Navision"
 order: 1
 ---

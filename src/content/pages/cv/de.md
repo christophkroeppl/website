@@ -53,8 +53,8 @@ interests:
   - "Österreichische Schule der Nationalökonomie"
 bitcoin:
   own:
-    - "Ich betreibe meinen eigenen Bitcoin-Knots-Knoten und verwahre meine Coins selbst — keine fremde Partei hält die Schlüssel."
-    - "Praktisches Wissen über den EU-Kryptorahmen: MiCA, CASP-Abgrenzung, Travel Rule, AML und DORA — einschließlich Erwägungsgrund 83, der nicht-verwahrende Wallet-Software aus MiCA heraushält."
+    - "Ich betreibe meinen eigenen Bitcoin-Knots – NYKNYC DYOR"
+    - "Praktisches Wissen über den EU-Kryptorahmen: MiCA, CASP-Abgrenzung, Travel Rule, AML und DORA."
   events:
     - "BTC Prague 2023, 2024 und 2025 — Europas größte Bitcoin-only-Konferenz."
     - "BTC22 Bitcoin Conference, Innsbruck — September 2022."

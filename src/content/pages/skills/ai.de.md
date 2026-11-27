@@ -1,8 +1,8 @@
 ---
 label: "Agentic Engineering & KI"
 items:
-  - "LLM-Anwendungen — Tool-Calling, Agent-Workflows und Evaluations-Harnesses"
-  - "KI-Integration und Transformation bestehender Systeme und Prozesse"
-  - "AI-gestützte Entwicklung als Lieferpraxis — von der Idee bis zum Betrieb"
+  - "LLM-Apps — Tool-Calling, Agent-Workflows & -Harnesses"
+  - "KI-Integration und Transformation bestehender Prozesse"
+  - "AI-gestützte Entwicklung"
 order: 5
 ---

@@ -1,7 +1,8 @@
 ---
 label: "Sprachen & Laufzeiten"
 items:
-  - "Bun / Node / Deno · Python · Rust · TypeScript / JavaScript · Kotlin · Groovy · C"
+  - "Edge-Worker · Bun / Node / Deno · TypeScript / JavaScript"
+  - "Python · Kotlin · Groovy · C · Rust"
   - "Bash · SQL · PostgreSQL"
 order: 2
 ---

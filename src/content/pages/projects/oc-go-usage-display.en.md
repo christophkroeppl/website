@@ -8,7 +8,7 @@ stack:
   - Node ≥22
   - OpenCode plugin API
   - npm
-status: Public · MIT · npm 2.1.0
+status: Public · npm 2.1.0
 license: MIT
 links:
   - label: GitHub

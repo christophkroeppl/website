@@ -1,9 +1,8 @@
 ---
 label: "Infrastructure & operations"
 items:
-  - "Docker · Podman · Ubuntu / Debian / Arch / pop!_OS · BTRFS · LUKS"
-  - "Server administration — Active Directory, DNS, DHCP, Group Policies, Exchange"
-  - "Cloudflare Workers · Cloudflare Zero Trust"
-  - "Cisco switching and telephony · Apache · OS deployment · CMDB"
+  - "Docker / Podman · Ubuntu / Debian / Arch · BTRFS · LUKS"
+  - "Active Directory, DNS, DHCP, Group Policies"
+  - "Cloudflare Proxy · Workers · Zero Trust"
 order: 4
 ---

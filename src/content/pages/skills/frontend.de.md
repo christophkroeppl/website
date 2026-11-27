@@ -1,7 +1,7 @@
 ---
 label: "Frontend & Produkt"
 items:
-  - "Astro · Nuxt 4 · Vue · Tailwind CSS · Nuxt UI"
-  - "Drizzle ORM · tRPC · BetterAuth · i18n · REST-API-Design"
+  - "Astro · Vue / Nuxt · Solid / React / Preact · Tailwind"
+  - "Drizzle ORM · tRPC · BetterAuth · i18n · REST"
 order: 3
 ---

@@ -1,8 +1,8 @@
 ---
 label: "Agentic engineering & AI"
 items:
-  - "LLM applications — tool calling, agent workflows and evaluation harnesses"
-  - "AI integration and transformation of existing systems and processes"
-  - "AI-assisted delivery as a practice — from idea to operations"
+  - "LLM apps — tool calling, agent workflows & harnesses"
+  - "AI integration and transformation of existing processes"
+  - "AI-assisted engineering & delivery"
 order: 5
 ---

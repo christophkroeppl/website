@@ -17,7 +17,6 @@ highlights:
   - "Sechs Tools: list, resolve, read, write, add, backlinks."
   - Base-Regionen werden über den Pfad gematcht, nicht über die Position.
   - Parity-Tests gegen die Obsidian-CLI.
-  - Audit-Trail für jeden Tool-Aufruf.
 artifact:
   kind: html
   src: /generated/projects/bases-mcp.html
