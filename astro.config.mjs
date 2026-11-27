@@ -46,6 +46,7 @@ export default defineConfig({
   ],
   prefetch: false,
   vite: {
+    server: { fs: { strict: false } },
     define: { __BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
     plugins: [tailwindcss()],
   },
