@@ -2,7 +2,7 @@
 order: 1
 name: oc-go-usage-display
 tagline: Dein Go-Kontingent, dort wo du hinsiehst.
-summary: "Ein Plugin für OpenCode und Kilo: das go_usage-Tool, eine Sidebar und die Statusline zeigen das 5-Stunden-, 7-Tage- und 30-Tage-Fenster inklusive Reset-Zeit. Ein npm-Paket, alle Bundles auf einem Versionsstand."
+summary: "TypeScript-Plugin für OpenCode und Kilo. Stellt Opencode-Go-Abo-Statistik und Zeit bis zum nächsten Reset in TUI-Sidebar und Statusline dar; Als Quelle dient die API und der Auth-Store des jeweiligen Hosts."
 stack:
   - TypeScript
   - Node ≥22

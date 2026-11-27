@@ -2,7 +2,7 @@
 order: 1
 name: oc-go-usage-display
 tagline: Your Go usage, where you already look.
-summary: "A plugin for OpenCode and Kilo: the go_usage tool, a sidebar and the statusline show the 5-hour, 7-day and 30-day windows with reset time. One npm package, every bundle on one version."
+summary: "TypeScript plugin for OpenCode and Kilo. Reading the host's own auth store it renders Opencode Go subscription_usage stats and time to reset as a TUI sidebar and a statusline."
 stack:
   - TypeScript
   - Node ≥22

@@ -3,7 +3,6 @@ import ProjectCard from "./ProjectCard.astro"
 import ProjectSlide from "./ProjectSlide.astro"
 import type { ProjectData } from "../content.config"
 import type { Locale } from "../i18n/locales"
-import { useTranslations } from "../i18n/ui"
 import { projectPosition, splitProjects } from "../lib/projects"
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
 }
 
 const { projects, lang, basePath, label } = Astro.props
-const t = useTranslations(lang)
 const count = projects.length
 const { featured } = splitProjects(projects)
 ---
@@ -27,7 +25,7 @@ const { featured } = splitProjects(projects)
     aria-label={label}
     tabindex="0"
   >
-    <div class="flex before:flex-[0_0_8%] before:content-[''] after:flex-[0_0_8%] after:content-['']">
+    <div class="flex">
       {projects.map((project, index) => (
         <ProjectSlide
           project={project.data}
@@ -39,56 +37,6 @@ const { featured } = splitProjects(projects)
       ))}
     </div>
   </div>
-  <div
-    class="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-base-100 to-transparent"
-    aria-hidden="true"
-  ></div>
-  <div
-    class="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-base-100 to-transparent"
-    aria-hidden="true"
-  ></div>
-  <button
-    type="button"
-    class="btn btn-sm btn-circle btn-outline absolute left-2 top-1/2 z-20 -translate-y-1/2"
-    data-carousel-prev
-    aria-label={t("projects.previous")}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m15 19-7-7 7-7" />
-    </svg>
-  </button>
-  <button
-    type="button"
-    class="btn btn-sm btn-circle btn-outline absolute right-2 top-1/2 z-20 -translate-y-1/2"
-    data-carousel-next
-    aria-label={t("projects.next")}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-    >
-      <path d="m9 5 7 7-7 7" />
-    </svg>
-  </button>
 </div>
 
 <div class="hidden gap-x-10 gap-y-10 sm:grid sm:grid-cols-2 lg:grid-cols-3">
@@ -107,14 +55,25 @@ const { featured } = splitProjects(projects)
     const viewport = root.querySelector<HTMLElement>(
       '[role="region"][aria-roledescription="carousel"]',
     )
-    const previous = root.querySelector<HTMLButtonElement>("[data-carousel-prev]")
-    const next = root.querySelector<HTMLButtonElement>("[data-carousel-next]")
+    const scope = root.closest("section") ?? document
+    const previous = scope.querySelector<HTMLButtonElement>("[data-carousel-prev]")
+    const next = scope.querySelector<HTMLButtonElement>("[data-carousel-next]")
     if (!viewport || !previous || !next) continue
 
     const slides = [...viewport.querySelectorAll<HTMLElement>('[aria-roledescription="slide"]')]
     if (!slides.length) continue
 
-    const step = () => slides[0].getBoundingClientRect().width + 16
+    const syncControls = () => {
+      const atStart = viewport.scrollLeft <= 2
+      const atEnd = viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 2
+      previous.disabled = atStart
+      next.disabled = atEnd
+    }
+    viewport.addEventListener("scroll", syncControls, { passive: true })
+    window.addEventListener("resize", syncControls)
+    syncControls()
+
+    const step = () => slides[0].getBoundingClientRect().width
     previous.addEventListener("click", () => {
       viewport.scrollBy({ left: -step(), behavior: "smooth" })
     })

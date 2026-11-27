@@ -15,10 +15,12 @@ const { project, lang, index, total, href } = Astro.props
 ---
 
 <div
-  class="min-w-0 flex-[0_0_84%] snap-center snap-always px-2"
+  class="min-w-0 flex-[0_0_100%] snap-center snap-always px-2"
   role="group"
   aria-roledescription="slide"
   aria-label={`${index} / ${total}`}
 >
-  <ProjectCard project={project} lang={lang} index={index} href={href} />
+  <div class="h-full rounded-box border border-base-300 bg-base-100 p-4 shadow-sm">
+    <ProjectCard project={project} lang={lang} index={index} href={href} />
+  </div>
 </div>

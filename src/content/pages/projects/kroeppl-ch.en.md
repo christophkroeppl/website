@@ -1,8 +1,8 @@
 ---
 order: 4
 name: kroeppl.ch
-tagline: "Personal web presence deployed as a hardened edge service."
-summary: "The vite-plus (`vp`) toolchain drives package scripts, formatting, checks and tests, while deployment through Cloudflare's brand-new `cf` CLI (`cf build`, `cf deploy`, `cf previews deploy`) achieves a perfect 100% Google Lighthouse score. SEO/AEO-first output delivers canonical URLs, structured data, sitemap, Markdown and llms.txt/llms-full.txt variants, keeping contact details hard to crawl: the only mailto lives on the noindexed links subdomain, while the crawlable site uses a Turnstile-verified form forwarded through a Telegram bot."
+tagline: "Astro on edge server – fully SEO & AEO optimized."
+summary: "On-demand Cloudflare worker built with the cf CLI; formatting, checks and tests run through vite-plus. de/en Zod collections feed routes, JSON-LD, sitemap, Markdown mirrors and llms.txt. Integrations generate social cards, reveal outlines and diagrams from pinned commit SHAs. Middleware keeps the only mailto on a noindexed links subdomain; the contact form verifies Turnstile before sending to Telegram."
 stack:
   - Astro
   - TypeScript
@@ -29,6 +29,6 @@ artifact:
   aspect: "1160 / 972"
 ---
 
-An on-demand Astro Worker powers the site using vite-plus scripts and the new cf CLI. All content is structured in de/en Zod collections, while external assets and diagrams are baked at build time from pinned commits instead of being fetched at runtime.
+The site is an on-demand Worker, built and deployed with cf; formatting, checks and tests run through vite-plus. Content is structured in de/en Zod collections, and images and diagrams come from pinned commits at build time rather than a runtime fetch.
 
-Dedicated SEO/AEO outputs pair with the 100% Lighthouse score across all pages. A separate noindexed links subdomain keeps mailto hard to crawl, while the Turnstile-verified form forwards incoming inquiries directly to Telegram.
+SEO output — canonical URLs, JSON-LD, sitemap, Markdown and llms.txt — is generated from the same collections. Contact details are deliberately hard to crawl: the only mailto lives on a noindexed links subdomain, and the indexed form checks Turnstile before sending to Telegram.

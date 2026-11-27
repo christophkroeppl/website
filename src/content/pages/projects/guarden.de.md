@@ -2,7 +2,7 @@
 order: 3
 name: guarden
 tagline: Ein Deployment-Host, den man lesen kann.
-summary: "Ein VPS, ein paar Projekte, kein Kubernetes. guarden macht aus einer frischen Ubuntu-Maschine einen ehrlichen Deployment-Host: jede Anwendung als eigener Dienst mit eigenem Benutzer, eigenen Containern und eigenem Zustand, ein Edge davor, geteiltes Postgres, Snapshots für den Rückweg. Keine Web-UI — nur Kommandos und Dateien."
+summary: "Python-Werkzeuge für Ubuntu: systemd/quadlet-Units, rootless Podman, ein Traefik-Edge, ferm-Firewall, gestaffelte btrfs-Snapshots. Ein Befehl konvergiert den Host und übersteht zwei Reboots. Jedes Projekt läuft als eigener Dienst mit eigenem Benutzer und Zustand; Postgres ist geteilt. Der Produktionsstart erfordert einen Schlüssel."
 stack:
   - Python
   - systemd/quadlet
